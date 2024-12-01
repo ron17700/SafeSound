@@ -1,0 +1,31 @@
+@import "../../styles/colors.scss";
+
+.secondary-button {
+  flex: 1;
+  padding: 8px 16px;
+  background: $blue-06;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background: $blue-05;
+  }
+
+  &:disabled {
+    background: $gray-05;
+    cursor: not-allowed;
+  }
+
+  &.without-hover {
+    &:hover {
+      background: $blue-06;
+    }
+  }
+}
