@@ -1,0 +1,54 @@
+@accessToken = <YOUR_ACCESS_TOKEN>
+@refreshToken = <YOUR_REFRESH_TOKEN>
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~ Auth ~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+# Add a new user
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "email": "john.doe@example.com",
+  "password": "securePassword123",
+  "firstName": "John",
+  "lastName": "Doe",
+  "age": 30,
+  "profileImage": "https://example.com/profile.jpg"
+}
+
+###
+
+# User login
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "securePassword123"
+}
+
+###
+
+# User logout
+POST http://localhost:3001/auth/logout
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+# Request a new Access Token using the Refresh Token
+POST http://localhost:3001/auth/refresh-token
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
