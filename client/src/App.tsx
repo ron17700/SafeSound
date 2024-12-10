@@ -1,28 +1,17 @@
-import React, { useMemo, useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Login } from "./pages/Login/Login";
-import { ToastContainer } from "react-toastify";
-import { ROUTES } from "./Types/Routes";
-import "./styles/default-style.scss";
-import "react-toastify/dist/ReactToastify.css";
-import "./App.scss";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
+import Register from './components/Register';
+import Login from './components/Login';
 
-const router = createBrowserRouter([
-  {
-    path: `/`,
-    element: <Login />,
-  }, {
-    path: `/${ROUTES.LOGIN}`,
-    element: <Login />,
-  },
-]);
-
-export const App: React.FC = () => {
+const App = () => {
   return (
-    <div className="App">
-      <RouterProvider router={router} />
-      <ToastContainer />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
+    </Router>
   );
 };
+
+export default App;
