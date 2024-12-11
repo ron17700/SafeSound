@@ -32,7 +32,7 @@ export interface IChunk extends Document {
 
 const ChunkScheme = new Schema<IChunk>(
     {
-        id: {
+        _id: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
         },

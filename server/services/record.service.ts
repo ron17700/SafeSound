@@ -2,7 +2,7 @@ import { Record, IRecord } from '../models/record.model';  // Adjust the path as
 
 export const RecordService = {
     async getAllRecords(userId: string) {
-        return await Record.find({ userId });
+        return Record.find({userId});
     },
 
     async addRecord(recordData: IRecord) {
@@ -11,10 +11,15 @@ export const RecordService = {
     },
 
     async updateRecord(id: string, recordData: Partial<IRecord>) {
-        return await Record.findByIdAndUpdate(id, recordData, { new: true });
+        return Record.findByIdAndUpdate(id, recordData, { new: true });
     },
 
-    async deleteRecord(id: string) {
-        return await Record.findByIdAndRemove(id);
+    async  deleteRecord(id: string): Promise<IRecord | null> {
+        try {
+            return await Record.findByIdAndRemove(id);
+        } catch (error) {
+            console.error('Error deleting record', error);
+            throw new Error('Error deleting record');
+        }
     }
 }

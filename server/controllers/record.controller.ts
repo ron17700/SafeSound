@@ -4,10 +4,10 @@ import { RecordService } from '../services/record.service';
 export const RecordController  = {
     async getRecords (req: Request, res: Response) {
         try {
-            const userId = req.user.id; // Assuming you have the logged-in user ID
+            const userId = req.body.id; // Assuming you have the logged-in user ID
             const records = await RecordService.getAllRecords(userId);
             res.json(records);
-        } catch (err) {
+        } catch (err: any) {
             res.status(500).json({ error: err.message });
         }
     },
@@ -16,7 +16,7 @@ export const RecordController  = {
         try {
             const newRecord = await RecordService.addRecord(req.body);
             res.status(201).json(newRecord);
-        } catch (err) {
+        } catch (err: any) {
             res.status(400).json({ error: err.message });
         }
     },
@@ -28,7 +28,7 @@ export const RecordController  = {
                 return res.status(404).json({ message: 'Record not found' });
             }
             res.json(updatedRecord);
-        } catch (err) {
+        } catch (err: any) {
             res.status(400).json({ error: err.message });
         }
     },
@@ -40,7 +40,7 @@ export const RecordController  = {
                 return res.status(404).json({ message: 'Record not found' });
             }
             res.json({ message: 'Record deleted successfully' });
-        } catch (err) {
+        } catch (err: any) {
             res.status(500).json({ error: err.message });
         }
     }

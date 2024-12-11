@@ -9,9 +9,9 @@ export interface IRecord extends Document {
     chunks: IChunk[];
 }
 
-const RecordScheme = new Schema<IRecord>(
+const RecordSchema = new Schema<IRecord>(
     {
-        id: {
+        _id: {
             type: mongoose.Schema.Types.ObjectId,
             required: true,
         },
@@ -35,4 +35,8 @@ const RecordScheme = new Schema<IRecord>(
     }
 );
 
-export const Record: Model<IRecord> = mongoose.model('Record', RecordScheme);
+interface RecordModel extends Model<IRecord> {
+    findByIdAndRemove(id: string): Promise<IRecord | null>;
+}
+
+export const Record = mongoose.model<IRecord, RecordModel>('Record', RecordSchema);
