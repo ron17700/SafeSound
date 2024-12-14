@@ -23,9 +23,9 @@ export const AuthController = {
     },
 
     async logout(req: Request, res: Response, next: NextFunction) {
-        const { refreshToken } = req.body;
+        const { userId } = req.body;
         try {
-            const response = await AuthService.logout(refreshToken);
+            const response = await AuthService.logout(userId);
             res.status(response.status).json(response.data);
         } catch (err: any) {
             res.status(err.status || 400).json({ error: err.message });

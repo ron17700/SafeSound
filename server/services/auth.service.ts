@@ -51,12 +51,11 @@ export const AuthService = {
         return { status: 200, data: { message: 'Login successful', accessToken, refreshToken } };
     },
 
-    async logout(refreshToken: string) {
-        const decodedToken: any = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!);
-        const user: IUser | null = await User.findById(decodedToken.userId).select('+refreshToken').exec();
+    async logout(userId: string) {
+        const user: IUser | null = await User.findById(userId).select('+refreshToken').exec();
 
-        if (!user || user.refreshToken !== refreshToken) {
-            throw new Error('Invalid refresh token');
+        if (!user) {
+            throw new Error('Invalid token');
         }
 
         user.refreshToken = null;
