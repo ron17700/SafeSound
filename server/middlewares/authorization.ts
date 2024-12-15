@@ -8,17 +8,15 @@ export const isAuthorized = async (req: Request, res: Response, next: NextFuncti
     if (!authHeaders) {
         return res.status(403).json({ error: "Authorization header not found!" });
     }
-
     const token = authHeaders.split(" ")[1];
 
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string }; // Explicitly typing decodedToken
+        const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
         const user = await User.findById(decodedToken.userId);
-
         if (!user) {
             return res.status(403).json({ error: "Not Authorized!" });
         }
-
+        req.body = Object.assign(req.body, {userId: decodedToken.userId})
         next();
     } catch (err) {
         return res.status(403).json({ error: "Not Authorized!" });
