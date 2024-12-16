@@ -2,11 +2,21 @@ import { Request, Response } from 'express';
 import { RecordService } from '../services/record.service';
 
 export const RecordController  = {
-    async getRecords (req: Request, res: Response) {
+    async getAllRecordsById (req: Request, res: Response) {
         try {
-            const userId = req.body.id; // Assuming you have the logged-in user ID
+            const userId = req.params.userId;
             const records = await RecordService.getAllRecords(userId);
             res.json(records);
+        } catch (err: any) {
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async getRecord (req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            const record = await RecordService.getRecord(id);
+            res.json(record);
         } catch (err: any) {
             res.status(500).json({ error: err.message });
         }
@@ -40,6 +50,26 @@ export const RecordController  = {
                 return res.status(404).json({ message: 'Record not found' });
             }
             res.json({ message: 'Record deleted successfully' });
+        } catch (err: any) {
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async getAllChunks (req: Request, res: Response) {
+        try {
+            const recordId = req.params.id;
+            const chunks = await RecordService.getAllChunks(recordId);
+            res.json(chunks);
+        } catch (err: any) {
+            res.status(500).json({ error: err.message });
+        }
+    },
+
+    async getChunk (req: Request, res: Response) {
+        try {
+            const { id: recordId, chunkId } = req.params;
+            const chunks = await RecordService.getChunk(recordId, chunkId);
+            res.json(chunks);
         } catch (err: any) {
             res.status(500).json({ error: err.message });
         }

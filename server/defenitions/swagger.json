@@ -1,0 +1,493 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "API documentation for our application",
+    "version": "1.0.0",
+    "title": "Safe Sound API"
+  },
+  "host": "localhost:3001",
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "description": "This endpoint registers a new user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User registration info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegistration"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Log in a user",
+        "description": "This endpoint logs in a user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User login info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLogin"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/create": {
+      "post": {
+        "summary": "Create a new record",
+        "description": "This endpoint creates a new record",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Record creation info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RecordCreation"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Record created successfully"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/{id}": {
+      "put": {
+        "summary": "Update an existing record",
+        "description": "This endpoint updates an existing record",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Record update info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RecordCreation"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record to update",
+            "required": true,
+            "type": "string"
+         }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record updated successfully"
+          },
+          "404": {
+            "description": "User or Record not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/delete/{id}": {
+      "delete": {
+        "summary": "Delete an existing record",
+        "description": "This endpoint deletes an existing record",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record to delete",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "record deleted successfully"
+          },
+          "404": {
+            "description": "record not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/getAllRecords/{userId}": {
+      "get": {
+        "summary": "Get all records by id",
+        "description": "This endpoint fetches all records by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the user",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/getRecord/{id}": {
+      "get": {
+        "summary": "Get record by id",
+        "description": "This endpoint fetches record by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/upload/image/{id}": {
+      "post": {
+        "summary": "Upload an image for record",
+        "description": "This endpoint adds an image to an existing record",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record to pair the image to",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Image upload info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RecordCreation"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Image uploaded successfully"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/:id/getAllChunks": {
+        "get": {
+            "summary": "Get all chunks by record id",
+            "description": "This endpoint fetches all chunks by record id",
+            "parameters": [
+            {
+                "in": "path",
+                "name": "id",
+                "description": "ID of the record",
+                "required": true,
+                "type": "string"
+            },
+            {
+                "in": "header",
+                "name": "x-auth-token",
+                "description": "Bearer JWT token",
+                "required": true,
+                "type": "string"
+            }
+            ],
+            "responses": {
+            "200": {
+                "description": "Chunks fetched successfully"
+            },
+            "500": {
+                "description": "Server error"
+            }
+            }
+        }
+        },
+    "/record/:id/chunk/:chunkId": {
+      "get": {
+        "summary": "Get chunk by chunkId",
+        "description": "This endpoint fetches all chunks by record id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "chunkId",
+            "description": "ID of the chunk",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chunk fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record/:id/chunk": {
+      "post": {
+        "summary": "Add a chunk to a record",
+        "description": "This endpoint adds a chunk to an existing record",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record to pair the chunk to",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Chunk creation info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChunkCreation"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-auth-token",
+            "description": "Bearer JWT token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Image uploaded successfully"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "UserRegistration": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "Adirana"
+        },
+        "name": {
+          "type": "string",
+          "example": "Adirana Smith"
+        },
+        "email": {
+          "type": "string",
+          "example": "adirana.smith@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
+        },
+        "birthYear": {
+          "type": "integer",
+          "example": 1985
+        },
+        "address": {
+          "type": "string",
+          "example": "123 Elm Street"
+        },
+        "gender": {
+          "type": "string",
+          "example": "female"
+        },
+        "isSeller": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "UserLogin": {
+      "type": "object",
+      "properties": {
+        "emailOrUsername": {
+          "type": "string",
+          "example": "john.doe@example.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "password123"
+        }
+      }
+    },
+    "RecordCreation": {
+      "type": "object",
+      "required": [
+        "userId"
+      ],
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "userId"
+        },
+        "startTime": {
+          "type": "string",
+          "example": "startTime"
+        },
+        "endTime": {
+          "type": "string",
+          "example": "endTime"
+        },
+        "summary": {
+          "type": "string",
+          "example": "curse words"
+        },
+        "chunks": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "image": {
+          "type": "string"
+        }
+      }
+    },
+    "ChunkCreation": {
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "type": "string",
+          "example": "startTime"
+        },
+        "endTime": {
+          "type": "string",
+          "example": "endTime"
+        },
+        "file": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import { v4 as uuid } from 'uuid';
 
 export interface IUser extends Document {
+    userId: string;
     email: string;
     password: string;
     refreshToken: string | null;
@@ -12,6 +14,11 @@ export interface IUser extends Document {
 
 const UserSchema= new Schema<IUser>(
     {
+        userId: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         email: {
             type: String,
             required: [true, 'Email is required!'],
@@ -42,6 +49,13 @@ const UserSchema= new Schema<IUser>(
         timestamps: true
     }
 );
+
+UserSchema.pre('save', function (next) {
+    if (!this.userId) {
+        this.userId = uuid();
+    }
+    next();
+});
 
 const User: Model<IUser> = mongoose.model('User', UserSchema);
 

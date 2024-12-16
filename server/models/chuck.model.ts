@@ -1,12 +1,13 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import {v4 as uuid} from "uuid";
 
-enum Class {
+export enum Class {
     Natural = "Natural",
     Good = "Good",
     Bad = "Bad"
 }
 
-enum Status {
+export enum Status {
     NotStarted = "not-started",
     InProgress = "in-progress",
     Completed = "completed",
@@ -14,26 +15,42 @@ enum Status {
 }
 
 export interface IChunkTimeStamp extends Document {
-    id: string;
-    chunkId: string;
     startTime: Date;
-    endTime: Date
-    text: string
+    endTime: Date;
+    text: string;
+    class: Class;
 }
 
-export interface IChunk extends Document {
-    id: string;
+export interface IChunk {
+    recordId: string;
+    chunkId: string;
+    startTime: Date;
+    endTime: Date;
+    status: Status;
+    class?: Class;
+    chunkTimeStamp?: IChunkTimeStamp[];
+    audioFilePath: string;
+}
+
+export interface IChunkScheme extends Document {
+    recordId: string;
+    chunkId: string;
     startTime: Date;
     endTime: Date;
     status: Status;
     class: Class;
-    chunkTimeStamp: IChunkTimeStamp[];
+    chunkTimeStamp?: IChunkTimeStamp[];
+    audioFilePath: string;
 }
 
-const ChunkScheme = new Schema<IChunk>(
+const ChunkScheme = new Schema<IChunkScheme>(
     {
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
+        recordId: {
+            type: String,
+            required: true
+        },
+        chunkId: {
+            type: String,
             required: true,
         },
         startTime: {
@@ -52,7 +69,25 @@ const ChunkScheme = new Schema<IChunk>(
             type: String,
             required: true,
         },
+        chunkTimeStamp: [{
+            startTime: Date,
+            endTime: Date,
+            text: String,
+            class: String
+        }],
+        audioFilePath: {
+            type: String,
+            required: true
+        }
     }
 );
 
-export const Chunk: Model<IChunk> = mongoose.model('Chunk', ChunkScheme);
+
+ChunkScheme.pre('save', function (next) {
+    if (!this.chunkId) {
+        this.chunkId = uuid();
+    }
+    next();
+});
+
+export const Chunk: Model<IChunkScheme> = mongoose.model('Chunk', ChunkScheme);
