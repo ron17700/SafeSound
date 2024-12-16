@@ -8,6 +8,7 @@
   "scripts": {
     "start:dev": "npx nodemon",
     "start": "npx ts-node index.ts",
+    "test-code": "ts-node ./test-code.ts",
     "build": "rimraf ./dist && tsc -p ./tsconfig.json",
     "start:prod": "node index.js",
     "test": "jest --detectOpenHandles --forceExit"

@@ -63,11 +63,9 @@ const ChunkScheme = new Schema<IChunkScheme>(
         },
         status: {
             type: String,
-            required: true,
         },
         class: {
             type: String,
-            required: true,
         },
         chunkTimeStamp: [{
             startTime: Date,
