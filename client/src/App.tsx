@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Register from './components/Register';
-import Login from './components/Login';
+import Register from './components/Auth/Register';
+import Login from './components/Auth/Login';
 
 const App = () => {
   return (

@@ -1,33 +1,34 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: '/api', // This uses the proxy set in vite.config.ts
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const API_BASE_URL = 'http://localhost:3001/auth';
 
-export const registerUser = async (data: {
-  username: string;
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  age: string;
-}) => {
-  try {
-    const response = await api.post('/auth/register', data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const register = async (
+  email: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+  profileImage: string
+) => {
+  return axios.post(`${API_BASE_URL}/register`, {
+    email,
+    password,
+    firstName,
+    lastName,
+    profileImage,
+  });
 };
 
-export const loginUser = async (data: { email: string; password: string }) => {
-  try {
-    const response = await api.post('/auth/login', data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+export const login = async (email: string, password: string) => {
+  return await axios.post(`${API_BASE_URL}/login`, {
+    email,
+    password,
+  });
+};
+
+export const logout = async (refreshToken: string) => {
+  return await axios.post(`${API_BASE_URL}/logout`, { refreshToken });
+};
+
+export const refreshToken = async (refreshToken: string) => {
+  return await axios.post(`${API_BASE_URL}/refresh-token`, { refreshToken });
 };
