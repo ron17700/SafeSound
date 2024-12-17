@@ -1,28 +1,98 @@
-import React, { useMemo, useState } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Login } from "./pages/Login/Login";
-import { ToastContainer } from "react-toastify";
-import { ROUTES } from "./Types/Routes";
-import "./styles/default-style.scss";
-import "react-toastify/dist/ReactToastify.css";
-import "./App.scss";
+import React, { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from 'react-router-dom';
+import Register from './components/Auth/Register';
+import Login from './components/Auth/Login';
+import RecordsPage from './components/Records/RecordsPage';
+import Layout from './components/shared/Layout';
+import { refreshAccessToken } from './api/apiLogic';
+import { BoxWrapper } from './components/shared/styles/wrappers';
+import { Loading } from './components/shared/styles/inputs';
+import { RecordsImage } from './components/shared/styles/images';
 
+const SafeSoundLogo = new URL('./assets/images/SafeSound.png', import.meta.url)
+  .href;
 
-const router = createBrowserRouter([
-  {
-    path: `/`,
-    element: <Login />,
-  }, {
-    path: `/${ROUTES.LOGIN}`,
-    element: <Login />,
-  },
-]);
+const App: React.FC = () => {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-export const App: React.FC = () => {
+  useEffect(() => {
+    const fetchAccessToken = async () => {
+      try {
+        let token: string | null = localStorage.getItem('accessToken');
+
+        if (!token) {
+          token = await refreshAccessToken();
+          if (token) {
+            localStorage.setItem('accessToken', token);
+          }
+        }
+
+        setAccessToken(token);
+      } catch (error) {
+        console.error('Failed to fetch access token:', error);
+        setAccessToken(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccessToken();
+  }, []);
+
+  const handleAccessToken = (token: string) => {
+    localStorage.setItem('accessToken', token);
+    setAccessToken(token);
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <BoxWrapper>
+          <Loading>Loading...</Loading>
+        </BoxWrapper>
+        <BoxWrapper>
+          <RecordsImage src={SafeSoundLogo} alt="SafeSound Logo" />
+        </BoxWrapper>
+      </div>
+    );
+  }
+
   return (
-    <div className="App">
-      <RouterProvider router={router} />
-      <ToastContainer />
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            accessToken ? <Navigate to="/records" /> : <Navigate to="/login" />
+          }
+        />
+        <Route
+          path="/login"
+          element={<Login handleAccessToken={handleAccessToken} />}
+        />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/records"
+          element={
+            accessToken ? (
+              <>
+                <Layout />
+                <RecordsPage />
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+      </Routes>
+    </Router>
   );
 };
+
+export default App;
