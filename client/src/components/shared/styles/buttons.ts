@@ -26,3 +26,8 @@ export const ConfirmButton = styled(Button)(() => ({
   backgroundColor: '#8EAAB0',
   color: '#FFFFFF',
 }));
+
+export const AddRecordButton = styled(Button)(() => ({
+  marginTop: '5px',
+  backgroundColor: '#103A49',
+}));

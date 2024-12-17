@@ -30,7 +30,7 @@ import { StyledForm } from '../shared/styles/forms';
 import Modal from 'react-modal';
 import { StyledImage, UploadedImage } from '../shared/styles/images';
 
-export default function Register() {
+const Register: React.FC = () => {
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState('');
   const [passwordError, setPasswordError] = useState(false);
@@ -131,14 +131,7 @@ export default function Register() {
     profileImage: string
   ) => {
     try {
-      const response = await register(
-        email,
-        password,
-        firstName,
-        lastName,
-        profileImage
-      );
-      console.log('Registration successful:', response.data);
+      await register(email, password, firstName, lastName, profileImage);
       alert('User registered successfully!');
     } catch (error: any) {
       console.error(
@@ -146,6 +139,7 @@ export default function Register() {
         error.response?.data || error.message
       );
       alert('Registration failed!');
+      throw error;
     }
   };
 
@@ -170,7 +164,7 @@ export default function Register() {
         profileImage
       );
 
-      navigate('/');
+      navigate('/login');
     } catch (error) {
       console.error('Registration failed:', error);
     }
@@ -302,4 +296,6 @@ export default function Register() {
       </Card>
     </StackContainer>
   );
-}
+};
+
+export default Register;

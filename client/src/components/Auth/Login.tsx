@@ -3,7 +3,7 @@ import * as React from 'react';
 import Divider from '@mui/material/Divider';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   StyledActiveButton,
   StyledPassiveButton,
@@ -18,16 +18,28 @@ import { Card } from '../shared/styles/cards';
 import { login } from '../../api/authApi';
 import { StyledForm } from '../shared/styles/forms';
 
-export default function Login() {
+interface LoginProps {
+  handleAccessToken: (token: string) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
 
+  const navigate = useNavigate();
+
+  const saveTokens = (accessToken: string, refreshToken: string) => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+  };
+
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await login(email, password);
-      console.log('Login successful:', response.data);
+      saveTokens(response.data.accessToken, response.data.refreshToken);
+      handleAccessToken(response.data.accessToken);
       alert('User logged in successfully!');
     } catch (error: any) {
       console.error(
@@ -53,6 +65,8 @@ export default function Login() {
         data.get('email') as string,
         data.get('password') as string
       );
+
+      navigate('/');
     } catch (error) {
       console.error('Registration failed:', error);
     }
@@ -154,4 +168,6 @@ export default function Login() {
       </Card>
     </StackContainer>
   );
-}
+};
+
+export default Login;

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Modal from 'react-modal';
 import { styled } from '@mui/material/styles';
 import { CSSProperties } from 'react';
+import Container from '@mui/material/Container';
 
 export const StackContainer = styled(Stack)(() => ({
   backgroundColor: '#C3CECD',
@@ -47,6 +47,17 @@ export const ButtonsDiv = styled('div')(() => ({
   width: '15vw',
   alignItems: 'center',
   margin: 'auto',
+}));
+
+export const RecordsContainer = styled(Container)(() => ({
+  textAlign: 'center',
+  marginTop: '10vh',
+}));
+
+export const BoxWrapper = styled(Box)(() => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
 }));
 
 export const StyledContent: CSSProperties = {

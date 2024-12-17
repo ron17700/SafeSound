@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:3001/auth';
+import api, { API_BASE_URL } from './apiService';
 
 export const register = async (
   email: string,
@@ -26,9 +25,17 @@ export const login = async (email: string, password: string) => {
 };
 
 export const logout = async (refreshToken: string) => {
-  return await axios.post(`${API_BASE_URL}/logout`, { refreshToken });
+  try {
+    const response = await api.post(`${API_BASE_URL}/logout`, { refreshToken });
+    return response;
+  } catch (error: any) {
+    console.error(
+      'Error during logout:',
+      error.response?.data || error.message
+    );
+    throw error;
+  }
 };
-
-export const refreshToken = async (refreshToken: string) => {
+export const getRefreshToken = async (refreshToken: string) => {
   return await axios.post(`${API_BASE_URL}/refresh-token`, { refreshToken });
 };

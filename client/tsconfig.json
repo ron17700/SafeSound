@@ -14,9 +14,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "allowSyntheticDefaultImports": true,
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

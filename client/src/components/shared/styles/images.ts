@@ -12,3 +12,10 @@ export const UploadedImage = styled('img')(() => ({
   maxHeight: '10vh',
   margin: 'auto',
 }));
+
+export const RecordsImage = styled('img')(() => ({
+  width: '20%',
+  height: '20%',
+  marginBottom: 2,
+  alignSelf: 'center',
+}));
