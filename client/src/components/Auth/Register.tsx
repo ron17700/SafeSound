@@ -1,35 +1,79 @@
 import * as React from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import Typography from '@mui/material/Typography';
-import { StyledHeader, StyledTextField } from '../shared/styles/inputs';
 import {
+  StyledHeader,
+  StyledText,
+  StyledTextField,
+} from '../shared/styles/inputs';
+import {
+  ConfirmButton,
   StyledActiveButton,
   StyledPassiveButton,
 } from '../shared/styles/buttons';
 import {
+  ButtonsDiv,
   StackContainer,
   StyledBox,
+  StyledContent,
   StyledDiv,
+  StyledOverlay,
+  StyledUploadImage,
 } from '../shared/styles/wrappers';
 import { Card } from '../shared/styles/cards';
 import { register } from '../../api/authApi';
+import { useDropzone } from 'react-dropzone';
+import { StyledForm } from '../shared/styles/forms';
+import Modal from 'react-modal';
+import { StyledImage, UploadedImage } from '../shared/styles/images';
 
 export default function Register() {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = React.useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
-    React.useState('');
-  const [nameError, setNameError] = React.useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+    useState('');
+  const [nameError, setNameError] = useState(false);
+  const [nameErrorMessage, setNameErrorMessage] = useState('');
 
   const navigate = useNavigate();
 
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      setModalIsOpen(true);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': [] },
+    maxFiles: 1,
+  });
+
+  const confirmImage = () => setModalIsOpen(false);
+  const removeImage = () => {
+    setImagePreview(null);
+    setModalIsOpen(false);
+  };
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
@@ -83,10 +127,17 @@ export default function Register() {
     email: string,
     password: string,
     firstName: string,
-    lastName: string
+    lastName: string,
+    profileImage: string
   ) => {
     try {
-      const response = await register(email, password, firstName, lastName, '');
+      const response = await register(
+        email,
+        password,
+        firstName,
+        lastName,
+        profileImage
+      );
       console.log('Registration successful:', response.data);
       alert('User registered successfully!');
     } catch (error: any) {
@@ -109,15 +160,16 @@ export default function Register() {
     const data = new FormData(event.currentTarget);
     const name = data.get('name')?.toString().trim() || '';
     const [firstName = '', lastName = ''] = name.split(' ').filter(Boolean);
-
+    const profileImage = imagePreview ? imagePreview : '';
     try {
       await handleRegister(
         data.get('email') as string,
         data.get('password') as string,
         firstName,
-        lastName
+        lastName,
+        profileImage
       );
-     
+
       navigate('/');
     } catch (error) {
       console.error('Registration failed:', error);
@@ -130,7 +182,7 @@ export default function Register() {
         <StyledHeader component="h1" variant="h4">
           Create Account
         </StyledHeader>
-        <form onSubmit={handleSubmit} noValidate>
+        <StyledForm onSubmit={handleSubmit} noValidate>
           <StyledDiv>
             <StyledBox>
               <FormControl>
@@ -200,14 +252,45 @@ export default function Register() {
                   size="small"
                 />
               </FormControl>
+              <StyledUploadImage
+                {...getRootProps()}
+                isDragActive={isDragActive}
+              >
+                <input {...getInputProps()} />
+                {imagePreview ? (
+                  <UploadedImage src={imagePreview} alt="Preview" />
+                ) : (
+                  <StyledText>
+                    Drag & drop an image here, or click to upload
+                  </StyledText>
+                )}
+              </StyledUploadImage>
+              <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={() => setModalIsOpen(false)}
+                appElement={document.getElementById('root') || undefined}
+                style={{
+                  overlay: StyledOverlay,
+                  content: StyledContent,
+                }}
+              >
+                <StyledHeader>Image Preview</StyledHeader>
+                {imagePreview && (
+                  <StyledImage src={imagePreview} alt="Preview" />
+                )}
+                <ButtonsDiv>
+                  <ConfirmButton onClick={confirmImage}>Confirm</ConfirmButton>
+                  <StyledActiveButton onClick={removeImage}>
+                    Remove
+                  </StyledActiveButton>
+                </ButtonsDiv>
+              </Modal>
             </StyledBox>
             <StyledBox>
               <StyledActiveButton type="submit" fullWidth variant="contained">
                 Sign up
               </StyledActiveButton>
-              <Divider>
-                <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-              </Divider>
+              <Divider>or</Divider>
               <Link to="/">
                 <StyledPassiveButton fullWidth variant="outlined">
                   Log in
@@ -215,7 +298,7 @@ export default function Register() {
               </Link>
             </StyledBox>
           </StyledDiv>
-        </form>
+        </StyledForm>
       </Card>
     </StackContainer>
   );

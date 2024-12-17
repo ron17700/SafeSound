@@ -11,14 +11,18 @@ export const StyledActiveButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.action.disabledBackground,
     color: theme.palette.action.disabled,
   },
-  width: '100%', 
 }));
 
 export const StyledPassiveButton = styled(Button)(({ theme }) => ({
   backgroundColor: 'white',
   border: 'none',
-  color: '#000000', // Black text color
+  color: '#333333',
   '&:hover': {
-    backgroundColor: theme.palette.grey[200], 
+    backgroundColor: theme.palette.grey[200],
   },
+}));
+
+export const ConfirmButton = styled(Button)(() => ({
+  backgroundColor: '#8EAAB0',
+  color: '#FFFFFF',
 }));

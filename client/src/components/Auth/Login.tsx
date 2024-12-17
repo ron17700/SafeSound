@@ -16,6 +16,7 @@ import {
 } from '../shared/styles/wrappers';
 import { Card } from '../shared/styles/cards';
 import { login } from '../../api/authApi';
+import { StyledForm } from '../shared/styles/forms';
 
 export default function Login() {
   const [emailError, setEmailError] = React.useState(false);
@@ -91,7 +92,7 @@ export default function Login() {
           <StyledHeader component="h1" variant="h4">
             Sign in
           </StyledHeader>
-          <form onSubmit={handleSubmit} noValidate>
+          <StyledForm onSubmit={handleSubmit} noValidate>
             <StyledDiv>
               <StyledBox>
                 <FormControl>
@@ -148,7 +149,7 @@ export default function Login() {
                 </Link>
               </StyledBox>
             </StyledDiv>
-          </form>
+          </StyledForm>
         </StyledBox>
       </Card>
     </StackContainer>

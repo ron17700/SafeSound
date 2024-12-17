@@ -9,5 +9,11 @@ export const StyledTextField = styled(TextField)(() => ({
 
 export const StyledHeader = styled(Typography)<TypographyProps>(() => ({
   width: '100%',
+  color: '#333333',
   fontSize: 'clamp(1.5rem, 8vw, 1.8rem)',
+}));
+
+export const StyledText = styled('p')(() => ({
+  color: '#444444',
+  fontSize: 'clamp(O.5rem, 4vw, 0.8rem)',
 }));
