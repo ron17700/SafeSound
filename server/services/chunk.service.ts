@@ -1,21 +1,18 @@
 import {Chunk, IChunk, IChunkScheme, Status} from '../models/chuck.model';
 import fs from 'fs';
 import path from 'path';
-import { TaskQueue } from './task.queue';
-const taskQueue = new TaskQueue();
+import {taskQueue} from "../index";
 
 export const ChunkService = {
     async addChunk(recordId: string, chunkData: IChunk, audioFile: Buffer) {
-        const audioFilePath = path.join(__dirname, '..', 'uploads', `${chunkData.chunkId}.mp3`);
+        const audioFilePath = path.join(__dirname, '..', 'uploads', `${chunkData.id}.mp3`);
         fs.writeFileSync(audioFilePath, audioFile);
 
         const newChunk = new Chunk({
             recordId: recordId,
-            chunkId: chunkData.chunkId,
             startTime: chunkData.startTime,
             endTime: chunkData.endTime,
             status: Status.NotStarted,
-            chunkTimeStamp: [],
             audioFilePath: audioFilePath
         });
 
@@ -41,5 +38,23 @@ export const ChunkService = {
             console.error('Error deleting chunk', error);
             throw new Error('Error deleting chunk');
         }
-    }
+    },
+
+    async getChunk(id: string): Promise<IChunkScheme | null> {
+        try {
+            return await Chunk.findById(id);
+        } catch (error) {
+            console.error('Error getting chunk', error);
+            throw new Error('Error deleting chunk');
+        }
+    },
+
+    async getAllChunks(recordId: string): Promise<IChunkScheme[] | null> {
+        try {
+            return await Chunk.find({recordId}).exec();
+        } catch (error) {
+            console.error('Error getting chunk', error);
+            throw new Error('Error deleting chunk');
+        }
+    },
 }

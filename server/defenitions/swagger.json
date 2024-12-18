@@ -67,7 +67,69 @@
         }
       }
     },
-    "/record/create": {
+    "/auth/logout": {
+      "post": {
+        "summary": "Log out a user",
+        "description": "This endpoint logs out a user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User logout info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLogout"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "summary": "Log in a user",
+        "description": "This endpoint refreshes a user's token",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Refresh token",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RefreshToken"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/record": {
       "post": {
         "summary": "Create a new record",
         "description": "This endpoint creates a new record",
@@ -144,7 +206,7 @@
         }
       }
     },
-    "/record/delete/{id}": {
+    "/record/{id}": {
       "delete": {
         "summary": "Delete an existing record",
         "description": "This endpoint deletes an existing record",
@@ -177,7 +239,7 @@
         }
       }
     },
-    "/record/getAllRecords/{userId}": {
+    "/record/{userId}": {
       "get": {
         "summary": "Get all records by id",
         "description": "This endpoint fetches all records by id",
@@ -207,7 +269,7 @@
         }
       }
     },
-    "/record/getRecord/{id}": {
+    "/record/{id}": {
       "get": {
         "summary": "Get record by id",
         "description": "This endpoint fetches record by id",
@@ -279,7 +341,7 @@
         }
       }
     },
-    "/record/:id/getAllChunks": {
+    "/chunk/:recordId": {
         "get": {
             "summary": "Get all chunks by record id",
             "description": "This endpoint fetches all chunks by record id",
@@ -309,7 +371,7 @@
             }
         }
         },
-    "/record/:id/chunk/:chunkId": {
+    "/chunk/:id": {
       "get": {
         "summary": "Get chunk by chunkId",
         "description": "This endpoint fetches all chunks by record id",
@@ -346,7 +408,7 @@
         }
       }
     },
-    "/record/:id/chunk": {
+    "/chunk/:recordId": {
       "post": {
         "summary": "Add a chunk to a record",
         "description": "This endpoint adds a chunk to an existing record",
@@ -397,10 +459,6 @@
           "type": "string",
           "example": "Adirana"
         },
-        "name": {
-          "type": "string",
-          "example": "Adirana Smith"
-        },
         "email": {
           "type": "string",
           "example": "adirana.smith@example.com"
@@ -409,34 +467,48 @@
           "type": "string",
           "example": "password123"
         },
-        "birthYear": {
-          "type": "integer",
-          "example": 1985
-        },
-        "address": {
+        "firstName": {
           "type": "string",
-          "example": "123 Elm Street"
+          "example": "Dana"
         },
-        "gender": {
+        "lastName": {
           "type": "string",
-          "example": "female"
+          "example": "Cohen"
         },
-        "isSeller": {
-          "type": "boolean",
-          "example": true
-        }
+        "age": {
+          "type": "number",
+          "example": 25
+      }
       }
     },
     "UserLogin": {
       "type": "object",
       "properties": {
-        "emailOrUsername": {
+        "email": {
           "type": "string",
           "example": "john.doe@example.com"
         },
         "password": {
           "type": "string",
           "example": "password123"
+        }
+      }
+    },
+    "UserLogout": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "example": "userId"
+        }
+      }
+    },
+    "RefreshToken": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string",
+          "example": "token"
         }
       }
     },
@@ -470,6 +542,10 @@
         },
         "image": {
           "type": "string"
+        },
+        "notes": {
+          "type": "string",
+          "example": "record number 1"
         }
       }
     },

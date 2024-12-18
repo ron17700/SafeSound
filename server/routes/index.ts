@@ -2,11 +2,13 @@ import express, { Request, Response, Router } from 'express';
 import path from 'path';
 import authRoutes from "./auth.routes";
 import recordRoutes from "./record.routes";
+import chunkRoutes from "./chunk.routes";
 import uploadRoutes from "./upload.routes";
 
 const router = Router();
 router.use("/auth", authRoutes);
 router.use("/record", recordRoutes);
+router.use("/chunk", chunkRoutes);
 router.use("/upload", uploadRoutes);
 
 // Serve the uploaded files statically

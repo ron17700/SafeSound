@@ -1,19 +1,17 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import {IChunkScheme} from "./chuck.model";
-import { v4 as uuid } from 'uuid';
 
 export interface IRecord extends Document {
-    recordId: string;
     userId: string;
     startTime?: Date;
     endTime?: Date;
     summary?: string;
-    chunks?: IChunkScheme[];
+    name?: string;
+    image?: string;
 }
 
 const RecordSchema = new Schema<IRecord>(
     {
-        recordId: {
+        userId: {
             type: String,
             ref: 'User',
         },
@@ -28,18 +26,7 @@ const RecordSchema = new Schema<IRecord>(
         summary: {
             type: String,
         },
-        chunks: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Chunk',
-        }],
     }
 );
-
-RecordSchema.pre('save', function (next) {
-    if (!this.recordId) {
-        this.recordId = uuid();
-    }
-    next();
-});
 
 export const Record: Model<IRecord> = mongoose.model('Record', RecordSchema);

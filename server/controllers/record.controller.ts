@@ -54,24 +54,4 @@ export const RecordController  = {
             res.status(500).json({ error: err.message });
         }
     },
-
-    async getAllChunks (req: Request, res: Response) {
-        try {
-            const recordId = req.params.id;
-            const chunks = await RecordService.getAllChunks(recordId);
-            res.json(chunks);
-        } catch (err: any) {
-            res.status(500).json({ error: err.message });
-        }
-    },
-
-    async getChunk (req: Request, res: Response) {
-        try {
-            const { id: recordId, chunkId } = req.params;
-            const chunks = await RecordService.getChunk(recordId, chunkId);
-            res.json(chunks);
-        } catch (err: any) {
-            res.status(500).json({ error: err.message });
-        }
-    }
 }

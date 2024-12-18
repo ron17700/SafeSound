@@ -39,3 +39,6 @@ export class TaskQueue {
         }
     }
 }
+
+const taskQueueInstance = new TaskQueue();
+export default taskQueueInstance;

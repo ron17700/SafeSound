@@ -1,26 +1,12 @@
-import { Record, IRecord } from '../models/record.model';
-import {IChunkScheme} from "../models/chuck.model";  // Adjust the path as necessary
+import {IRecord, Record} from '../models/record.model';
 
 export const RecordService = {
     async getAllRecords(userId: string) {
         return Record.find({userId});
     },
 
-    async getAllChunks(recordId: string): Promise<IChunkScheme[] | null> {
-        const result = await Record.findOne({ recordId }).exec();
-        return result?.chunks ? result.chunks : null;
-    },
-
-    async getChunk(recordId: string, chunkId: string): Promise<IChunkScheme | any> {
-        const result = await Record.findOne({ recordId, chunkId });
-        if (result?.chunks) {
-            return result.chunks.find(chunk => chunk.chunkId === chunkId);
-        }
-        return {};
-    },
-
     async getRecord(id: string) {
-        return Record.find({id});
+        return Record.findById(id);
     },
 
     async addRecord(recordData: IRecord) {
@@ -29,13 +15,12 @@ export const RecordService = {
             startTime: recordData.startTime,
             endTime: recordData.endTime,
             summary: recordData.summary,
-            chunks: recordData.chunks
+            name: recordData.name,
+            image: recordData.image,
         });
 
         try {
-
-            const result = await newRecord.save();
-            return result;
+            return await newRecord.save();
         } catch (error) {
             console.error('Error adding record', error);
             throw new Error('Error adding record');

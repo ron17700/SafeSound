@@ -26,13 +26,14 @@ app.use("/", mainRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 app.use(errorHandler);
 
+export let taskQueue: TaskQueue;
 const start = async () => {
     try {
         console.log('Trying to connect to MongoDB...\n');
         await mongoose.connect(process.env.MONGO_URI as string);
         console.log('MongoDB connected successfully\n');
 
-        const taskQueue = new TaskQueue();
+        taskQueue = new TaskQueue();
         console.log('Task queue initialized\n');
     } catch (error) {
         console.error((error as Error).message);
