@@ -162,13 +162,11 @@
             "schema": {
               "$ref": "#/definitions/RecordCreation"
             }
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -199,19 +197,17 @@
             }
           },
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "ID of the record to update",
             "required": true,
             "type": "string"
          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
         ],
         "responses": {
           "200": {
@@ -237,13 +233,11 @@
             "description": "ID of the record to delete",
             "required": true,
             "type": "string"
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -259,7 +253,7 @@
         }
       }
     },
-    "/record/{userId}": {
+    "/record/:id": {
       "get": {
         "summary": "Get all records by id",
         "description": "This endpoint fetches all records by id",
@@ -267,16 +261,14 @@
           {
             "in": "path",
             "name": "id",
-            "description": "ID of the user",
+            "description": "ID of the record",
             "required": true,
             "type": "string"
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -289,47 +281,10 @@
         }
       }
     },
-    "/record/{userId}": {
+    "/record": {
       "get": {
-        "summary": "Get record by userId",
+        "summary": "Get all record by userId",
         "description": "This endpoint fetches record by userId",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "description": "ID of the record",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Record fetched successfully"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/record/{id}": {
-      "get": {
-        "summary": "Get record by id",
-        "description": "This endpoint fetches record by id",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "description": "ID of the record",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Record fetched successfully"
@@ -365,13 +320,11 @@
             "schema": {
               "$ref": "#/definitions/RecordCreation"
             }
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -398,15 +351,13 @@
                 "description": "ID of the record",
                 "required": true,
                 "type": "string"
-            },
-              {
-                "in": "header",
-                "name": "authorization",
-                "description": "JWT token",
-                "required": true,
-                "type": "string"
-              }
+            }
             ],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
             "responses": {
             "200": {
                 "description": "Chunks fetched successfully"
@@ -435,13 +386,11 @@
             "description": "ID of the chunk",
             "required": true,
             "type": "string"
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -474,13 +423,11 @@
             "schema": {
               "$ref": "#/definitions/ChunkCreation"
             }
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {

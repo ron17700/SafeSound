@@ -2,14 +2,14 @@ import {IRecord, Record} from '../models/record.model';
 
 export const RecordService = {
     async getAllRecords(userId: string) {
-        return Record.find({userId});
+        return await Record.find({userId});
     },
 
-    async getRecord(id: string) {
-        return Record.findById(id);
+    async getRecord(userId: string, id: string) {
+        return await Record.findOne({userId, _id: id});
     },
 
-    async addRecord(recordData: IRecord) {
+    async addRecord(recordData: IRecord): Promise<IRecord> {
         const newRecord = new Record({
             userId: recordData.userId,
             startTime: recordData.startTime,
@@ -28,7 +28,13 @@ export const RecordService = {
     },
 
     async updateRecord(id: string, recordData: Partial<IRecord>) {
-        return Record.findByIdAndUpdate(id, recordData);
+        const record = await Record.findOne({userId: recordData.userId, _id: id});
+
+        if (!record) {
+            throw new Error('Record not found');
+        }
+
+        return record;
     },
 
     async  deleteRecord(id: string): Promise<IRecord | null> {

@@ -4,7 +4,7 @@ import { RecordService } from '../services/record.service';
 export const RecordController  = {
     async getAllRecordsById (req: Request, res: Response) {
         try {
-            const userId = req.params.userId;
+            const userId = req.body.userId;
             const records = await RecordService.getAllRecords(userId);
             res.json(records);
         } catch (err: any) {
@@ -15,7 +15,8 @@ export const RecordController  = {
     async getRecord (req: Request, res: Response) {
         try {
             const id = req.params.id;
-            const record = await RecordService.getRecord(id);
+            const userId = req.body.userId;
+            const record = await RecordService.getRecord(userId, id);
             res.json(record);
         } catch (err: any) {
             res.status(500).json({ error: err.message });
