@@ -13,9 +13,9 @@ export const uploadController = {
                 next();
             } else {
                 req.body.image = path.join('uploads/images', imageFile.filename); // Add the file path to the request body
+                next()
             }
 
-            next();
         } catch (err) {
             res.status(500).send((err as Error).message);
         }

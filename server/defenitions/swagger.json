@@ -5,8 +5,23 @@
     "version": "1.0.0",
     "title": "Safe Sound API"
   },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "Bearer": [],
   "host": "localhost:3001",
-  "basePath": "/api",
+  "basePath": "/",
   "schemes": [
     "http"
   ],
@@ -80,13 +95,11 @@
             "schema": {
               "$ref": "#/definitions/UserLogout"
             }
-          },
+          }
+        ],
+        "security": [
           {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
-            "required": true,
-            "type": "string"
+            "bearerAuth": []
           }
         ],
         "responses": {
@@ -276,22 +289,15 @@
         }
       }
     },
-    "/record/{id}": {
+    "/record/{userId}": {
       "get": {
-        "summary": "Get record by id",
-        "description": "This endpoint fetches record by id",
+        "summary": "Get record by userId",
+        "description": "This endpoint fetches record by userId",
         "parameters": [
           {
             "in": "path",
             "name": "id",
             "description": "ID of the record",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "header",
-            "name": "authorization",
-            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -303,7 +309,40 @@
           "500": {
             "description": "Server error"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/record/{id}": {
+      "get": {
+        "summary": "Get record by id",
+        "description": "This endpoint fetches record by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/upload/image/{id}": {
@@ -541,12 +580,6 @@
           "type": "string",
           "example": "curse words"
         },
-        "chunks": {
-          "type": "array",
-          "items": {
-            "type": "object"
-          }
-        },
         "image": {
           "type": "string"
         },
@@ -571,6 +604,14 @@
           "type": "string"
         }
       }
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
     }
   }
 }
