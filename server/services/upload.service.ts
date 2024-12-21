@@ -2,10 +2,9 @@ import multer, { StorageEngine } from 'multer';
 import path from 'path';
 import { Request } from 'express';
 
-// Configure Multer storage options
 const storage: StorageEngine = multer.diskStorage({
     destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-        cb(null, 'uploads/'); // Set the destination folder
+        cb(null, 'uploads/images'); // Set the destination folder
     },
     filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

@@ -80,6 +80,13 @@
             "schema": {
               "$ref": "#/definitions/UserLogout"
             }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "description": "JWT token",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
@@ -145,8 +152,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -180,8 +187,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           },
@@ -220,8 +227,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -253,8 +260,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -283,8 +290,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -322,8 +329,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -353,13 +360,13 @@
                 "required": true,
                 "type": "string"
             },
-            {
+              {
                 "in": "header",
-                "name": "x-auth-token",
-                "description": "Bearer JWT token",
+                "name": "authorization",
+                "description": "JWT token",
                 "required": true,
                 "type": "string"
-            }
+              }
             ],
             "responses": {
             "200": {
@@ -392,8 +399,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
@@ -431,8 +438,8 @@
           },
           {
             "in": "header",
-            "name": "x-auth-token",
-            "description": "Bearer JWT token",
+            "name": "authorization",
+            "description": "JWT token",
             "required": true,
             "type": "string"
           }
