@@ -5,6 +5,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { BoxWrapper, RecordsContainer } from '../shared/styles/wrappers';
 import { RecordsImage } from '../shared/styles/images';
 import { AddRecordButton } from '../shared/styles/buttons';
+import RecordsList from './list/RecordsList';
 
 const SafeSoundLogo = new URL(
   '../../assets/images/SafeSound.png',
@@ -12,24 +13,28 @@ const SafeSoundLogo = new URL(
 ).href;
 
 const RecordsPage: React.FC = () => {
+  const noRecords: JSX.Element = (
+    <BoxWrapper>
+      <RecordsImage src={SafeSoundLogo} alt="SafeSound Logo" />
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        No Data Available
+      </Typography>
+      <Typography variant="body1" color="textSecondary">
+        Tap the plus button to start
+      </Typography>
+      <AddRecordButton
+        variant="contained"
+        startIcon={<AddCircleOutlineIcon />}
+        onClick={() => alert('Add Record Logic')}
+      >
+        Add Record
+      </AddRecordButton>
+    </BoxWrapper>
+  );
+
   return (
     <RecordsContainer>
-      <BoxWrapper>
-        <RecordsImage src={SafeSoundLogo} alt="SafeSound Logo" />
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
-          No Data Available
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
-          Tap the plus button to start
-        </Typography>
-        <AddRecordButton
-          variant="contained"
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={() => alert('Add Record Logic')}
-        >
-          Add Record
-        </AddRecordButton>
-      </BoxWrapper>
+      <RecordsList />
     </RecordsContainer>
   );
 };

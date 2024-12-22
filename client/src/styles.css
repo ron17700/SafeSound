@@ -1,5 +1,15 @@
-/* Example: Global styles */
 body {
-    font-family: 'Arial', sans-serif;
-  }
-  
+  font-family: 'Arial', sans-serif;
+}
+
+.custom-swal-title {
+  font-family: 'Arial', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+}
+
+.swal2-container {
+  z-index: 5000;
+}

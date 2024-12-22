@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import { CSSProperties } from 'react';
 import Container from '@mui/material/Container';
+import Toolbar from '@mui/material/Toolbar';
 
 export const StackContainer = styled(Stack)(() => ({
   backgroundColor: '#C3CECD',
@@ -71,3 +72,7 @@ export const StyledContent: CSSProperties = {
 export const StyledOverlay = {
   backgroundColor: 'rgba(0, 0, 0, 0.6)',
 };
+
+export const StyledToolbar = styled(Toolbar)(() => ({
+  padding: '0px !important',
+}));

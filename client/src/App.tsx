@@ -5,14 +5,15 @@ import {
   Routes,
   Navigate,
 } from 'react-router-dom';
-import Register from './components/Auth/Register';
-import Login from './components/Auth/Login';
-import RecordsPage from './components/Records/RecordsPage';
+import Register from './components/auth/Register';
+import Login from './components/auth/Login';
+import RecordsPage from './components/records/RecordsPage';
 import Layout from './components/shared/Layout';
 import { refreshAccessToken } from './api/apiLogic';
 import { BoxWrapper } from './components/shared/styles/wrappers';
 import { Loading } from './components/shared/styles/inputs';
 import { RecordsImage } from './components/shared/styles/images';
+import ChunksPage from './components/chunks/ChunksPage';
 
 const SafeSoundLogo = new URL('./assets/images/SafeSound.png', import.meta.url)
   .href;
@@ -84,6 +85,19 @@ const App: React.FC = () => {
               <>
                 <Layout />
                 <RecordsPage />
+              </>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/records/:id"
+          element={
+            accessToken ? (
+              <>
+                <Layout />
+                <ChunksPage />
               </>
             ) : (
               <Navigate to="/login" />

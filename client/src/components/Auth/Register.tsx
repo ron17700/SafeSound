@@ -29,6 +29,7 @@ import { useDropzone } from 'react-dropzone';
 import { StyledForm } from '../shared/styles/forms';
 import Modal from 'react-modal';
 import { StyledImage, UploadedImage } from '../shared/styles/images';
+import { showSwal } from '../shared/Swal';
 
 const Register: React.FC = () => {
   const [emailError, setEmailError] = useState(false);
@@ -132,13 +133,13 @@ const Register: React.FC = () => {
   ) => {
     try {
       await register(email, password, firstName, lastName, profileImage);
-      alert('User registered successfully!');
+      showSwal('User registered successfully!');
     } catch (error: any) {
       console.error(
         'Error during registration:',
         error.response?.data || error.message
       );
-      alert('Registration failed!');
+      showSwal('Registration failed!', 'error');
       throw error;
     }
   };

@@ -10,9 +10,17 @@ import AlbumIcon from '@mui/icons-material/Album';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PersonIcon from '@mui/icons-material/Person';
 import { StyledAppbar, StyledDrawer } from './styles/layout';
-import { BoxWrapper } from './styles/wrappers';
+import { BoxWrapper, StyledToolbar } from './styles/wrappers';
 import { logout } from '../../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import { Logo } from './styles/images';
+import { AppHeader } from './styles/inputs';
+import { showSwal } from './Swal';
+
+const SafeSoundLogo = new URL(
+  '../../assets/images/SafeSound.png',
+  import.meta.url
+).href;
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -38,16 +46,16 @@ const Layout: React.FC = () => {
 
   const handleLogout = async (refreshToken: string) => {
     try {
-      const response = await logout(refreshToken);
+      await logout(refreshToken);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      alert('User logged out successfully!');
+      showSwal('User logged out successfully!');
     } catch (error: any) {
       console.error(
         'Error during logout:',
         error.response?.data || error.message
       );
-      alert('Logout failed!');
+      showSwal('Logout failed!', 'error');
     }
   };
   const onLogout = () => {
@@ -95,11 +103,12 @@ const Layout: React.FC = () => {
         </List>
       </StyledDrawer>
       <StyledAppbar position="fixed">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            My Records
-          </Typography>
-        </Toolbar>
+        <StyledToolbar>
+          <Logo src={SafeSoundLogo} alt="SafeSound Logo" />
+          <AppHeader variant="h5" component="div" sx={{ flexGrow: 1 }}>
+            SafeSound
+          </AppHeader>
+        </StyledToolbar>
       </StyledAppbar>
     </BoxWrapper>
   );
