@@ -18,6 +18,7 @@ export const ChunkService = {
 
             // Add task to queue
             taskQueue.addTask(result);
+            return result;
         } catch (error) {
             console.error('Error adding chunk', error);
             throw new Error('Error adding chunk');

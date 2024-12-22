@@ -30,7 +30,6 @@ export class TaskQueue {
         this.currentTasks++;
         try {
             // Save the chunk before processing
-            await Chunk.create(chunk);
             await processChunk(chunk);
         } catch (error) {
             console.error('Error processing chunk', error);
