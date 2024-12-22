@@ -4,10 +4,7 @@ import path from 'path';
 import {taskQueue} from "../index";
 
 export const ChunkService = {
-    async addChunk(recordId: string, chunkData: IChunk, audioFile: Buffer) {
-        const audioFilePath = path.join(__dirname, '..', 'uploads', `${chunkData.id}.mp3`);
-        fs.writeFileSync(audioFilePath, audioFile);
-
+    async addChunk(recordId: string, chunkData: IChunk, audioFilePath: String) {
         const newChunk = new Chunk({
             recordId: recordId,
             startTime: chunkData.startTime,

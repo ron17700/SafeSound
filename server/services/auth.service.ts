@@ -9,7 +9,7 @@ interface RegisterData {
     firstName: string;
     lastName: string;
     age: number;
-    image?: string;
+    file?: string;
 }
 
 interface LoginData {
@@ -18,7 +18,7 @@ interface LoginData {
 }
 
 export const AuthService = {
-    async register({ username, email, password, firstName, lastName, age, image }: RegisterData) {
+    async register({ username, email, password, firstName, lastName, age, file }: RegisterData) {
         const existUser = await User.exists({ email });
         if (existUser) {
             return { status: 400, data: { error: 'Email already exists!' } };
@@ -26,7 +26,7 @@ export const AuthService = {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new User({ username, email, password: hashedPassword, firstName, lastName, age, image });
+        const newUser = new User({ username, email, password: hashedPassword, firstName, lastName, age, image: file });
 
         await newUser.save();
         return { status: 201, data: { message: 'User registered successfully', newUser } };

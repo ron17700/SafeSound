@@ -26,6 +26,9 @@ const RecordSchema = new Schema<IRecord>(
         summary: {
             type: String,
         },
+        image: {
+            type: String,
+        }
     }
 );
 

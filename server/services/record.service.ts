@@ -9,14 +9,14 @@ export const RecordService = {
         return await Record.findOne({userId, _id: id});
     },
 
-    async addRecord(recordData: IRecord): Promise<IRecord> {
+    async addRecord(recordData: IRecord & {file: string}): Promise<IRecord> {
         const newRecord = new Record({
             userId: recordData.userId,
             startTime: recordData.startTime,
             endTime: recordData.endTime,
             summary: recordData.summary,
             name: recordData.name,
-            image: recordData.image,
+            image: recordData.file,
         });
 
         try {

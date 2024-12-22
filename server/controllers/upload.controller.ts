@@ -3,16 +3,16 @@ import {UploadService} from "../services/upload.service";
 import path from 'path';
 
 export const uploadController = {
-    upload: UploadService.single('image'),
+    upload: UploadService.single('file'),
 
     async verifyUpload(req: Request, res: Response, next: NextFunction) {
-        const imageFile = req.file; // multer attaches the file information to req.file
+        const file = req.file; // multer attaches the file information to req.file
 
         try {
-            if (!imageFile) {
+            if (!file) {
                 next();
             } else {
-                req.body.image = path.join('uploads/images', imageFile.filename); // Add the file path to the request body
+                req.body.file = path.join('uploads/', file.filename); // Add the file path to the request body
                 next()
             }
 

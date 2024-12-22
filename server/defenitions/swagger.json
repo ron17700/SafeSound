@@ -180,6 +180,23 @@
             "description": "Server error"
           }
         }
+      },
+      "get": {
+        "summary": "Get all record by userId",
+        "description": "This endpoint fetches record by userId",
+        "responses": {
+          "200": {
+            "description": "Record fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/record/{id}": {
@@ -220,9 +237,7 @@
             "description": "Server error"
           }
         }
-      }
-    },
-    "/record/{id}": {
+      },
       "delete": {
         "summary": "Delete an existing record",
         "description": "This endpoint deletes an existing record",
@@ -281,26 +296,7 @@
         }
       }
     },
-    "/record": {
-      "get": {
-        "summary": "Get all record by userId",
-        "description": "This endpoint fetches record by userId",
-        "responses": {
-          "200": {
-            "description": "Record fetched successfully"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/upload/image/{id}": {
+    "/upload/file/{id}": {
       "post": {
         "summary": "Upload an image for record",
         "description": "This endpoint adds an image to an existing record",
@@ -341,7 +337,7 @@
       }
     },
     "/chunk/:recordId": {
-        "get": {
+      "get": {
             "summary": "Get all chunks by record id",
             "description": "This endpoint fetches all chunks by record id",
             "parameters": [
@@ -366,44 +362,7 @@
                 "description": "Server error"
             }
             }
-        }
         },
-    "/chunk/:id": {
-      "get": {
-        "summary": "Get chunk by chunkId",
-        "description": "This endpoint fetches all chunks by record id",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "description": "ID of the record",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "chunkId",
-            "description": "ID of the chunk",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Chunk fetched successfully"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
-    "/chunk/:recordId": {
       "post": {
         "summary": "Add a chunk to a record",
         "description": "This endpoint adds a chunk to an existing record",
@@ -436,6 +395,41 @@
           },
           "400": {
             "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/chunk/:id": {
+      "get": {
+        "summary": "Get chunk by chunkId",
+        "description": "This endpoint fetches all chunks by record id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "chunkId",
+            "description": "ID of the chunk",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chunk fetched successfully"
           },
           "500": {
             "description": "Server error"
@@ -527,7 +521,7 @@
           "type": "string",
           "example": "curse words"
         },
-        "image": {
+        "file": {
           "type": "string"
         },
         "notes": {
@@ -547,7 +541,7 @@
           "type": "string",
           "example": "endTime"
         },
-        "file": {
+        "audio": {
           "type": "string"
         }
       }

@@ -6,11 +6,11 @@ export const ChunkController  = {
         try {
             const recordId = req.params.id;
             const chunkData = req.body;
-            const audioFile: Buffer | undefined = req.file?.buffer;
-            if (!audioFile) {
+            const audioFilePath: string = req.body.file;
+            if (!audioFilePath) {
                 throw new Error('Audio file is required');
             }
-            await ChunkService.addChunk(recordId, chunkData, audioFile);
+            await ChunkService.addChunk(recordId, chunkData, audioFilePath);
             res.status(201);
         } catch (err: any) {
             res.status(400).json({ error: err.message });
