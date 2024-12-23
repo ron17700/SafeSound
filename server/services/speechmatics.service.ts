@@ -1,5 +1,6 @@
 import { BatchClient } from '@speechmatics/batch-client';
 import { openAsBlob } from 'node:fs';
+import { mockData } from './mock';
 
 export async function analyzeAudio(audioFilePath: string) {
     const client = new BatchClient({
@@ -13,22 +14,24 @@ export async function analyzeAudio(audioFilePath: string) {
         const blob = await openAsBlob(audioFilePath);
         const file = new File([blob], audioFilePath);
 
-        const response = await client.transcribe(
-            file,
-            {
-                transcription_config: {
-                    language: 'en',
-                },
-                sentiment_analysis_config: {},
-                summarization_config: {
-                    "content_type": "informative",
-                    "summary_length": "brief",
-                    "summary_type": "bullets"
-                }
-            },
-        );
+        // const response = await client.transcribe(
+        //     file,
+        //     {
+        //         transcription_config: {
+        //             language: 'en',
+        //         },
+        //         sentiment_analysis_config: {},
+        //         summarization_config: {
+        //             "content_type": "informative",
+        //             "summary_length": "brief",
+        //             "summary_type": "bullets"
+        //         }
+        //     },
+        // );
 
-        console.log('Transcription finished!');
+        const response = mockData;
+
+        console.log('Transcription finished!', {client, file});
         return response;
     } catch (error) {
         console.error('Error analyzing audio with Speechmatics', error);
