@@ -1,0 +1,65 @@
+@accessToken = <YOUR_ACCESS_TOKEN>
+@refreshToken = <YOUR_REFRESH_TOKEN>
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#~~~~~~~~~~~ Record ~~~~~~~~~~~~#
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+# Create a new record
+POST http://localhost:3001/record
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": "userId",
+  "startTime": "startTime",
+  "endTime": "endTime",
+  "summary": "curse words",
+  "file": "file",
+  "notes": "record number 1"
+}
+
+###
+
+# Get all records by userId
+GET http://localhost:3001/record
+Authorization: Bearer {{accessToken}}
+
+###
+
+# Update an existing record
+PUT http://localhost:3001/record/{id}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "userId": "userId",
+  "startTime": "startTime",
+  "endTime": "endTime",
+  "summary": "curse words",
+  "file": "file",
+  "notes": "record number 1"
+}
+
+###
+
+# Delete an existing record
+DELETE http://localhost:3001/record/{id}
+Authorization: Bearer {{accessToken}}
+
+###
+
+# Get all records by id
+GET http://localhost:3001/record/{id}
+Authorization: Bearer {{accessToken}}
+
+###
+
+# Upload an image for record
+POST http://localhost:3001/upload/file/{id}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "file": "file"
+}

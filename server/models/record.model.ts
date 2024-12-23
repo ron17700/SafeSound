@@ -6,6 +6,7 @@ export interface IRecord extends Document {
     name?: string;
     image?: string;
     class: Class;
+    timestamps: boolean;
 }
 
 const RecordSchema = new Schema<IRecord>(
@@ -14,6 +15,9 @@ const RecordSchema = new Schema<IRecord>(
             type: String,
             ref: 'User',
         },
+        name:{
+            type: String,
+        },
         class: {
             type: String,
             enum: Object.values(Class),
@@ -21,7 +25,11 @@ const RecordSchema = new Schema<IRecord>(
         },
         image: {
             type: String,
-        }
+            default: 'default-files/default-record-image.png'
+        },
+    },
+    {
+        timestamps: true
     }
 );
 
