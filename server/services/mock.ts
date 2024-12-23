@@ -1,4 +1,6 @@
-export const mockData = {
+import {RetrieveTranscriptResponse} from "@speechmatics/batch-client";
+
+export const mockData: RetrieveTranscriptResponse | any = {
   "format": "2.9",
   "job": {
     "created_at": "2024-12-22T18:17:26.730Z",

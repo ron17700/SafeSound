@@ -1,12 +1,11 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import { Class } from './chuck.model';
 
 export interface IRecord extends Document {
     userId: string;
-    startTime?: Date;
-    endTime?: Date;
-    summary?: string;
     name?: string;
     image?: string;
+    class: Class;
 }
 
 const RecordSchema = new Schema<IRecord>(
@@ -15,16 +14,10 @@ const RecordSchema = new Schema<IRecord>(
             type: String,
             ref: 'User',
         },
-        startTime: {
-            type: Date,
-            default: Date.now
-        },
-        endTime: {
-            type: Date,
-            default: Date.now
-        },
-        summary: {
+        class: {
             type: String,
+            enum: Object.values(Class),
+            default: Class.Natural
         },
         image: {
             type: String,

@@ -8,7 +8,7 @@ import swaggerUi from "swagger-ui-express"
 import swaggerDoc from "./defenitions/swagger.json";
 import mainRoutes from './routes/index';
 import errorHandler from './middlewares/errorHandler';
-import {TaskQueue} from "./services/task.queue";
+import taskQueueInstance, {TaskQueue} from "./services/task.queue";
 
 dotenv.config({ path: path.join(__dirname, "./.env") });
 
@@ -33,7 +33,7 @@ const start = async () => {
         await mongoose.connect(process.env.MONGO_URI as string);
         console.log('MongoDB connected successfully\n');
 
-        taskQueue = new TaskQueue();
+        taskQueue = taskQueueInstance;
         console.log('Task queue initialized\n');
     } catch (error) {
         console.error((error as Error).message);

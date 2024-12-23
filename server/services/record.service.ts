@@ -1,4 +1,5 @@
 import {IRecord, Record} from '../models/record.model';
+import { Chunk, Class } from '../models/chuck.model';
 
 export const RecordService = {
     async getAllRecords(userId: string) {
@@ -9,12 +10,9 @@ export const RecordService = {
         return await Record.findOne({userId, _id: id});
     },
 
-    async addRecord(recordData: IRecord & {file: string}): Promise<IRecord> {
+    async addRecord(recordData: IRecord & { file: string }): Promise<IRecord> {
         const newRecord = new Record({
             userId: recordData.userId,
-            startTime: recordData.startTime,
-            endTime: recordData.endTime,
-            summary: recordData.summary,
             name: recordData.name,
             image: recordData.file,
         });
@@ -34,15 +32,63 @@ export const RecordService = {
             throw new Error('Record not found');
         }
 
-        return record;
+        Object.assign(record, recordData);
+
+        try {
+            return await record.save();
+        } catch (error) {
+            console.error('Error updating record', error);
+            throw new Error('Error updating record');
+        }
     },
 
-    async  deleteRecord(id: string): Promise<IRecord | null> {
+    async deleteRecord(id: string): Promise<IRecord | null> {
         try {
             return await Record.findByIdAndDelete(id);
         } catch (error) {
             console.error('Error deleting record', error);
             throw new Error('Error deleting record');
         }
+    },
+
+    async defineRecordClass(id: string) {
+        const chunks = await Chunk.find({recordId: id});
+
+        let overallTone;
+        let goodChunksCount = 0;
+        let badChunksCount = 0;
+        let neutralChunksCount = 0;
+
+        for (let i = 0; i < chunks.length; i++) {
+            const chunk = chunks[i];
+            switch (chunk.class){
+                case Class.Good:
+                    goodChunksCount++;
+                    break;
+                case Class.Bad:
+                    badChunksCount++;
+                    break;
+                case Class.Natural:
+                    neutralChunksCount++;
+                    break;
+            }
+        }
+
+        if (neutralChunksCount > badChunksCount && neutralChunksCount > goodChunksCount) {
+            overallTone = Class.Natural;
+        } else if (goodChunksCount > badChunksCount) {
+            overallTone = Class.Good;
+        } else {
+            overallTone = Class.Bad;
+        }
+
+        let record = await Record.findById(id);
+
+        if (!record) {
+            throw new Error('Record not found');
+        }
+
+        record.class = overallTone;
+        await record.save();
     }
-}
+};
