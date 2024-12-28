@@ -8,6 +8,10 @@ export interface IRecord extends Document {
     class: Class;
     timestamps: boolean;
     public?: boolean;
+    location?: {
+        type: string;
+        coordinates: [number];
+    };
 }
 
 const RecordSchema = new Schema<IRecord>(
@@ -31,6 +35,17 @@ const RecordSchema = new Schema<IRecord>(
         public: {
             type: Boolean,
             default: false
+        },
+        location: {
+            type: {
+                type: String,
+                enum: ['Point'],
+                default: 'Point'
+            },
+            coordinates: {
+                type: [Number],
+                required: false
+            }
         }
     },
     {

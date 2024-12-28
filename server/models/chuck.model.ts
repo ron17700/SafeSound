@@ -19,7 +19,7 @@ export interface IChunk {
     startTime: Date;
     endTime: Date;
     status: Status;
-    class?: Class;
+    chunkClass?: Class;
     audioFilePath: string;
 }
 
@@ -28,7 +28,7 @@ export interface IChunkScheme extends Document {
     startTime: Date;
     endTime: Date;
     status: Status;
-    class: Class;
+    chunkClass: Class;
     summary: string;
     audioFilePath: string;
 }
@@ -50,7 +50,7 @@ const ChunkScheme = new Schema<IChunkScheme>(
         status: {
             type: String,
         },
-        class: {
+        chunkClass: {
             type: String,
         },
         summary: {

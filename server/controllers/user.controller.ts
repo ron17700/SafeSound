@@ -10,5 +10,18 @@ export const UserController = {
         } catch (err: any) {
             next(err);
         }
+    },
+
+    async getUserById(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.params.id;
+            const user = await UserService.getUserById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.json(user);
+        } catch (err: any) {
+            next(err);
+        }
     }
 }

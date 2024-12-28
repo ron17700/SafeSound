@@ -19,7 +19,7 @@ export async function processChunk(chunk: IChunkScheme) {
         // Update chunk with analysis result
         await ChunkService.updateChunk(chunk.id, {
             status: Status.Completed,
-            class: chunkClass,
+            chunkClass: chunkClass,
             summary: analysisResult.summary,
         });
     } catch (error) {

@@ -1,17 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { RecordService } from '../services/record.service';
-import {UserService} from "../services/user.service";
 
 export const RecordController  = {
     async getAllRecordsById (req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.body.userId;
-            const user = await UserService.getUserById(userId);
             const records = await RecordService.getAllRecords(userId);
-            res.json({
-                user,
-                records,
-            });
+            res.json(records);
         } catch (err: any) {
             next(err);
         }
@@ -21,12 +16,8 @@ export const RecordController  = {
         try {
             const id = req.params.id;
             const userId = req.body.userId;
-            const user = await UserService.getUserById(userId);
             const record = await RecordService.getRecord(userId, id);
-            res.json({
-                user,
-                record,
-            });
+            res.json(record);
         } catch (err: any) {
             next(err);
         }
