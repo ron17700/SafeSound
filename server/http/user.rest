@@ -1,0 +1,13 @@
+@userId=5f5b1f3b1f6b7b001f6b7b00
+@accessToken = <YOUR_ACCESS_TOKEN>
+@refreshToken = <YOUR_REFRESH_TOKEN>
+
+# Update user profile
+PUT http://localhost:3001/user/{{userId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "file": "https://example.com/profile.jpg"
+}

@@ -15,6 +15,7 @@ export const RecordService = {
             userId: recordData.userId,
             name: recordData.name,
             image: recordData.file,
+            public: recordData.public || false,
         });
 
         try {
@@ -90,5 +91,9 @@ export const RecordService = {
 
         record.class = overallTone;
         await record.save();
+    },
+
+    getAllPublicRecords() {
+        return Record.find({public: true});
     }
 };

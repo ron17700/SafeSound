@@ -21,7 +21,7 @@ export const AuthService = {
     async register({ username, email, password, firstName, lastName, age, file }: RegisterData) {
         const existUser = await User.exists({ email });
         if (existUser) {
-            return { status: 400, data: { error: 'Email already exists!' } };
+            throw new Error('Invalid credentials');
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -35,12 +35,12 @@ export const AuthService = {
     async login({ email, password }: LoginData) {
         const user: IUser | null = await User.findOne({ email }).select('+password').exec();
         if (!user) {
-            return { status: 400, data: { error: 'Invalid credentials' } };
+            throw new Error('Invalid credentials');
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return { status: 400, data: { error: 'Invalid credentials' } };
+            throw new Error('Invalid credentials');
         }
 
         const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_EXPIRES_IN });

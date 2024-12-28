@@ -63,3 +63,9 @@ Content-Type: application/json
 {
   "file": "file"
 }
+
+###
+
+# Get all public records
+GET http://localhost:3001/record/public
+Authorization: Bearer {{accessToken}}

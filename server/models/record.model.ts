@@ -7,6 +7,7 @@ export interface IRecord extends Document {
     image?: string;
     class: Class;
     timestamps: boolean;
+    public?: boolean;
 }
 
 const RecordSchema = new Schema<IRecord>(
@@ -27,6 +28,10 @@ const RecordSchema = new Schema<IRecord>(
             type: String,
             default: 'default-files/default-record-image.png'
         },
+        public: {
+            type: Boolean,
+            default: false
+        }
     },
     {
         timestamps: true

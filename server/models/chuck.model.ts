@@ -25,7 +25,6 @@ export interface IChunk {
 
 export interface IChunkScheme extends Document {
     recordId: string;
-    chunkId: string;
     startTime: Date;
     endTime: Date;
     status: Status;
