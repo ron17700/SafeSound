@@ -9,7 +9,7 @@ export const UserService = {
 
     async updateProfile(userId: string, userData: Partial<IUser> & { file: string }) {
         return User.findByIdAndUpdate(userId, {
-            picture: userData.file,
+            profileImage: userData.file,
             userName: userData.userName,
         }, { new: true });
     }
