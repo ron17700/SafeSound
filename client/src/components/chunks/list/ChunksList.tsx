@@ -1,50 +1,94 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
   Typography,
   List,
   ListItem,
-  ListItemIcon,
+  ListItemAvatar,
+  Avatar,
   ListItemText,
-  IconButton,
+  Box,
+  CircularProgress,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { useParams } from 'react-router-dom';
 
-const chunks = [
-  { id: 1, name: 'Chunk #1', time: '12:05 - 12:10' },
-  { id: 2, name: 'Chunk #2', time: '12:10 - 12:15' },
-  { id: 3, name: 'Chunk #3', time: '12:15 - 12:20' },
-];
+interface Chunk {
+  id: string;
+  startTime: string;
+  endTime: string;
+  audio: string;
+}
 
-const ChunksList = () => {
+const ChunksList: React.FC = () => {
+  const { recordId } = useParams<{ recordId: string }>();
+  const [chunks, setChunks] = useState<Chunk[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchChunks = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3001/chunk/${recordId}`,
+          {
+            headers: {
+              Authorization: `Bearer <YOUR_ACCESS_TOKEN>`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setChunks(data);
+        } else {
+          console.error('Failed to fetch chunks');
+        }
+      } catch (error) {
+        console.error('Error fetching chunks:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChunks();
+  }, [recordId]);
+
   return (
-    <div style={{ padding: '16px' }}>
+    <Box padding="16px">
       <Typography variant="h5" gutterBottom>
-        Record Details
+        Chunks for Record {recordId}
       </Typography>
-      <List>
-        {chunks.map((chunk) => (
-          <Card key={chunk.id} style={{ marginBottom: '8px' }}>
-            <CardContent>
-              <ListItem
-                secondaryAction={
-                  <IconButton edge="end" aria-label="edit">
-                    <EditIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemIcon>
-                  <AccessTimeIcon />
-                </ListItemIcon>
-                <ListItemText primary={chunk.name} secondary={chunk.time} />
-              </ListItem>
-            </CardContent>
-          </Card>
-        ))}
-      </List>
-    </div>
+      {loading ? (
+        <CircularProgress />
+      ) : chunks.length === 0 ? (
+        <Typography>No chunks available</Typography>
+      ) : (
+        <List>
+          {chunks.map((chunk) => (
+            <Card
+              key={chunk.id}
+              style={{
+                marginBottom: '8px',
+                backgroundColor: '#f5f5f5',
+              }}
+            >
+              <CardContent>
+                <ListItem>
+                  <ListItemAvatar>
+                    <Avatar>
+                      {/* Add audio icon or other visualization */}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`Start: ${chunk.startTime} - End: ${chunk.endTime}`}
+                    secondary="Tap to play the audio"
+                  />
+                </ListItem>
+              </CardContent>
+            </Card>
+          ))}
+        </List>
+      )}
+    </Box>
   );
 };
 

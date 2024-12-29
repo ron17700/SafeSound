@@ -8,7 +8,7 @@ export const register = async (
   lastName: string,
   profileImage: string
 ) => {
-  return axios.post(`${API_BASE_URL}/register`, {
+  return axios.post(`${API_BASE_URL}/auth/register`, {
     email,
     password,
     firstName,
@@ -18,7 +18,7 @@ export const register = async (
 };
 
 export const login = async (email: string, password: string) => {
-  return await axios.post(`${API_BASE_URL}/login`, {
+  return await axios.post(`${API_BASE_URL}/auth/login`, {
     email,
     password,
   });
@@ -26,7 +26,9 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async (refreshToken: string) => {
   try {
-    const response = await api.post(`${API_BASE_URL}/logout`, { refreshToken });
+    const response = await api.post(`${API_BASE_URL}/auth/logout`, {
+      refreshToken,
+    });
     return response;
   } catch (error: any) {
     console.error(
@@ -37,5 +39,5 @@ export const logout = async (refreshToken: string) => {
   }
 };
 export const getRefreshToken = async (refreshToken: string) => {
-  return await axios.post(`${API_BASE_URL}/refresh-token`, { refreshToken });
+  return await axios.post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken });
 };

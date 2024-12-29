@@ -1,41 +1,203 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { BoxWrapper, RecordsContainer } from '../shared/styles/wrappers';
-import { RecordsImage } from '../shared/styles/images';
-import { AddRecordButton } from '../shared/styles/buttons';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import TextField from '@mui/material/TextField';
+import DialogActions from '@mui/material/DialogActions';
+import Box from '@mui/material/Box';
+import api from '../../api/apiService';
 import RecordsList from './list/RecordsList';
-
-const SafeSoundLogo = new URL(
-  '../../assets/images/SafeSound.png',
-  import.meta.url
-).href;
+import { splitMp3IntoChunks } from '../../utils/audioUtils';
 
 const RecordsPage: React.FC = () => {
-  const noRecords: JSX.Element = (
-    <BoxWrapper>
-      <RecordsImage src={SafeSoundLogo} alt="SafeSound Logo" />
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        No Data Available
-      </Typography>
-      <Typography variant="body1" color="textSecondary">
-        Tap the plus button to start
-      </Typography>
-      <AddRecordButton
-        variant="contained"
-        startIcon={<AddCircleOutlineIcon />}
-        onClick={() => alert('Add Record Logic')}
+  const [records, setRecords] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [audio, setAudio] = useState<File | null>(null);
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const response = await api.get('/record');
+        setRecords(response.data);
+      } catch (error) {
+        console.error('Failed to fetch records:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecords();
+  }, []);
+
+  const handleDialogOpen = () => setDialogOpen(true);
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setName('');
+    setPhoto(null);
+    setAudio(null);
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) setPhoto(event.target.files[0]);
+  };
+
+  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) setAudio(event.target.files[0]);
+  };
+
+  const handleAddRecord = async () => {
+    if (!name) {
+      alert('Name is required');
+      return;
+    }
+
+    const userId = localStorage.getItem('userId') || '';
+
+    try {
+      const recordResponse = await api.post('/record', {
+        userId,
+        name,
+        image: photo,
+        class: 'Good',
+      });
+
+      const createdRecord = recordResponse.data;
+      if (audio) {
+        try {
+          // Split the audio into chunks
+          const chunks = await splitMp3IntoChunks(audio, 10 * 60);
+
+          console.log('Chunks:', chunks);
+
+          // Iterate over each chunk and upload
+          for (const [index, chunk] of chunks.entries()) {
+            const chunkStartTime =
+              new Date().getTime() + index * 10 * 60 * 1000; // Start time for chunk
+            const chunkEndTime = chunkStartTime + 10 * 60 * 1000; // End time for chunk
+
+            // Convert the chunk to base64 string (you can use FileReader to convert it)
+            const chunkData = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                resolve(reader.result);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(chunk); // Convert the file to base64
+            });
+
+            const data = {
+              startTime: new Date(chunkStartTime).toISOString(),
+              endTime: new Date(chunkEndTime).toISOString(),
+              audio: audio, // Base64 encoded audio data
+            };
+
+            console.log('Sending chunk:', {
+              chunkIndex: index,
+              startTime: new Date(chunkStartTime).toISOString(),
+              endTime: new Date(chunkEndTime).toISOString(),
+              audio: chunkData,
+            });
+
+            // Send the chunk data to the server
+            const response = await api.post(
+              `/chunk/${createdRecord._id}`,
+              data
+            );
+
+            if (response.status === 201) {
+              console.log(`Chunk ${index + 1} uploaded successfully.`);
+            } else {
+              console.error(`Failed to upload chunk ${index + 1}.`);
+            }
+          }
+        } catch (error) {
+          console.error('Error while splitting and uploading chunks:', error);
+        }
+      }
+
+      setRecords((prevRecords) => [...prevRecords, createdRecord]);
+      handleDialogClose();
+    } catch (error) {
+      console.error('Error creating record or uploading chunks:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
       >
-        Add Record
-      </AddRecordButton>
-    </BoxWrapper>
-  );
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
-    <RecordsContainer>
-      <RecordsList />
-    </RecordsContainer>
+    <Box
+      width="100%"
+      margin="auto"
+      padding="16px"
+      style={{ paddingTop: '50px' }}
+    >
+      <Typography variant="h5" gutterBottom>
+        Records
+      </Typography>
+      <Button
+        variant="contained"
+        startIcon={<AddCircleOutlineIcon />}
+        onClick={handleDialogOpen}
+        style={{ marginBottom: '16px' }}
+      >
+        Add Record
+      </Button>
+      <Box style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+        {records.length === 0 ? (
+          <Typography>No records available</Typography>
+        ) : (
+          <RecordsList records={records} setRecords={setRecords} />
+        )}
+      </Box>
+      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Add New Record</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            fullWidth
+            required
+          />
+          <Box mt={2}>
+            <Typography variant="subtitle1">Photo (optional)</Typography>
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+          </Box>
+          <Box mt={2}>
+            <Typography variant="subtitle1">MP3 File (optional)</Typography>
+            <input
+              type="file"
+              accept="audio/mp3"
+              onChange={handleAudioUpload}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button variant="contained" onClick={handleAddRecord}>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

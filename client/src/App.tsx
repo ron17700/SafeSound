@@ -13,7 +13,9 @@ import { refreshAccessToken } from './api/apiLogic';
 import { BoxWrapper } from './components/shared/styles/wrappers';
 import { Loading } from './components/shared/styles/inputs';
 import { RecordsImage } from './components/shared/styles/images';
-import ChunksPage from './components/chunks/ChunksPage';
+import ChunksList from './components/chunks/list/ChunksList';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './styles/theme';
 
 const SafeSoundLogo = new URL('./assets/images/SafeSound.png', import.meta.url)
   .href;
@@ -65,47 +67,53 @@ const App: React.FC = () => {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            accessToken ? <Navigate to="/records" /> : <Navigate to="/login" />
-          }
-        />
-        <Route
-          path="/login"
-          element={<Login handleAccessToken={handleAccessToken} />}
-        />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/records"
-          element={
-            accessToken ? (
-              <>
-                <Layout />
-                <RecordsPage />
-              </>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-        <Route
-          path="/records/:id"
-          element={
-            accessToken ? (
-              <>
-                <Layout />
-                <ChunksPage />
-              </>
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-      </Routes>
-    </Router>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              accessToken ? (
+                <Navigate to="/records" />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={<Login handleAccessToken={handleAccessToken} />}
+          />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/records"
+            element={
+              accessToken ? (
+                <>
+                  <Layout />
+                  <RecordsPage />
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/records/:id"
+            element={
+              accessToken ? (
+                <>
+                  <Layout />
+                  <ChunksList />
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 };
 

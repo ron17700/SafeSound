@@ -30,6 +30,7 @@ export const AppHeader = styled(Typography)<TypographyProps>(() => ({
   fontSize: 'clamp(1.5rem, 8vw, 1.8rem)',
   fontWeight: 800,
   WebkitTextStroke: '1px #103A49',
+  pointerEvents: 'none',
 }));
 
 export const StyledTitle = styled('div')(({ theme }) => ({

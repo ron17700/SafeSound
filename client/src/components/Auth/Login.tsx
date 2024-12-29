@@ -39,8 +39,10 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await login(email, password);
+      
       saveTokens(response.data.accessToken, response.data.refreshToken);
       handleAccessToken(response.data.accessToken);
+      localStorage.setItem('userId', email);
       showSwal('User logged in successfully!');
     } catch (error: any) {
       console.error(
