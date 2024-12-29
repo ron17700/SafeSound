@@ -42,7 +42,6 @@ interface RecordsListProps {
 }
 
 const getClassIcon = (className: string | undefined) => {
-  console.log('class:', className);
   switch (className) {
     case 'Good':
       return <CheckCircleIcon style={{ color: 'green' }} />;
@@ -58,13 +57,9 @@ const getClassIcon = (className: string | undefined) => {
 const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
   const navigate = useNavigate();
 
-  console.log('records');
-  console.log(records);
-
   const handleDelete = async (e: any, recordId: string): Promise<void> => {
     try {
       e.stopPropagation();
-      console.log('delete record:', recordId);
       await api.delete(`/record/${recordId}`);
       setRecords(records.filter((record) => record._id !== recordId));
     } catch (error) {

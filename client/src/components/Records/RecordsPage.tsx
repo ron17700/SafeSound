@@ -69,46 +69,37 @@ const RecordsPage: React.FC = () => {
       });
 
       const createdRecord = recordResponse.data;
+
       if (audio) {
         try {
           // Split the audio into chunks
           const chunks = await splitMp3IntoChunks(audio, 10 * 60);
 
-          console.log('Chunks:', chunks);
-
           // Iterate over each chunk and upload
           for (const [index, chunk] of chunks.entries()) {
             const chunkStartTime =
-              new Date().getTime() + index * 10 * 60 * 1000; // Start time for chunk
-            const chunkEndTime = chunkStartTime + 10 * 60 * 1000; // End time for chunk
+              new Date().getTime() + index * 10 * 60 * 1000;
+            const chunkEndTime = chunkStartTime + 10 * 60 * 1000; 
 
-            // Convert the chunk to base64 string (you can use FileReader to convert it)
-            const chunkData = await new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                resolve(reader.result);
-              };
-              reader.onerror = reject;
-              reader.readAsDataURL(chunk); // Convert the file to base64
-            });
+            const formData = new FormData();
+            formData.append('file', chunk); 
+            formData.append(
+              'startTime',
+              new Date(chunkStartTime).toISOString()
+            );
+            formData.append('endTime', new Date(chunkEndTime).toISOString());
 
-            const data = {
-              startTime: new Date(chunkStartTime).toISOString(),
-              endTime: new Date(chunkEndTime).toISOString(),
-              audio: audio, // Base64 encoded audio data
-            };
-
-            console.log('Sending chunk:', {
-              chunkIndex: index,
-              startTime: new Date(chunkStartTime).toISOString(),
-              endTime: new Date(chunkEndTime).toISOString(),
-              audio: chunkData,
-            });
-
-            // Send the chunk data to the server
             const response = await api.post(
               `/chunk/${createdRecord._id}`,
-              data
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${localStorage.getItem(
+                    'accessToken'
+                  )}`
+                },
+              }
             );
 
             if (response.status === 201) {
