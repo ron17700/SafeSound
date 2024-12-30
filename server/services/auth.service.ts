@@ -6,7 +6,6 @@ interface RegisterData {
     username: string;
     email: string;
     password: string;
-    age: number;
     file?: string;
 }
 
@@ -16,7 +15,7 @@ interface LoginData {
 }
 
 export const AuthService = {
-    async register({username, email, password, age, file}: RegisterData) {
+    async register({username, email, password, file}: RegisterData) {
         const existUser = await User.exists({email});
         if (existUser) {
             throw new Error('Invalid credentials');
@@ -24,7 +23,7 @@ export const AuthService = {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new User({username, email, password: hashedPassword, age, profileImage: file});
+        const newUser = new User({username, email, password: hashedPassword, profileImage: file});
 
         await newUser.save();
         const { password: _, refreshToken: __, ...userWithoutSensitiveData } = newUser.toObject();

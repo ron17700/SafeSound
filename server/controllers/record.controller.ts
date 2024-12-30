@@ -47,7 +47,7 @@ export const RecordController  = {
 
     async deleteRecord (req: Request, res: Response, next: NextFunction) {
         try {
-            const deletedRecord = await RecordService.deleteRecord(req.params.id);
+            const deletedRecord = await RecordService.deleteRecord(req.params.id, req.body.userId);
             if (!deletedRecord) {
                 return res.status(404).json({ message: 'Record not found' });
             }
