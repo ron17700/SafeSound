@@ -1,4 +1,4 @@
-import { IChunkScheme } from '../models/chuck.model';
+import { IChunkScheme } from '../models/chunk.model';
 import { processChunk } from './process-chunk.service';
 import { RecordService } from './record.service';
 

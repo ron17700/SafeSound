@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { Class } from './chuck.model';
+import { Class } from './chunk.model';
 
 export interface IRecord extends Document {
     userId: string;
@@ -30,7 +30,7 @@ const RecordSchema = new Schema<IRecord>(
         },
         image: {
             type: String,
-            default: 'default-files/default-record-image.png'
+            default: 'default-files/default-record-image.jpg'
         },
         public: {
             type: Boolean,

@@ -1,4 +1,4 @@
-import {Class, IChunkScheme, Status} from '../models/chuck.model';
+import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
 import {analyzeToneAndWords, AnalysisResult} from "./transcribe-analyzer.service";

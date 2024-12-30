@@ -1,4 +1,4 @@
-import {Chunk, IChunk, IChunkScheme, Status} from '../models/chuck.model';
+import {Chunk, IChunk, IChunkScheme, Status} from '../models/chunk.model';
 import {taskQueue} from "../index";
 
 export const ChunkService = {

@@ -1,5 +1,5 @@
 import {IRecord, Record} from '../models/record.model';
-import { Chunk, Class } from '../models/chuck.model';
+import { Chunk, Class } from '../models/chunk.model';
 
 export const RecordService = {
     async getAllRecords(userId: string) {
