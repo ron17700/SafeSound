@@ -6,9 +6,11 @@ import {isAuthorized} from "../middlewares/authorization";
 const router = Router();
 
 router.post('/', [isAuthorized, uploadController.upload, uploadController.verifyUpload, isAuthorized, RecordController.addRecord]);
+router.post('/:id/like', [isAuthorized, RecordController.addRecordToFavorite]);
 router.put('/:id', [isAuthorized, uploadController.upload, uploadController.verifyUpload, isAuthorized, RecordController.updateRecord]);
 router.delete('/:id', [isAuthorized, RecordController.deleteRecord]);
 router.get('/', [isAuthorized, RecordController.getAllRecordsById]);
 router.get('/:id', [isAuthorized, RecordController.getRecord]);
+router.get('/public', [isAuthorized, RecordController.getAllPublicRecords]);
 
 export default router;

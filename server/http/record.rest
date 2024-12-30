@@ -63,3 +63,20 @@ Content-Type: application/json
 {
   "file": "file"
 }
+
+###
+
+# Get all public records
+GET http://localhost:3001/record/public
+Authorization: Bearer {{accessToken}}
+
+###
+
+# Like a record
+POST http://localhost:3000/:id/like
+Authorization: Bearer <your_token_here>
+Content-Type: application/json
+
+{
+  "id": "<record_id_here>"
+}
