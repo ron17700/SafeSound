@@ -6,8 +6,8 @@ export interface IRecord extends Document {
     name?: string;
     image?: string;
     recordClass: Class;
-    timestamps: boolean;
     public?: boolean;
+    createdAt: Date;
     location?: {
         type: string;
         coordinates: [number];

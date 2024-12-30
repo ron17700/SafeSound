@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { RecordService } from '../services/record.service';
+import {UserService} from "../services/user.service";
 
 export const RecordController  = {
     async getAllRecordsById (req: Request, res: Response, next: NextFunction) {
@@ -56,9 +57,47 @@ export const RecordController  = {
         }
     },
 
-    async getAllPublicRecords (req: Request, res: Response, next: NextFunction) {
-        return RecordService.getAllPublicRecords()
-            .then(records => res.json(records))
-            .catch(err => next(err));
+    async getAllPublicRecords(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.body.userId;
+            const favoriteRecords = await UserService.getFavoriteRecords(userId);
+            const publicRecords = await RecordService.getAllPublicRecords();
+
+            const favoriteRecordIds = new Set(favoriteRecords.map(record => record.id.toString()));
+
+            const sortedRecords = publicRecords.map(record => ({
+                ...record.toObject(),
+                isFavorite: favoriteRecordIds.has(record.id.toString())
+            })).sort((a, b) => {
+                if (a.isFavorite && !b.isFavorite) return -1;
+                if (!a.isFavorite && b.isFavorite) return 1;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
+
+            res.json(sortedRecords);
+        } catch (err: any) {
+            next(err);
+        }
+    },
+
+    async addRecordToFavorite (req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.body.userId;
+            const recordId = req.params.id;
+            const record = await RecordService.getRecordById(recordId);
+
+            // Check if the record is public and not owned by the user
+            if (!record?.public) {
+                throw Error('You can only like public records');
+            }
+            if (record?.userId.toString() === userId) {
+                throw Error('You cannot like your own record');
+            }
+
+            const user = await UserService.addRecordToFavorite(userId, recordId);
+            res.json(user);
+        } catch (err: any) {
+            next(err);
+        }
     }
 }

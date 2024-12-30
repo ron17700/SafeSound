@@ -9,6 +9,7 @@ export interface IUser extends Document {
     role: 'user' | 'admin';
     createdAt: Date;
     updatedAt: Date;
+    favRecords: string[];
 }
 
 const UserSchema= new Schema<IUser>(
@@ -34,13 +35,14 @@ const UserSchema= new Schema<IUser>(
         },
         profileImage: {
             type: String,
-            default: null,
+           default: 'default-files/default-profile-image.jpg'
         },
         role: {
             type: String,
             enum: ['user', 'admin'],
             default: 'user',
         },
+        favRecords: [String],
     },
     {
         timestamps: true
