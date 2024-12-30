@@ -16,6 +16,7 @@ import { RecordsImage } from './components/shared/styles/images';
 import ChunksList from './components/chunks/list/ChunksList';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './styles/theme';
+import PublicRecordsPage from './components/records/PublicRecordsPage';
 
 const SafeSoundLogo = new URL('./assets/images/SafeSound.png', import.meta.url)
   .href;
@@ -92,6 +93,19 @@ const App: React.FC = () => {
                 <>
                   <Layout />
                   <RecordsPage />
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/records/public"
+            element={
+              accessToken ? (
+                <>
+                  <Layout />
+                  <PublicRecordsPage />
                 </>
               ) : (
                 <Navigate to="/login" />

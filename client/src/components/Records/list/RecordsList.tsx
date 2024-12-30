@@ -2,11 +2,9 @@ import React from 'react';
 import {
   Card,
   CardContent,
-  Typography,
   List,
   ListItem,
   ListItemAvatar,
-  Avatar,
   ListItemText,
   Box,
   IconButton,
@@ -14,11 +12,11 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ErrorIcon from '@mui/icons-material/Error';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/apiService';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
-import image from '../../../assets/images/defaultRecord.png';
 
 const defaultRecordImage = new URL(
   '../../../assets/images/defaultRecord.png',
@@ -33,7 +31,7 @@ interface Record {
   name: string;
   public?: boolean;
   image?: string | null;
-  class?: string;
+  recordClass?: string;
 }
 
 interface RecordsListProps {
@@ -44,11 +42,11 @@ interface RecordsListProps {
 const getClassIcon = (className: string | undefined) => {
   switch (className) {
     case 'Good':
-      return <CheckCircleIcon style={{ color: 'green' }} />;
+      return <CheckCircleIcon style={{ color: '#44D02D' }} />;
     case 'Bad':
-      return <ErrorIcon style={{ color: 'red' }} />;
+      return <ErrorIcon style={{ color: '#FF5A5A' }} />;
     case 'Natural':
-      return <StarHalfIcon />;
+      return <StarHalfIcon  style={{ color: '#ECC477' }} />;
     default:
       return null;
   }
@@ -67,11 +65,18 @@ const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
     }
   };
 
+  const handleAddFavorite = async (e: any, recordId: string): Promise<void> => {
+    try {
+      e.stopPropagation();
+      await api.post(`/record/${recordId}/like`);
+    } catch (error) {
+      console.error(`Failed to add record to favorite: ${recordId}`, error);
+    }
+  };
+
+  
   return (
     <Box padding="16px">
-      <Typography variant="h5" gutterBottom>
-        My Records
-      </Typography>
       <List>
         {records?.map((record: Record) => (
           <Card
@@ -83,16 +88,12 @@ const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
             }}
           >
             <CardContent>
-              <ListItem>
-                <ListItemAvatar>{getClassIcon(record.class)}</ListItemAvatar>
+              <ListItem onClick={() => navigate(`/records/${record._id}`)}>
+                <ListItemAvatar>
+                  {getClassIcon(record.recordClass)}
+                </ListItemAvatar>
                 <img
-                  src={
-                    record?.image &&
-                    record.image !== 'default-files/default-record-image.png'
-                      ? record.image
-                      : defaultRecordImage
-                  }
-                  
+                  src={defaultRecordImage}
                   draggable="false"
                   alt="Record Image"
                   style={{
@@ -120,6 +121,9 @@ const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
                 <IconButton onClick={(e) => handleDelete(e, record._id)}>
                   <DeleteIcon />
                 </IconButton>
+                {/* <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
+                  <FavoriteIcon />
+                </IconButton> */}
               </ListItem>
             </CardContent>
           </Card>

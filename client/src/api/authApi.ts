@@ -1,21 +1,14 @@
 import axios from 'axios';
 import api, { API_BASE_URL } from './apiService';
 
-export const register = async (
-  email: string,
-  password: string,
-  firstName: string,
-  lastName: string,
-  profileImage: string
-) => {
-  return axios.post(`${API_BASE_URL}/auth/register`, {
-    email,
-    password,
-    firstName,
-    lastName,
-    profileImage,
+export const register = async (formData: FormData) => {
+  return axios.post(`${API_BASE_URL}/auth/register`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data', // Required for FormData
+    },
   });
 };
+
 
 export const login = async (email: string, password: string) => {
   return await axios.post(`${API_BASE_URL}/auth/login`, {

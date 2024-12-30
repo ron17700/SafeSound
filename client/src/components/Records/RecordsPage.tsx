@@ -12,10 +12,12 @@ import Box from '@mui/material/Box';
 import api from '../../api/apiService';
 import RecordsList from './list/RecordsList';
 import { splitMp3IntoChunks } from '../../utils/audioUtils';
+import { Checkbox, FormControlLabel } from '@mui/material';
 
 const RecordsPage: React.FC = () => {
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isPublic, setIsPublic] = useState<boolean>(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [name, setName] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
@@ -40,6 +42,7 @@ const RecordsPage: React.FC = () => {
   const handleDialogClose = () => {
     setDialogOpen(false);
     setName('');
+    setIsPublic(false);
     setPhoto(null);
     setAudio(null);
   };
@@ -61,11 +64,13 @@ const RecordsPage: React.FC = () => {
     const userId = localStorage.getItem('userId') || '';
 
     try {
+      console.log('isPublic:', isPublic);
       const recordResponse = await api.post('/record', {
         userId,
         name,
         image: photo,
         class: 'Good',
+        public: isPublic,
       });
 
       const createdRecord = recordResponse.data;
@@ -79,10 +84,10 @@ const RecordsPage: React.FC = () => {
           for (const [index, chunk] of chunks.entries()) {
             const chunkStartTime =
               new Date().getTime() + index * 10 * 60 * 1000;
-            const chunkEndTime = chunkStartTime + 10 * 60 * 1000; 
+            const chunkEndTime = chunkStartTime + 10 * 60 * 1000;
 
             const formData = new FormData();
-            formData.append('file', chunk); 
+            formData.append('file', chunk);
             formData.append(
               'startTime',
               new Date(chunkStartTime).toISOString()
@@ -97,7 +102,7 @@ const RecordsPage: React.FC = () => {
                   'Content-Type': 'multipart/form-data',
                   Authorization: `Bearer ${localStorage.getItem(
                     'accessToken'
-                  )}`
+                  )}`,
                 },
               }
             );
@@ -141,7 +146,7 @@ const RecordsPage: React.FC = () => {
       style={{ paddingTop: '50px' }}
     >
       <Typography variant="h5" gutterBottom>
-        Records
+        My Records
       </Typography>
       <Button
         variant="contained"
@@ -178,6 +183,17 @@ const RecordsPage: React.FC = () => {
               type="file"
               accept="audio/mp3"
               onChange={handleAudioUpload}
+            />
+          </Box>
+          <Box mt={2}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isPublic}
+                  onChange={(e: any) => setIsPublic(e.target.checked)}
+                />
+              }
+              label="Make Public"
             />
           </Box>
         </DialogContent>

@@ -12,33 +12,48 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+import api from '../../../api/apiService';
 
 interface Chunk {
-  id: string;
+  _id: string;
   startTime: string;
   endTime: string;
-  audio: string;
+  audioFilePath: string;
+  status: string;
 }
 
+const getClassIcon = (status: string) => {
+  switch (status) {
+    case 'Good':
+      return <CheckCircleIcon style={{ color: 'green' }} />;
+    case 'Bad':
+      return <ErrorIcon style={{ color: 'red' }} />;
+    case 'Natural':
+      return <StarHalfIcon />;
+    default:
+      return null;
+  }
+};
+
 const ChunksList: React.FC = () => {
-  const { recordId } = useParams<{ recordId: string }>();
+  const { id: recordId } = useParams<{ id: string }>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchChunks = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:3001/chunk/${recordId}`,
-          {
-            headers: {
-              Authorization: `Bearer <YOUR_ACCESS_TOKEN>`,
-            },
-          }
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setChunks(data);
+        const response: any = await api.get(`/chunk/${recordId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        });
+
+        if (response.status === 200) {
+          setChunks(response.data);
         } else {
           console.error('Failed to fetch chunks');
         }
@@ -65,7 +80,7 @@ const ChunksList: React.FC = () => {
         <List>
           {chunks.map((chunk) => (
             <Card
-              key={chunk.id}
+              key={chunk._id}
               style={{
                 marginBottom: '8px',
                 backgroundColor: '#f5f5f5',
@@ -73,14 +88,10 @@ const ChunksList: React.FC = () => {
             >
               <CardContent>
                 <ListItem>
-                  <ListItemAvatar>
-                    <Avatar>
-                      {/* Add audio icon or other visualization */}
-                    </Avatar>
-                  </ListItemAvatar>
+                  <ListItemAvatar>{getClassIcon(chunk.status)}</ListItemAvatar>
                   <ListItemText
-                    primary={`Start: ${chunk.startTime} - End: ${chunk.endTime}`}
-                    secondary="Tap to play the audio"
+                    primary={`Start: ${new Date(chunk.startTime).toLocaleString()} - End: ${new Date(chunk.endTime).toLocaleString()}`}
+                    secondary={`Status: ${chunk.status}`}
                   />
                 </ListItem>
               </CardContent>
