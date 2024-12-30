@@ -1,6 +1,7 @@
 import {IRecord, Record} from '../models/record.model';
 import { Chunk, Class } from '../models/chunk.model';
 import * as fs from "node:fs";
+import User from "../models/user.model";
 
 export const RecordService = {
     async getAllRecords(userId: string) {
@@ -44,7 +45,19 @@ export const RecordService = {
             throw new Error('Record not found');
         }
 
-        Object.assign(record, {name: recordData.name, public: recordData.isPublic, image: recordData.file});
+        Object.assign(record, {
+            name: recordData.name ? recordData.name : record.name,
+            public: recordData.isPublic ? recordData.isPublic : record.public,
+            image: recordData.file ? recordData.file : record.image,
+        });
+
+        if (recordData.isPublic === false) {
+            await User.updateMany(
+                { favRecords: id },
+                { $pull: { favRecords: id } }
+            );
+        }
+
         try {
             return await record.save();
         } catch (error) {
@@ -73,6 +86,12 @@ export const RecordService = {
             if (record.image && record.image !== 'default-files/default-record-image.jpg') {
                 fs.unlinkSync(record.image);
             }
+
+            await User.updateMany(
+                { favRecords: id },
+                { $pull: { favRecords: id } }
+            );
+
             return await Record.findByIdAndDelete(id);
         } catch (error) {
             console.error('Error deleting record', error);
