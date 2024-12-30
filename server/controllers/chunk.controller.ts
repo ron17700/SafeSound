@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
+import {NextFunction, Request, Response} from 'express';
 import { ChunkService } from '../services/chunk.service';
 
 export const ChunkController  = {
-    async addChunk (req: Request, res: Response) {
+    async addChunk (req: Request, res: Response, next: NextFunction) {
         try {
-            const recordId = req.params.id;
+            const recordId = req.params.recordId;
             const chunkData = req.body;
             const audioFilePath: string = req.body.file;
             if (!audioFilePath) {
@@ -13,11 +13,11 @@ export const ChunkController  = {
             const chunk = ChunkService.addChunk(recordId, chunkData, audioFilePath);
             res.status(201).json(chunk);
         } catch (err: any) {
-            res.status(400).json({ error: err.message });
+            next(err);
         }
     },
 
-    async updateChunk (req: Request, res: Response) {
+    async updateChunk (req: Request, res: Response, next: NextFunction) {
         try {
             const updatedChunk = await ChunkService.updateChunk(req.params.id, req.body);
             if (!updatedChunk) {
@@ -25,11 +25,11 @@ export const ChunkController  = {
             }
             res.json(updatedChunk);
         } catch (err: any) {
-            res.status(400).json({ error: err.message });
+            next(err);
         }
     },
 
-    async deleteChunk (req: Request, res: Response) {
+    async deleteChunk (req: Request, res: Response, next: NextFunction) {
         try {
             const deletedChunk = await ChunkService.deleteChunk(req.params.id);
             if (!deletedChunk) {
@@ -37,11 +37,11 @@ export const ChunkController  = {
             }
             res.json({ message: 'Chunk deleted successfully' });
         } catch (err: any) {
-            res.status(500).json({ error: err.message });
+            next(err);
         }
     },
 
-    async getChunk (req: Request, res: Response) {
+    async getChunk (req: Request, res: Response, next: NextFunction) {
         try {
             const chunk = await ChunkService.getChunk(req.params.id);
             if (!chunk) {
@@ -49,17 +49,21 @@ export const ChunkController  = {
             }
             res.json(chunk);
         } catch (err: any) {
-            res.status(500).json({ error: err.message });
+            next(err);
         }
     },
 
-    async getAllChunks (req: Request, res: Response) {
+    async getAllChunks (req: Request, res: Response, next: NextFunction) {
         try {
             const recordId = req.params.recordId;
             const chunks = await ChunkService.getAllChunks(recordId);
-            res.json(chunks);
+            const chunksWithNames = chunks?.map((chunk, index) => ({
+                ...chunk.toObject(),
+                name: `#${index + 1}`
+            }));
+            res.json(chunksWithNames);
         } catch (err: any) {
-            res.status(500).json({ error: err.message });
+            next(err);
         }
     }
 }

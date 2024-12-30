@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { Class } from './chuck.model';
+import { Class } from './chunk.model';
 
 export interface IRecord extends Document {
     userId: string;
@@ -7,6 +7,11 @@ export interface IRecord extends Document {
     image?: string;
     recordClass: Class;
     timestamps: boolean;
+    public?: boolean;
+    location?: {
+        type: string;
+        coordinates: [number];
+    };
 }
 
 const RecordSchema = new Schema<IRecord>(
@@ -25,8 +30,23 @@ const RecordSchema = new Schema<IRecord>(
         },
         image: {
             type: String,
-            default: 'default-files/default-record-image.png'
+            default: 'default-files/default-record-image.jpg'
         },
+        public: {
+            type: Boolean,
+            default: false
+        },
+        location: {
+            type: {
+                type: String,
+                enum: ['Point'],
+                default: 'Point'
+            },
+            coordinates: {
+                type: [Number],
+                required: false
+            }
+        }
     },
     {
         timestamps: true

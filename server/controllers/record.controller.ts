@@ -1,38 +1,38 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { RecordService } from '../services/record.service';
 
 export const RecordController  = {
-    async getAllRecordsById (req: Request, res: Response) {
+    async getAllRecordsById (req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.body.userId;
             const records = await RecordService.getAllRecords(userId);
             res.json(records);
         } catch (err: any) {
-            res.status(500).json({ error: err.message });
+            next(err);
         }
     },
 
-    async getRecord (req: Request, res: Response) {
+    async getRecord (req: Request, res: Response, next: NextFunction) {
         try {
             const id = req.params.id;
             const userId = req.body.userId;
             const record = await RecordService.getRecord(userId, id);
             res.json(record);
         } catch (err: any) {
-            res.status(500).json({ error: err.message });
+            next(err);
         }
     },
 
-    async addRecord (req: Request, res: Response) {
+    async addRecord (req: Request, res: Response, next: NextFunction) {
         try {
             const newRecord = await RecordService.addRecord(req.body);
             res.status(201).json(newRecord);
         } catch (err: any) {
-            res.status(400).json({ error: err.message });
+            next(err);
         }
     },
 
-    async updateRecord (req: Request, res: Response)  {
+    async updateRecord (req: Request, res: Response, next: NextFunction) {
         try {
             const updatedRecord = await RecordService.updateRecord(req.params.id, req.body);
             if (!updatedRecord) {
@@ -40,11 +40,11 @@ export const RecordController  = {
             }
             res.json(updatedRecord);
         } catch (err: any) {
-            res.status(400).json({ error: err.message });
+            next(err);
         }
     },
 
-    async deleteRecord (req: Request, res: Response) {
+    async deleteRecord (req: Request, res: Response, next: NextFunction) {
         try {
             const deletedRecord = await RecordService.deleteRecord(req.params.id);
             if (!deletedRecord) {
@@ -52,7 +52,13 @@ export const RecordController  = {
             }
             res.json({ message: 'Record deleted successfully' });
         } catch (err: any) {
-            res.status(500).json({ error: err.message });
+            next(err);
         }
     },
+
+    async getAllPublicRecords (req: Request, res: Response, next: NextFunction) {
+        return RecordService.getAllPublicRecords()
+            .then(records => res.json(records))
+            .catch(err => next(err));
+    }
 }

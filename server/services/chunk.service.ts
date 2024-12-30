@@ -1,6 +1,4 @@
-import {Chunk, IChunk, IChunkScheme, Status} from '../models/chuck.model';
-import fs from 'fs';
-import path from 'path';
+import {Chunk, IChunk, IChunkScheme, Status} from '../models/chunk.model';
 import {taskQueue} from "../index";
 
 export const ChunkService = {
@@ -49,7 +47,7 @@ export const ChunkService = {
 
     async getAllChunks(recordId: string): Promise<IChunkScheme[] | null> {
         try {
-            return await Chunk.find({recordId}).exec();
+            return await Chunk.find({ recordId }).sort({ timeStamp: 1 }).exec();
         } catch (error) {
             console.error('Error getting chunk', error);
             throw new Error('Error deleting chunk');

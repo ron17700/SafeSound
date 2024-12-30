@@ -1,4 +1,4 @@
-import {Class, IChunkScheme, Status} from '../models/chuck.model';
+import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
 import {analyzeToneAndWords, AnalysisResult} from "./transcribe-analyzer.service";
@@ -7,7 +7,7 @@ import {RetrieveTranscriptResponse} from "@speechmatics/batch-client"; // Assume
 export async function processChunk(chunk: IChunkScheme) {
     try {
         // Update chunk status to in-progress
-        await ChunkService.updateChunk(chunk.chunkId, { status: Status.InProgress });
+        await ChunkService.updateChunk(chunk.id, { status: Status.InProgress });
 
         // Send audio to Speechmatics
         const result: RetrieveTranscriptResponse | string  = await analyzeAudio(chunk.audioFilePath);
@@ -17,14 +17,14 @@ export async function processChunk(chunk: IChunkScheme) {
         const chunkClass = analysisResult.overallTone === 'negative' ? Class.Bad : Class.Good;
 
         // Update chunk with analysis result
-        await ChunkService.updateChunk(chunk.chunkId, {
+        await ChunkService.updateChunk(chunk.id, {
             status: Status.Completed,
-            class: chunkClass,
+            chunkClass: chunkClass,
             summary: analysisResult.summary,
         });
     } catch (error) {
         // Update chunk status to failed
-        await ChunkService.updateChunk(chunk.chunkId, { status: Status.Failed});
+        await ChunkService.updateChunk(chunk.id, { status: Status.Failed});
         throw error;
     }
 }

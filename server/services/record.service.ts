@@ -1,20 +1,27 @@
 import {IRecord, Record} from '../models/record.model';
-import { Chunk, Class } from '../models/chuck.model';
+import { Chunk, Class } from '../models/chunk.model';
 
 export const RecordService = {
     async getAllRecords(userId: string) {
-        return await Record.find({userId});
+        return Record.find({ userId }).populate('userId', '-password -refreshToken');
     },
 
     async getRecord(userId: string, id: string) {
-        return await Record.findOne({userId, _id: id});
+        return Record.findOne({userId, _id: id}).populate('userId', '-password -refreshToken');
     },
 
-    async addRecord(recordData: IRecord & { file: string }): Promise<IRecord> {
+    async addRecord(recordData: IRecord & { file: string, isPublic: boolean,}): Promise<IRecord> {
+        const { userId, name, file, isPublic } = recordData;
+
         const newRecord = new Record({
-            userId: recordData.userId,
-            name: recordData.name,
-            image: recordData.file,
+            userId,
+            name,
+            image: file,
+            public: isPublic,
+            // location: {
+            //     type: 'Point',
+            //     coordinates: [parseFloat(lon), parseFloat(lat)]
+            // }
         });
 
         try {
@@ -61,7 +68,7 @@ export const RecordService = {
 
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
-            switch (chunk.class){
+            switch (chunk.chunkClass){
                 case Class.Good:
                     goodChunksCount++;
                     break;
@@ -90,5 +97,9 @@ export const RecordService = {
 
         record.recordClass = overallTone;
         await record.save();
+    },
+
+    getAllPublicRecords() {
+        return Record.find({public: true});
     }
 };
