@@ -70,7 +70,7 @@ export const RecordService = {
             }
 
             // Delete the record
-            if (record.image) {
+            if (record.image && record.image !== 'default-files/default-record-image.jpg') {
                 fs.unlinkSync(record.image);
             }
             return await Record.findByIdAndDelete(id);
@@ -121,7 +121,7 @@ export const RecordService = {
         await record.save();
     },
 
-    getAllPublicRecords() {
-        return Record.find({public: true});
+    getAllPublicRecords(userId: string) {
+        return Record.find({ public: true, userId: { $ne: userId } });
     }
 };

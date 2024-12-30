@@ -61,7 +61,7 @@ export const RecordController  = {
         try {
             const userId = req.body.userId;
             const favoriteRecords = await UserService.getFavoriteRecords(userId);
-            const publicRecords = await RecordService.getAllPublicRecords();
+            const publicRecords = await RecordService.getAllPublicRecords(userId);
 
             const favoriteRecordIds = new Set(favoriteRecords.map(record => record.id.toString()));
 
