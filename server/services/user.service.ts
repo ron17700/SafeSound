@@ -16,7 +16,16 @@ export const UserService = {
     },
 
     async addRecordToFavorite(userId: string, recordId: string) {
-        return User.findByIdAndUpdate(userId, { $push: { favRecords: recordId } }, { new: true });
+        const user = await User.findById(userId).select('favRecords');
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const updateOperation = user.favRecords.includes(recordId)
+            ? { $pull: { favRecords: recordId } }
+            : { $push: { favRecords: recordId } };
+
+        return User.findByIdAndUpdate(userId, updateOperation, { new: true });
     },
 
     async getFavoriteRecords(userId: string) {
