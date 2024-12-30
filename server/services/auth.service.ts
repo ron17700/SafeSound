@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import User, {IUser} from '../models/user.model';
 
 interface RegisterData {
-    username: string;
+    userName: string;
     email: string;
     password: string;
     file?: string;
@@ -15,7 +15,7 @@ interface LoginData {
 }
 
 export const AuthService = {
-    async register({username, email, password, file}: RegisterData) {
+    async register({userName, email, password, file}: RegisterData) {
         const existUser = await User.exists({email});
         if (existUser) {
             throw new Error('Invalid credentials');
@@ -23,7 +23,7 @@ export const AuthService = {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new User({username, email, password: hashedPassword, profileImage: file});
+        const newUser = new User({userName, email, password: hashedPassword, profileImage: file});
 
         await newUser.save();
         const { password: _, refreshToken: __, ...userWithoutSensitiveData } = newUser.toObject();
