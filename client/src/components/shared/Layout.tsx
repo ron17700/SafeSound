@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -16,6 +16,7 @@ import { Logo } from './styles/images';
 import { AppHeader } from './styles/inputs';
 import { showSwal } from './Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
+import { API_BASE_URL } from '../../api/apiService';
 
 const SafeSoundLogo = new URL(
   '../../assets/images/SafeSound.png',
@@ -26,8 +27,7 @@ const profileImagePath = parseAccessTokenToPayload(
   localStorage.getItem('accessToken') || ''
 ).profileImage;
 
-// this is example of how the image url should look like for checking
-const userImageUrl = `http://localhost:3001/uploads/file-1735589782667-622718814.jpg`;
+const userImageUrl = `${API_BASE_URL}/${profileImagePath.replace(/\\/g, '/')}`;
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
@@ -116,20 +116,25 @@ const Layout: React.FC = () => {
               display: 'flex',
               justifyContent: 'space-between',
               width: '100%',
-              flexDirection: 'row',
               alignItems: 'center',
             }}
           >
-            <>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Logo src={SafeSoundLogo} alt="SafeSound Logo" />
               <AppHeader variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 SafeSound
               </AppHeader>
-            </>
+            </div>
             <img
+              crossOrigin="anonymous"
               src={userImageUrl}
               alt="user image"
-              style={{ width: '50px' }}
+              style={{
+                width: '50px',
+                borderRadius: '50%',
+                border: '1px solid #103A49',
+                marginRight: '1vw',
+              }}
             />
           </div>
         </StyledToolbar>

@@ -6,7 +6,6 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  Avatar,
   ListItemText,
   Box,
   CircularProgress,
@@ -23,10 +22,13 @@ interface Chunk {
   endTime: string;
   audioFilePath: string;
   status: string;
+  chunkClass: string;
+  name: string;
+  summary: string;
 }
 
-const getClassIcon = (status: string) => {
-  switch (status) {
+const getClassIcon = (chunkClass: string) => {
+  switch (chunkClass) {
     case 'Good':
       return <CheckCircleIcon style={{ color: 'green' }} />;
     case 'Bad':
@@ -42,6 +44,8 @@ const ChunksList: React.FC = () => {
   const { id: recordId } = useParams<{ id: string }>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  console.log('chunks:', chunks);
 
   useEffect(() => {
     const fetchChunks = async () => {
@@ -68,7 +72,7 @@ const ChunksList: React.FC = () => {
   }, [recordId]);
 
   return (
-    <Box padding="16px">
+    <Box marginLeft="2vw" marginTop="12vh">
       <Typography variant="h5" gutterBottom>
         Chunks for Record {recordId}
       </Typography>
@@ -84,14 +88,30 @@ const ChunksList: React.FC = () => {
               style={{
                 marginBottom: '8px',
                 backgroundColor: '#f5f5f5',
+                width: '50vw',
               }}
             >
               <CardContent>
                 <ListItem>
-                  <ListItemAvatar>{getClassIcon(chunk.status)}</ListItemAvatar>
+                  <ListItemAvatar>
+                    {getClassIcon(chunk.chunkClass)}
+                  </ListItemAvatar>
                   <ListItemText
-                    primary={`Start: ${new Date(chunk.startTime).toLocaleString()} - End: ${new Date(chunk.endTime).toLocaleString()}`}
-                    secondary={`Status: ${chunk.status}`}
+                    primary={chunk.name}
+                    secondary={`${new Date(
+                      chunk.startTime
+                    ).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                    })} - ${new Date(chunk.endTime).toLocaleTimeString(
+                      'en-GB',
+                      {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                      }
+                    )}`}
                   />
                 </ListItem>
               </CardContent>

@@ -15,13 +15,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ErrorIcon from '@mui/icons-material/Error';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../api/apiService';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
-
-const defaultRecordImage = new URL(
-  '../../../assets/images/defaultRecord.png',
-  import.meta.url
-).href;
+import api, { API_BASE_URL } from '../../../api/apiService';
+import CustomIcon from '../../../assets/icons/natural';
 
 interface Record {
   _id: string;
@@ -37,22 +32,27 @@ interface Record {
 interface RecordsListProps {
   records: Record[];
   setRecords: (records: Record[]) => void;
+  isPublic?: boolean;
 }
 
 const getClassIcon = (className: string | undefined) => {
   switch (className) {
     case 'Good':
-      return <CheckCircleIcon style={{ color: '#44D02D' }} />;
+      return <CheckCircleIcon style={{ color: 'green' }} />;
     case 'Bad':
-      return <ErrorIcon style={{ color: '#FF5A5A' }} />;
+      return <ErrorIcon style={{ color: 'red' }} />;
     case 'Natural':
-      return <StarHalfIcon  style={{ color: '#ECC477' }} />;
+      return <CustomIcon />;
     default:
       return null;
   }
 };
 
-const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
+const RecordsList: React.FC<RecordsListProps> = ({
+  records,
+  setRecords,
+  isPublic,
+}) => {
   const navigate = useNavigate();
 
   const handleDelete = async (e: any, recordId: string): Promise<void> => {
@@ -74,7 +74,6 @@ const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
     }
   };
 
-  
   return (
     <Box padding="16px">
       <List>
@@ -93,7 +92,11 @@ const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
                   {getClassIcon(record.recordClass)}
                 </ListItemAvatar>
                 <img
-                  src={defaultRecordImage}
+                  src={`${API_BASE_URL}/${(record.image || '').replace(
+                    /\\/g,
+                    '/'
+                  )}`}
+                  crossOrigin="anonymous"
                   draggable="false"
                   alt="Record Image"
                   style={{
@@ -109,21 +112,25 @@ const RecordsList: React.FC<RecordsListProps> = ({ records, setRecords }) => {
                     record.createdAt
                   ).toLocaleDateString()}`}
                 />
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Navigate to edit page or handle editing
-                    navigate(`/records/${record._id}/edit`);
-                  }}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={(e) => handleDelete(e, record._id)}>
-                  <DeleteIcon />
-                </IconButton>
-                {/* <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
-                  <FavoriteIcon />
-                </IconButton> */}
+                {!isPublic && (
+                  <>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={(e) => handleDelete(e, record._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </>
+                )}
+                {isPublic && (
+                  <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
+                    <FavoriteIcon />
+                  </IconButton>
+                )}
               </ListItem>
             </CardContent>
           </Card>

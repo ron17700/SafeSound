@@ -26,12 +26,7 @@ const PublicRecordsPage: React.FC = () => {
   }, []);
 
   return (
-    <Box
-      width="100%"
-      margin="auto"
-      padding="16px"
-      style={{ paddingTop: '50px' }}
-    >
+    <Box width="100%" padding="16px" style={{ paddingTop: '12vh' }}>
       <Typography variant="h5" gutterBottom>
         Public Records
       </Typography>
@@ -40,7 +35,11 @@ const PublicRecordsPage: React.FC = () => {
         {records.length === 0 ? (
           <Typography>No records available</Typography>
         ) : (
-          <RecordsList records={records} setRecords={setRecords} />
+          <RecordsList
+            records={records}
+            setRecords={setRecords}
+            isPublic={true}
+          />
         )}
       </Box>
     </Box>

@@ -2,13 +2,8 @@ import axios from 'axios';
 import api, { API_BASE_URL } from './apiService';
 
 export const register = async (formData: FormData) => {
-  return axios.post(`${API_BASE_URL}/auth/register`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data', // Required for FormData
-    },
-  });
+  return axios.post(`${API_BASE_URL}/auth/register`, formData);
 };
-
 
 export const login = async (email: string, password: string) => {
   return await axios.post(`${API_BASE_URL}/auth/login`, {
@@ -32,5 +27,7 @@ export const logout = async (refreshToken: string) => {
   }
 };
 export const getRefreshToken = async (refreshToken: string) => {
-  return await axios.post(`${API_BASE_URL}/auth/refresh-token`, { refreshToken });
+  return await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+    refreshToken,
+  });
 };

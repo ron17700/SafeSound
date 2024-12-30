@@ -64,14 +64,15 @@ const RecordsPage: React.FC = () => {
     const userId = localStorage.getItem('userId') || '';
 
     try {
-      console.log('isPublic:', isPublic);
-      const recordResponse = await api.post('/record', {
-        userId,
-        name,
-        image: photo,
-        class: 'Good',
-        public: isPublic,
-      });
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('userId', userId);
+      formData.append('isPublic', JSON.stringify(isPublic));
+      if (photo) {
+        formData.append('file', photo);
+      }
+
+      const recordResponse = await api.post('/record', formData);
 
       const createdRecord = recordResponse.data;
 
@@ -96,15 +97,7 @@ const RecordsPage: React.FC = () => {
 
             const response = await api.post(
               `/chunk/${createdRecord._id}`,
-              formData,
-              {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${localStorage.getItem(
-                    'accessToken'
-                  )}`,
-                },
-              }
+              formData
             );
 
             if (response.status === 201) {
@@ -139,12 +132,7 @@ const RecordsPage: React.FC = () => {
   }
 
   return (
-    <Box
-      width="100%"
-      margin="auto"
-      padding="16px"
-      style={{ paddingTop: '50px' }}
-    >
+    <Box width="100%" padding="16px" style={{ paddingTop: '12vh' }}>
       <Typography variant="h5" gutterBottom>
         My Records
       </Typography>
