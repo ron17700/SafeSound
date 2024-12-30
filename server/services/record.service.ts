@@ -95,7 +95,7 @@ export const RecordService = {
             throw new Error('Record not found');
         }
 
-        record.class = overallTone;
+        record.recordClass = overallTone;
         await record.save();
     },
 

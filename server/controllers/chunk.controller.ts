@@ -10,8 +10,8 @@ export const ChunkController  = {
             if (!audioFilePath) {
                 throw new Error('Audio file is required');
             }
-            ChunkService.addChunk(recordId, chunkData, audioFilePath);
-            res.status(201).json('ok');
+            const chunk = ChunkService.addChunk(recordId, chunkData, audioFilePath);
+            res.status(201).json(chunk);
         } catch (err: any) {
             next(err);
         }

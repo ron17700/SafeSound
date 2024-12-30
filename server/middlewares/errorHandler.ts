@@ -32,7 +32,7 @@ const errorHandler = (error: CustomError, req: Request, res: Response, next: Nex
         // General errors
         console.error(error.message);
         console.log(error.stack);
-        return res.status(error.status || 400).json({ error: { message: error.message } });
+        return res.status(error.status || 400).send(error.message);
     }
     return res.status(500).json({ message: 'An internal server error occurred.' });
 };
