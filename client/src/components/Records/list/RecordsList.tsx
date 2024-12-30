@@ -12,11 +12,13 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ErrorIcon from '@mui/icons-material/Error';
 import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../../../api/apiService';
 import CustomIcon from '../../../assets/icons/natural';
+import { parseAccessTokenToPayload } from '../../../logic/user';
 
 interface Record {
   _id: string;
@@ -27,6 +29,7 @@ interface Record {
   public?: boolean;
   image?: string | null;
   recordClass?: string;
+  isFavorite?: boolean;
 }
 
 interface RecordsListProps {
@@ -68,7 +71,19 @@ const RecordsList: React.FC<RecordsListProps> = ({
   const handleAddFavorite = async (e: any, recordId: string): Promise<void> => {
     try {
       e.stopPropagation();
-      await api.post(`/record/${recordId}/like`);
+      await api.post(`/record/${recordId}/like`, {
+        userId: parseAccessTokenToPayload(
+          localStorage.getItem('accessToken') || ''
+        ).userId,
+        id: recordId,
+      });
+      setRecords(
+        records.map((currRecord: Record) =>
+          currRecord._id === recordId
+            ? { ...currRecord, isFavorite: !currRecord.isFavorite }
+            : currRecord
+        )
+      );
     } catch (error) {
       console.error(`Failed to add record to favorite: ${recordId}`, error);
     }
@@ -128,7 +143,11 @@ const RecordsList: React.FC<RecordsListProps> = ({
                 )}
                 {isPublic && (
                   <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
-                    <FavoriteIcon />
+                    {record.isFavorite ? (
+                      <StarIcon style={{ color: '#FFD700' }} />
+                    ) : (
+                      <StarBorderIcon style={{ color: '#FFD700' }} />
+                    )}
                   </IconButton>
                 )}
               </ListItem>

@@ -11,10 +11,10 @@ const PublicRecordsPage: React.FC = () => {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const response = await api.get('/record');
+        const response = await api.get('/record/public');
 
         console.log('response.data:', response.data);
-        setRecords(response.data.filter((record: any) => record.public));
+        setRecords(response.data);
       } catch (error) {
         console.error('Failed to fetch records:', error);
       } finally {
