@@ -1,4 +1,5 @@
 import User, {IUser} from '../models/user.model';
+import {Record} from '../models/record.model';
 
 export const UserService = {
 
@@ -12,5 +13,17 @@ export const UserService = {
             profileImage: userData.file,
             userName: userData.userName,
         }, { new: true });
+    },
+
+    async addRecordToFavorite(userId: string, recordId: string) {
+        return User.findByIdAndUpdate(userId, { $push: { favRecords: recordId } }, { new: true });
+    },
+
+    async getFavoriteRecords(userId: string) {
+        const user = await User.findById(userId).select('favRecords');
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return Record.find({_id: {$in: user.favRecords}});
     }
 };

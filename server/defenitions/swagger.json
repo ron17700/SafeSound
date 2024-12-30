@@ -390,6 +390,35 @@
         }
       }
     },
+    "/:id/like": {
+      "post": {
+        "tags": ["Record"],
+        "summary": "Add a record to favorites",
+        "description": "Adds the specified record to the user's list of favorite records.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the record to add to favorites",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Record added to favorites successfully"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
     "/upload/file/{id}": {
       "post": {
         "summary": "Upload an image for record",
