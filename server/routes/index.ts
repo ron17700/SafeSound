@@ -11,7 +11,8 @@ router.use("/record", recordRoutes);
 router.use("/chunk", chunkRoutes);
 router.use("/upload", uploadRoutes);
 
-// Serve the uploaded files statically
+// Serve the uploaded and default files statically
 router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+router.use('/default-files', express.static(path.join(__dirname, '../default-files')));
 
 export default router;
