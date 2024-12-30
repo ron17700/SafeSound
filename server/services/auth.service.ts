@@ -18,22 +18,22 @@ interface LoginData {
 }
 
 export const AuthService = {
-    async register({ username, email, password, firstName, lastName, age, file }: RegisterData) {
-        const existUser = await User.exists({ email });
+    async register({username, email, password, firstName, lastName, age, file}: RegisterData) {
+        const existUser = await User.exists({email});
         if (existUser) {
             return { status: 400, data: { error: 'Email already exists!' } };
         }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new User({ username, email, password: hashedPassword, firstName, lastName, age, image: file });
+        const newUser = new User({username, email, password: hashedPassword, firstName, lastName, age, image: file});
 
         await newUser.save();
-        return { status: 201, data: { message: 'User registered successfully', newUser } };
+        return {status: 201, data: {message: 'User registered successfully', newUser}};
     },
 
-    async login({ email, password }: LoginData) {
-        const user: IUser | null = await User.findOne({ email }).select('+password').exec();
+    async login({email, password}: LoginData) {
+        const user: IUser | null = await User.findOne({email}).select('+password').exec();
         if (!user) {
             return { status: 400, data: { error: 'Invalid credentials' } };
         }
@@ -43,13 +43,19 @@ export const AuthService = {
             return { status: 400, data: { error: 'Invalid credentials' } };
         }
 
-        const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_EXPIRES_IN });
-        const refreshToken = jwt.sign({ userId: user._id }, process.env.JWT_REFRESH_SECRET!, { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN });
+        const accessToken = jwt.sign({
+            userId: user._id,
+            userName: user.userName,
+            email: user.email,
+            role: user.role,
+            profileImage: user.profileImage
+        }, process.env.JWT_SECRET!, {expiresIn: process.env.JWT_EXPIRES_IN});
+        const refreshToken = jwt.sign({userId: user._id}, process.env.JWT_REFRESH_SECRET!, {expiresIn: process.env.JWT_REFRESH_EXPIRES_IN});
 
         user.refreshToken = refreshToken;
         await user.save();
 
-        return { status: 200, data: { message: 'Login successful', accessToken, refreshToken } };
+        return {status: 200, data: {message: 'Login successful', accessToken, refreshToken}};
     },
 
     async logout(userId: string) {
@@ -62,7 +68,7 @@ export const AuthService = {
         user.refreshToken = null;
         await user.save();
 
-        return { status: 200, data: { message: 'Logged out successfully' } };
+        return {status: 200, data: {message: 'Logged out successfully'}};
     },
 
     async refreshToken(refreshToken: string) {
@@ -73,7 +79,13 @@ export const AuthService = {
             throw new Error('Invalid refresh token');
         }
 
-        const newAccessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_EXPIRES_IN });
-        return { status: 200, data: { accessToken: newAccessToken } };
+        const newAccessToken = jwt.sign({
+            userId: user._id,
+            userName: user.userName,
+            email: user.email,
+            role: user.role,
+            profileImage: user.profileImage
+        }, process.env.JWT_SECRET!, {expiresIn: process.env.JWT_EXPIRES_IN});
+        return {status: 200, data: {accessToken: newAccessToken}};
     }
 };
