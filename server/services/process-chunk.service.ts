@@ -4,6 +4,21 @@ import {analyzeAudio} from './speechmatics.service';
 import {analyzeToneAndWords, AnalysisResult} from "./transcribe-analyzer.service";
 import {RetrieveTranscriptResponse} from "@speechmatics/batch-client"; // Assume this service sends audio to Speechmatics and returns the result
 
+function getRandomStatus(): Status {
+    const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
+    return statuses[Math.floor(Math.random() * statuses.length)];
+}
+
+function getRandomClass(): Class {
+    const classes = [Class.Natural, Class.Good, Class.Bad];
+    return classes[Math.floor(Math.random() * classes.length)];
+}
+
+function getRandomSummary(mockSummary: string): string {
+    const summaries = ['I want to hug you tonight', 'May the odds be ever in your favor', 'I hate you!!!', mockSummary];
+    return summaries[Math.floor(Math.random() * summaries.length)];
+}
+
 export async function processChunk(chunk: IChunkScheme) {
     try {
         // Update chunk status to in-progress
@@ -18,13 +33,13 @@ export async function processChunk(chunk: IChunkScheme) {
 
         // Update chunk with analysis result
         await ChunkService.updateChunk(chunk.id, {
-            status: Status.Completed,
-            chunkClass: chunkClass,
-            summary: analysisResult.summary,
+            status: getRandomStatus(),
+            chunkClass: getRandomClass(),
+            summary: getRandomSummary(analysisResult.summary),
         });
     } catch (error) {
         // Update chunk status to failed
-        await ChunkService.updateChunk(chunk.id, { status: Status.Failed, chunkClass: Class.Failed});
+        await ChunkService.updateChunk(chunk.id, { status: Status.Failed, summary: 'Failed analyzing audio' });
         throw error;
     }
 }

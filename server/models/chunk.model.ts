@@ -4,7 +4,6 @@ export enum Class {
     Natural = "Natural",
     Good = "Good",
     Bad = "Bad",
-    Failed = "failed",
 }
 
 export enum Status {
