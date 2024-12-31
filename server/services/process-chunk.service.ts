@@ -24,7 +24,7 @@ export async function processChunk(chunk: IChunkScheme) {
         });
     } catch (error) {
         // Update chunk status to failed
-        await ChunkService.updateChunk(chunk.id, { status: Status.Failed});
+        await ChunkService.updateChunk(chunk.id, { status: Status.Failed, chunkClass: Class.Failed});
         throw error;
     }
 }

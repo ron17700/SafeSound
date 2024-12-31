@@ -3,7 +3,8 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export enum Class {
     Natural = "Natural",
     Good = "Good",
-    Bad = "Bad"
+    Bad = "Bad",
+    Failed = "failed",
 }
 
 export enum Status {
