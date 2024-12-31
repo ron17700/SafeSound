@@ -145,7 +145,25 @@ export const RecordService = {
         await record.save();
     },
 
-    getAllPublicRecords(userId: string) {
-        return Record.find({ public: true, userId: { $ne: userId } }).populate('userId', '-password -refreshToken');
+    async getAllPublicRecords(userId: string) {
+        const records = await Record.find({ public: true, userId: { $ne: userId } }).populate('userId', '-password -refreshToken');
+
+        const recordObjs: any = [];
+        records.forEach((record) => {
+            recordObjs.push({
+                id: record.id,
+                userId: record.userId,
+                name: record.name,
+                image: record.image,
+                recordClass: record.recordClass,
+                public: record.public,
+                createdAt: record.createdAt,
+                location: record.location,
+                latitude: record.location ? record.location.coordinates[0] : 0,
+                longitude: record.location ? record.location.coordinates[1] : 0,
+            })
+       });
+
+        return recordObjs;
     }
 };
