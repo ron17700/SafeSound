@@ -66,11 +66,15 @@ export const RecordService = {
         }
     },
 
-    async deleteRecord(id: string): Promise<IRecord | null> {
+    async deleteRecord(id: string, userId: string): Promise<IRecord | null> {
         try {
             const record = await Record.findById(id);
             if (!record) {
                 throw new Error('Record not found');
+            }
+
+            if (record.userId !== userId) {
+                throw new Error('Record does not belong to the user');
             }
 
             // Find and delete all chunks associated with the record
