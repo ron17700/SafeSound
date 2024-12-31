@@ -16,7 +16,7 @@ export const RecordService = {
         return Record.findById(id);
     },
 
-    async addRecord(recordData: IRecord & { file: string, isPublic: boolean,}): Promise<IRecord> {
+    async addRecord(recordData: IRecord & { file: string, isPublic: boolean,}) {
         const { userId, name, file, isPublic } = recordData;
 
         const newRecord = new Record({
@@ -31,7 +31,8 @@ export const RecordService = {
         });
 
         try {
-            return await newRecord.save();
+            const savedRecord = await newRecord.save();
+            return Record.findById(savedRecord._id).populate('userId', '-password -refreshToken');
         } catch (error) {
             console.error('Error adding record', error);
             throw new Error('Error adding record');
@@ -145,6 +146,6 @@ export const RecordService = {
     },
 
     getAllPublicRecords(userId: string) {
-        return Record.find({ public: true, userId: { $ne: userId } });
+        return Record.find({ public: true, userId: { $ne: userId } }).populate('userId', '-password -refreshToken');
     }
 };
