@@ -16,8 +16,8 @@ export const RecordService = {
         return Record.findById(id);
     },
 
-    async addRecord(recordData: IRecord & { file: string, isPublic: boolean,}): Promise<IRecord> {
-        const { userId, name, file, isPublic } = recordData;
+    async addRecord(recordData: IRecord & { file: string, isPublic: boolean, longitude: number, latitude: number }) {
+        const { userId, name, file, isPublic, longitude, latitude } = recordData;
 
         const newRecord = new Record({
             userId,
@@ -26,7 +26,7 @@ export const RecordService = {
             public: isPublic,
             location: {
                 type: 'Point',
-                coordinates: [parseFloat(longitude), parseFloat(latitude)]
+                coordinates: [longitude, latitude]
             }
         });
 
