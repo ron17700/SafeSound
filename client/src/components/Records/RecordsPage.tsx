@@ -8,6 +8,7 @@ import RecordsList from './list/RecordsList';
 import { AddRecordButton } from '../shared/styles/buttons';
 import RecordDialog from './dialog/RecordDialog';
 import { ListWrapper, PaddedBox } from '../shared/styles/wrappers';
+import { splitMp3IntoChunks } from '../../utils/audioUtils';
 
 const RecordsPage: React.FC = () => {
   const [records, setRecords] = useState<any[]>([]);
@@ -42,14 +43,55 @@ const RecordsPage: React.FC = () => {
   };
 
   const handleSaveRecord = async (recordData: any) => {
-    if (isEditing && currentRecord) {
-      await api.put(`/record/${currentRecord._id}`, recordData);
-    } else {
-      await api.post('/record', recordData);
+    const { name, isPublic, photo, audio } = recordData;
+    const userId = localStorage.getItem('userId') || '';
+  
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('userId', userId);
+      formData.append('isPublic', JSON.stringify(isPublic));
+      if (photo) {
+        formData.append('file', photo);
+      }
+  
+      let createdRecord;
+      if (isEditing && currentRecord) {
+        await api.put(`/record/${currentRecord._id}`, formData);
+        createdRecord = currentRecord;
+      } else {
+        const recordResponse = await api.post('/record', formData);
+        createdRecord = recordResponse.data;
+      }
+  
+      if (audio) {
+        try {
+          const chunks = await splitMp3IntoChunks(audio, 10 * 60);
+          for (const [index, chunk] of chunks.entries()) {
+            const chunkStartTime =
+              new Date().getTime() + index * 10 * 60 * 1000;
+            const chunkEndTime = chunkStartTime + 10 * 60 * 1000;
+  
+            const chunkFormData = new FormData();
+            chunkFormData.append('file', chunk);
+            chunkFormData.append(
+              'startTime',
+              new Date(chunkStartTime).toISOString()
+            );
+            chunkFormData.append('endTime', new Date(chunkEndTime).toISOString());
+  
+            await api.post(`/chunk/${createdRecord._id}`, chunkFormData);
+          }
+        } catch (error) {
+          console.error('Error while splitting and uploading chunks:', error);
+        }
+      }
+  
+      const response = await api.get('/record');
+      setRecords(response.data);
+    } catch (error) {
+      console.error('Error creating or updating record:', error);
     }
-
-    const response = await api.get('/record');
-    setRecords(response.data);
   };
 
   if (loading) {

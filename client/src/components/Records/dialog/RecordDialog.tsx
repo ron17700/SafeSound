@@ -78,10 +78,13 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
       audio,
     };
 
-    await onSave(recordData);
-    onClose();
+    try {
+      await onSave(recordData);
+      onClose();
+    } catch (error) {
+      console.error('Failed to save record:', error);
+    }
   };
-
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogWrapper>
