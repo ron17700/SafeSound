@@ -55,6 +55,13 @@ Authorization: Bearer {{accessToken}}
 
 ###
 
+
+#Get all chunks by recordId
+GET http://localhost:3001/record/chunk/{recordId}
+Authorization: Bearer {{accessToken}}
+
+###
+
 # Upload an image for record
 POST http://localhost:3001/upload/file/{id}
 Authorization: Bearer {{accessToken}}

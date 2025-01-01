@@ -5,12 +5,6 @@
 #~~~~~~~~~~~ Chunk ~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# Get all chunks by record id
-GET http://localhost:3001/chunk/{recordId}
-Authorization: Bearer {{accessToken}}
-
-###
-
 # Add a chunk to a record
 POST http://localhost:3001/chunk/{id}
 Authorization: Bearer {{accessToken}}

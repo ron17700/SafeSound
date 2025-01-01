@@ -366,6 +366,34 @@
         }
       }
     },
+    "/record/chunk/:recordId": {
+      "get": {
+        "summary": "Get all chunks by record id",
+        "description": "This endpoint fetches all chunks by record id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chunks fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/record/public": {
       "get": {
         "tags": ["record"],
@@ -460,32 +488,6 @@
       }
     },
     "/chunk/:recordId": {
-      "get": {
-            "summary": "Get all chunks by record id",
-            "description": "This endpoint fetches all chunks by record id",
-            "parameters": [
-            {
-                "in": "path",
-                "name": "id",
-                "description": "ID of the record",
-                "required": true,
-                "type": "string"
-            }
-            ],
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-            "responses": {
-            "200": {
-                "description": "Chunks fetched successfully"
-            },
-            "500": {
-                "description": "Server error"
-            }
-            }
-        },
       "post": {
         "summary": "Add a chunk to a record",
         "description": "This endpoint adds a chunk to an existing record",
