@@ -10,7 +10,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
@@ -41,11 +41,30 @@ const getClassIcon = (chunkClass: string) => {
 };
 
 const ChunksList: React.FC = () => {
+  const navigate = useNavigate();
+
   const { id: recordId } = useParams<{ id: string }>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
+  const [recordName, setRecordName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
-  console.log('chunks:', chunks);
+  useEffect(() => {
+    const fetchRecordName = async () => {
+      try {
+        const response = await api.get(`/record/${recordId}`);
+
+        if (response.status === 200) {
+          setRecordName(response.data.name);
+        } else {
+          console.error('Failed to fetch record details');
+        }
+      } catch (error) {
+        console.error('Error fetching record details:', error);
+      }
+    };
+
+    if (recordId) fetchRecordName();
+  }, [recordId]);
 
   useEffect(() => {
     const fetchChunks = async () => {
@@ -68,13 +87,17 @@ const ChunksList: React.FC = () => {
       }
     };
 
-    fetchChunks();
+    if (recordId) fetchChunks();
   }, [recordId]);
+
+  const handleChunkClick = (chunkId: string) => {
+    navigate(`/records/${recordId}/chunks/${chunkId}`);
+  };
 
   return (
     <Box marginLeft="2vw" marginTop="12vh">
       <Typography variant="h5" gutterBottom>
-        Chunks for Record {recordId}
+        Chunks for Record {recordName || recordId}
       </Typography>
       {loading ? (
         <CircularProgress />
@@ -90,6 +113,7 @@ const ChunksList: React.FC = () => {
                 backgroundColor: '#f5f5f5',
                 width: '50vw',
               }}
+              onClick={() => handleChunkClick(chunk._id)}
             >
               <CardContent>
                 <ListItem>
@@ -98,20 +122,18 @@ const ChunksList: React.FC = () => {
                   </ListItemAvatar>
                   <ListItemText
                     primary={chunk.name}
-                    secondary={`${new Date(
-                      chunk.startTime
-                    ).toLocaleTimeString('en-GB', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                    })} - ${new Date(chunk.endTime).toLocaleTimeString(
+                    secondary={`${new Date(chunk.startTime).toLocaleTimeString(
                       'en-GB',
                       {
                         hour: '2-digit',
                         minute: '2-digit',
                         second: '2-digit',
                       }
-                    )}`}
+                    )} - ${new Date(chunk.endTime).toLocaleTimeString('en-GB', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                    })}`}
                   />
                 </ListItem>
               </CardContent>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AlbumIcon from '@mui/icons-material/Album';
-import ShareIcon from '@mui/icons-material/Share';
+import GroupIcon  from '@mui/icons-material/Group';
 import PersonIcon from '@mui/icons-material/Person';
 import { StyledAppbar, StyledDrawer } from './styles/layout';
 import { BoxWrapper, StyledToolbar } from './styles/wrappers';
@@ -23,14 +23,31 @@ const SafeSoundLogo = new URL(
   import.meta.url
 ).href;
 
-const profileImagePath = parseAccessTokenToPayload(
-  localStorage.getItem('accessToken') || ''
-).profileImage;
-
-const userImageUrl = `${API_BASE_URL}/${profileImagePath.replace(/\\/g, '/')}`;
-
 const Layout: React.FC = () => {
   const navigate = useNavigate();
+
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfileImage = () => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        const profileImagePath = parseAccessTokenToPayload(token).profileImage;
+        const userImage = `${API_BASE_URL}/${profileImagePath.replace(
+          /\\/g,
+          '/'
+        )}`;
+        setUserImageUrl(userImage);
+      }
+    };
+
+    fetchProfileImage(); // Call on component mount
+    window.addEventListener('storage', fetchProfileImage); // Listen for changes in localStorage (like when the access token changes)
+
+    return () => {
+      window.removeEventListener('storage', fetchProfileImage); // Clean up the event listener on component unmount
+    };
+  }, []); // Only run once on mount, but will update if access token is changed via localStorage
 
   type MenuItemType = 'MY_RECORDS' | 'PUBLIC_RECORDS' | 'MY_PROFILE' | 'LOGOUT';
 
@@ -45,7 +62,7 @@ const Layout: React.FC = () => {
     {
       type: 'PUBLIC_RECORDS',
       text: 'Public Records',
-      icon: <ShareIcon />,
+      icon: <GroupIcon  />,
     },
     { type: 'MY_PROFILE', text: 'My Profile', icon: <PersonIcon /> },
     { type: 'LOGOUT', text: 'Logout', icon: <LogoutIcon /> },
@@ -83,7 +100,7 @@ const Layout: React.FC = () => {
         navigate('/records/public');
         break;
       case 'MY_PROFILE':
-        console.log('Navigating to My Profile...');
+        navigate('/user/profile');
         break;
       case 'LOGOUT':
         onLogout();
@@ -127,7 +144,7 @@ const Layout: React.FC = () => {
             </div>
             <img
               crossOrigin="anonymous"
-              src={userImageUrl}
+              src={userImageUrl || ''}
               alt="user image"
               style={{
                 width: '50px',

@@ -18,7 +18,6 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../../../api/apiService';
 import CustomIcon from '../../../assets/icons/natural';
-import { parseAccessTokenToPayload } from '../../../logic/user';
 
 interface Record {
   _id: string;
@@ -35,7 +34,8 @@ interface Record {
 interface RecordsListProps {
   records: Record[];
   setRecords: (records: Record[]) => void;
-  isPublic?: boolean;
+  handleAddFavorite?: (e: any, recordId: string) => Promise<void>;
+  handleEditRecord?: (record: Record) => void; // Add new prop
 }
 
 const getClassIcon = (className: string | undefined) => {
@@ -54,7 +54,8 @@ const getClassIcon = (className: string | undefined) => {
 const RecordsList: React.FC<RecordsListProps> = ({
   records,
   setRecords,
-  isPublic,
+  handleAddFavorite,
+  handleEditRecord,
 }) => {
   const navigate = useNavigate();
 
@@ -65,27 +66,6 @@ const RecordsList: React.FC<RecordsListProps> = ({
       setRecords(records.filter((record) => record._id !== recordId));
     } catch (error) {
       console.error(`Failed to delete record: ${recordId}`, error);
-    }
-  };
-
-  const handleAddFavorite = async (e: any, recordId: string): Promise<void> => {
-    try {
-      e.stopPropagation();
-      await api.post(`/record/${recordId}/like`, {
-        userId: parseAccessTokenToPayload(
-          localStorage.getItem('accessToken') || ''
-        ).userId,
-        id: recordId,
-      });
-      setRecords(
-        records.map((currRecord: Record) =>
-          currRecord._id === recordId
-            ? { ...currRecord, isFavorite: !currRecord.isFavorite }
-            : currRecord
-        )
-      );
-    } catch (error) {
-      console.error(`Failed to add record to favorite: ${recordId}`, error);
     }
   };
 
@@ -127,11 +107,12 @@ const RecordsList: React.FC<RecordsListProps> = ({
                     record.createdAt
                   ).toLocaleDateString()}`}
                 />
-                {!isPublic && (
+                {!handleAddFavorite && (
                   <>
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (handleEditRecord) handleEditRecord(record); // Call edit handler
                       }}
                     >
                       <EditIcon />
@@ -141,7 +122,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
                     </IconButton>
                   </>
                 )}
-                {isPublic && (
+                {handleAddFavorite && (
                   <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
                     {record.isFavorite ? (
                       <StarIcon style={{ color: '#FFD700' }} />

@@ -43,7 +43,7 @@ export const ChunkController  = {
 
     async getChunk (req: Request, res: Response, next: NextFunction) {
         try {
-            const chunk = await ChunkService.getChunk(req.params.id);
+            const chunk = await ChunkService.getChunk(req.params.chunkId);
             if (!chunk) {
                 return res.status(404).json({ message: 'Chunk not found' });
             }
