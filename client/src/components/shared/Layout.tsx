@@ -73,6 +73,8 @@ const Layout: React.FC = () => {
       await logout(refreshToken);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('userId');
+      window.dispatchEvent(new CustomEvent('logout'));
       showSwal('User logged out successfully!');
     } catch (error: any) {
       console.error(

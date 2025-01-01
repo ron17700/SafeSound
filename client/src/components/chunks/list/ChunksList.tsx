@@ -55,7 +55,7 @@ const ChunksList: React.FC = () => {
   useEffect(() => {
     const fetchChunks = async () => {
       try {
-        const response: any = await api.get(`/chunk/${recordId}`);
+        const response: any = await api.get(`/record/${recordId}/chunk`);
 
         if (response.status === StatusCodes.OK) {
           setChunks(response.data);

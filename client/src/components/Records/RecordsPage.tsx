@@ -88,7 +88,7 @@ const RecordsPage: React.FC = () => {
               new Date(chunkEndTime).toISOString()
             );
 
-            await api.post(`/chunk/${createdRecord._id}`, chunkFormData);
+            await api.post(`/record/${createdRecord._id}/chunk`, chunkFormData);
           }
         } catch (error) {
           console.error('Error while splitting and uploading chunks:', error);

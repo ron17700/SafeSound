@@ -28,6 +28,19 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    const handleLogoutEvent = () => {
+      setAccessToken(null);
+    };
+
+    window.addEventListener('logout', handleLogoutEvent);
+
+
+    return () => {
+      window.removeEventListener('logout', handleLogoutEvent);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchAccessToken = async () => {
       try {
         let token: string | null = localStorage.getItem('accessToken');
@@ -68,6 +81,9 @@ const App: React.FC = () => {
       </div>
     );
   }
+
+  console.log('accessToken');
+  console.log(accessToken);
 
   return (
     <ThemeProvider theme={theme}>
