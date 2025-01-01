@@ -68,7 +68,7 @@ export const RecordController  = {
             const sortedRecords = publicRecords
                 .map((record: any) => ({
                     ...record,
-                    isFavorite: favoriteRecordIds.has(record.id.toString())
+                    isFavorite: favoriteRecordIds.has(record._id.toString())
                 }))
                 .sort((a: any, b: any) => {
                     if (a.isFavorite && !b.isFavorite) return -1;

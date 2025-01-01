@@ -151,7 +151,7 @@ export const RecordService = {
         const recordObjs: any = [];
         records.forEach((record) => {
             recordObjs.push({
-                id: record.id,
+                _id: record.id,
                 userId: record.userId,
                 name: record.name,
                 image: record.image,
