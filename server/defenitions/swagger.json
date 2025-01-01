@@ -366,7 +366,7 @@
         }
       }
     },
-    "/record/chunk/:recordId": {
+    "/record/:recordId/chunk": {
       "get": {
         "summary": "Get all chunks by record id",
         "description": "This endpoint fetches all chunks by record id",
@@ -487,7 +487,7 @@
         }
       }
     },
-    "/chunk/:recordId": {
+    "/record/:recordId/chunk": {
       "post": {
         "summary": "Add a chunk to a record",
         "description": "This endpoint adds a chunk to an existing record",
@@ -527,7 +527,7 @@
         }
       }
     },
-    "/chunk/:id": {
+    "/record/:recordId/chunk/:id": {
       "get": {
         "summary": "Get chunk by chunkId",
         "description": "This endpoint fetches all chunks by record id",

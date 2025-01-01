@@ -13,6 +13,9 @@ router.delete('/:id', [isAuthorized, RecordController.deleteRecord]);
 router.get('/public', [isAuthorized, RecordController.getAllPublicRecords]);
 router.get('/', [isAuthorized, RecordController.getAllRecordsById]);
 router.get('/:id', [isAuthorized, RecordController.getRecord]);
-router.get('/chunk/:recordId', [isAuthorized, ChunkController.getAllChunks]);
+
+router.get('/:recordId/chunk', [isAuthorized, ChunkController.getAllChunks]);
+router.get('/:recordId/chunk/:id', [isAuthorized, ChunkController.getChunk]);
+router.post('/:recordId/chunk', [isAuthorized, uploadController.upload, uploadController.verifyUpload, isAuthorized, ChunkController.addChunk]);
 
 export default router;
