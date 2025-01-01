@@ -61,7 +61,7 @@ const Register: React.FC = () => {
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
-      setImageFile(file); // Save the file for submission
+      setImageFile(file);
       setModalIsOpen(true);
     }
   }, []);
@@ -75,7 +75,7 @@ const Register: React.FC = () => {
   const confirmImage = () => setModalIsOpen(false);
   const removeImage = () => {
     setImagePreview(null);
-    setImageFile(null); // Clear the file
+    setImageFile(null);
     setModalIsOpen(false);
   };
 
@@ -130,7 +130,7 @@ const Register: React.FC = () => {
 
   const handleRegister = async (formData: FormData) => {
     try {
-      await register(formData); // Pass the FormData directly
+      await register(formData);
       showSwal('User registered successfully!');
     } catch (error: any) {
       console.error(
@@ -152,13 +152,12 @@ const Register: React.FC = () => {
 
     const data = new FormData(event.currentTarget);
 
-    // Append the image file to the FormData
     if (imageFile) {
       data.append('file', imageFile);
     }
 
     try {
-      await handleRegister(data); // Send FormData to the backend
+      await handleRegister(data);
       navigate('/login');
     } catch (error) {
       console.error('Registration failed:', error);

@@ -6,7 +6,6 @@ export const splitMp3IntoChunks = async (
   audioFile: File,
   chunkDuration: number
 ): Promise<File[]> => {
-  // Load ffmpeg.wasm if not already loaded
   if (!ffmpeg.isLoaded()) {
     try {
       await ffmpeg.load();
@@ -31,35 +30,37 @@ export const splitMp3IntoChunks = async (
     });
 
     // Extract audio duration
-    await ffmpeg.run(
-      '-i', fileName,
-      '-hide_banner'
-    );
+    await ffmpeg.run('-i', fileName, '-hide_banner');
 
     // Parse the logs to find the duration
-    const durationMatch = ffmpegLogs.match(/Duration:\s*([0-9]+:[0-9]+:[0-9]+\.[0-9]+)/);
+    const durationMatch = ffmpegLogs.match(
+      /Duration:\s*([0-9]+:[0-9]+:[0-9]+\.[0-9]+)/
+    );
     if (!durationMatch) {
       throw new Error('Unable to retrieve audio duration from ffmpeg logs');
     }
 
     const durationString = durationMatch[1];
     const [hours, minutes, seconds] = durationString.split(':');
-    const totalDuration = parseFloat(hours) * 3600 + parseFloat(minutes) * 60 + parseFloat(seconds);
-
-    console.log('Audio duration:', totalDuration);
+    const totalDuration =
+      parseFloat(hours) * 3600 + parseFloat(minutes) * 60 + parseFloat(seconds);
 
     // Split the audio into chunks
     const totalChunks = Math.ceil(totalDuration / chunkDuration);
     for (let i = 0; i < totalChunks; i++) {
       const start = i * chunkDuration;
       const chunkName = `chunk_${i}.mp3`;
-      const chunkTime = Math.min(chunkDuration, totalDuration - start); // Ensure the last chunk is smaller if needed
+      const chunkTime = Math.min(chunkDuration, totalDuration - start);
 
       await ffmpeg.run(
-        '-i', fileName,
-        '-ss', start.toString(),
-        '-t', chunkTime.toString(),
-        '-c', 'copy',
+        '-i',
+        fileName,
+        '-ss',
+        start.toString(),
+        '-t',
+        chunkTime.toString(),
+        '-c',
+        'copy',
         chunkName
       );
 

@@ -34,7 +34,6 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
 
   const saveTokens = (accessToken: string, refreshToken: string) => {
     localStorage.setItem('accessToken', accessToken);
-    console.log('why in here');
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem(
       'userId',
@@ -45,8 +44,6 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await login(email, password);
-
-      console.log('Login response:', response.data);
 
       saveTokens(response.data.accessToken, response.data.refreshToken);
       handleAccessToken(response.data.accessToken);

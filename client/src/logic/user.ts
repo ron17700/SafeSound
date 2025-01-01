@@ -16,15 +16,10 @@ export const parseAccessTokenToPayload = (
     const parts = accessToken.split('.');
     if (parts.length !== 3) throw new Error('Invalid token format');
 
-    // Decode the payload (second part of the token)
     const payload = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
 
-    console.log('Token payload:', payload);
-
-    // Parse the payload and return the object
     const parsedPayload: TokenPayload = JSON.parse(payload);
 
-    // Ensure that the parsed payload has all required properties
     if (
       !parsedPayload.userId ||
       !parsedPayload.email ||
@@ -36,10 +31,10 @@ export const parseAccessTokenToPayload = (
       throw new Error('Missing required fields in token payload');
     }
 
-    return parsedPayload; // Return the parsed payload with all required fields
+    return parsedPayload;
   } catch (error) {
     console.error('Failed to parse token payload:', error);
-    // Return default values in case of an error
+
     return {
       userId: '',
       email: '',

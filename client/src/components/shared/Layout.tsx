@@ -6,7 +6,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AlbumIcon from '@mui/icons-material/Album';
-import GroupIcon  from '@mui/icons-material/Group';
+import GroupIcon from '@mui/icons-material/Group';
 import PersonIcon from '@mui/icons-material/Person';
 import { StyledAppbar, StyledDrawer } from './styles/layout';
 import { BoxWrapper, StyledToolbar } from './styles/wrappers';
@@ -41,13 +41,13 @@ const Layout: React.FC = () => {
       }
     };
 
-    fetchProfileImage(); // Call on component mount
-    window.addEventListener('storage', fetchProfileImage); // Listen for changes in localStorage (like when the access token changes)
+    fetchProfileImage();
+    window.addEventListener('storage', fetchProfileImage);
 
     return () => {
-      window.removeEventListener('storage', fetchProfileImage); // Clean up the event listener on component unmount
+      window.removeEventListener('storage', fetchProfileImage);
     };
-  }, []); // Only run once on mount, but will update if access token is changed via localStorage
+  }, []);
 
   type MenuItemType = 'MY_RECORDS' | 'PUBLIC_RECORDS' | 'MY_PROFILE' | 'LOGOUT';
 
@@ -62,7 +62,7 @@ const Layout: React.FC = () => {
     {
       type: 'PUBLIC_RECORDS',
       text: 'Public Records',
-      icon: <GroupIcon  />,
+      icon: <GroupIcon />,
     },
     { type: 'MY_PROFILE', text: 'My Profile', icon: <PersonIcon /> },
     { type: 'LOGOUT', text: 'Logout', icon: <LogoutIcon /> },

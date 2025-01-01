@@ -17,11 +17,11 @@ interface UserProfile {
 }
 
 const UserProfilePage: React.FC = () => {
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null); // Store user profile
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [updatedUsername, setUpdatedUsername] = useState<string>(''); // Updated username
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // File to upload
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // To store image preview URL
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [updatedUsername, setUpdatedUsername] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const userImageUrl = `${API_BASE_URL}/${(
     userProfile?.profileImage || ''
@@ -50,7 +50,7 @@ const UserProfilePage: React.FC = () => {
     } catch (error) {
       console.error('Error fetching user profile:', error);
     } finally {
-      setLoading(false); // Set loading to false once the request is complete
+      setLoading(false);
     }
   };
 
@@ -63,12 +63,11 @@ const UserProfilePage: React.FC = () => {
       const file = event.target.files[0];
       setSelectedFile(file);
 
-      // Create a preview of the selected image
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string); // Set the image preview to the file
+        setImagePreview(reader.result as string);
       };
-      reader.readAsDataURL(file); // Read the selected file as a data URL
+      reader.readAsDataURL(file);
     }
   };
 
@@ -94,10 +93,8 @@ const UserProfilePage: React.FC = () => {
       if (response.status === 200) {
         alert('Profile updated successfully!');
 
-
         setImagePreview(null);
         setUpdatedUsername('');
-
 
         await fetchUserProfile();
         await refreshAccessToken();
@@ -110,12 +107,10 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
-  // Show loading spinner while profile is being fetched
   if (loading) {
     return <CircularProgress />;
   }
 
-  // Handle case where the user profile couldn't be loaded
   if (!userProfile) {
     return <Typography>Error loading user profile</Typography>;
   }
@@ -138,7 +133,7 @@ const UserProfilePage: React.FC = () => {
       <TextField
         label="Username"
         variant="outlined"
-        value={updatedUsername} // Display current username
+        value={updatedUsername}
         onChange={(e) => setUpdatedUsername(e.target.value)}
         sx={{ marginTop: 2, marginBottom: 2, width: '300px' }}
       />

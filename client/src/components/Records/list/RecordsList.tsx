@@ -35,7 +35,7 @@ interface RecordsListProps {
   records: Record[];
   setRecords: (records: Record[]) => void;
   handleAddFavorite?: (e: any, recordId: string) => Promise<void>;
-  handleEditRecord?: (record: Record) => void; // Add new prop
+  handleEditRecord?: (record: Record) => void;
 }
 
 const getClassIcon = (className: string | undefined) => {
@@ -112,7 +112,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (handleEditRecord) handleEditRecord(record); // Call edit handler
+                        if (handleEditRecord) handleEditRecord(record);
                       }}
                     >
                       <EditIcon />

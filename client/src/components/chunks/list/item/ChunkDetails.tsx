@@ -14,8 +14,6 @@ const ChunkDetails: React.FC = () => {
     chunkId: string;
     recordId: string;
   }>();
-  console.log('recordId', recordId);
-  console.log('chunkId', chunkId);
   const [chunk, setChunk] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -28,7 +26,6 @@ const ChunkDetails: React.FC = () => {
           },
         });
 
-        console.log('response', response);
         if (response.status === 200) {
           setChunk(response.data);
         } else {

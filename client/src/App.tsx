@@ -17,7 +17,7 @@ import ChunksList from './components/chunks/list/ChunksList';
 import { ThemeProvider } from '@mui/material/styles';
 import theme from './styles/theme';
 import PublicRecordsPage from './components/records/PublicRecordsPage';
-import UserProfilePage from './components/user/UserProfilePage'; // Import the UserProfilePage component
+import UserProfilePage from './components/user/UserProfilePage';
 import ChunkDetails from './components/chunks/list/item/ChunkDetails';
 
 const SafeSoundLogo = new URL('./assets/images/SafeSound.png', import.meta.url)
@@ -127,13 +127,13 @@ const App: React.FC = () => {
               )
             }
           />
-           <Route
+          <Route
             path="/records/:recordId/chunks/:chunkId"
             element={
               accessToken ? (
                 <>
                   <Layout />
-                  <ChunkDetails  />
+                  <ChunkDetails />
                 </>
               ) : (
                 <Navigate to="/login" />

@@ -22,8 +22,8 @@ const RecordsPage: React.FC = () => {
   const [name, setName] = useState('');
   const [photo, setPhoto] = useState<File | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
-  const [isEditing, setIsEditing] = useState(false); // Tracks if the dialog is in edit mode
-  const [currentRecord, setCurrentRecord] = useState<any | null>(null); // Stores the record being edited
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -48,8 +48,8 @@ const RecordsPage: React.FC = () => {
     setIsPublic(false);
     setPhoto(null);
     setAudio(null);
-    setIsEditing(false); // Reset editing mode
-    setCurrentRecord(null); // Clear current record
+    setIsEditing(false);
+    setCurrentRecord(null);
   };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +65,7 @@ const RecordsPage: React.FC = () => {
     setCurrentRecord(record);
     setName(record.name || '');
     setIsPublic(record.public || false);
-    setPhoto(null); // Reset photo for optional re-upload
+    setPhoto(null);
     setDialogOpen(true);
   };
 
@@ -87,10 +87,8 @@ const RecordsPage: React.FC = () => {
       }
 
       if (isEditing && currentRecord) {
-        // Update an existing record
         await api.put(`/record/${currentRecord._id}`, formData);
       } else {
-        // Add a new record
         const recordResponse = await api.post('/record', formData);
         const createdRecord = recordResponse.data;
 
@@ -118,7 +116,6 @@ const RecordsPage: React.FC = () => {
         }
       }
 
-      // Refresh records after adding or updating
       const response = await api.get('/record');
       setRecords(response.data);
 
