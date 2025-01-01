@@ -65,14 +65,16 @@ export const RecordController  = {
 
             const favoriteRecordIds = new Set(favoriteRecords.map(record => record.id.toString()));
 
-            const sortedRecords = publicRecords.map(record => ({
-                ...record.toObject(),
-                isFavorite: favoriteRecordIds.has(record.id.toString())
-            })).sort((a, b) => {
-                if (a.isFavorite && !b.isFavorite) return -1;
-                if (!a.isFavorite && b.isFavorite) return 1;
-                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-            });
+            const sortedRecords = publicRecords
+                .map((record: any) => ({
+                    ...record,
+                    isFavorite: favoriteRecordIds.has(record.id.toString())
+                }))
+                .sort((a: any, b: any) => {
+                    if (a.isFavorite && !b.isFavorite) return -1;
+                    if (!a.isFavorite && b.isFavorite) return 1;
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                });
 
             res.json(sortedRecords);
         } catch (err: any) {

@@ -10,7 +10,7 @@ export interface IRecord extends Document {
     createdAt: Date;
     location?: {
         type: string;
-        coordinates: [number];
+        coordinates: [number, number];
     };
 }
 
