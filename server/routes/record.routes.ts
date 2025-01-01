@@ -10,8 +10,8 @@ router.get('/public', [isAuthorized, RecordController.getAllPublicRecords]);
 router.post('/:id/like', [isAuthorized, RecordController.addRecordToFavorite]);
 router.put('/:id', [isAuthorized, uploadController.upload, uploadController.verifyUpload, isAuthorized, RecordController.updateRecord]);
 router.delete('/:id', [isAuthorized, RecordController.deleteRecord]);
+router.get('/public', [isAuthorized, RecordController.getAllPublicRecords]);
 router.get('/', [isAuthorized, RecordController.getAllRecordsById]);
 router.get('/:id', [isAuthorized, RecordController.getRecord]);
-
 
 export default router;

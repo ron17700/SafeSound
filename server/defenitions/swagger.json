@@ -584,11 +584,7 @@
         "lastName": {
           "type": "string",
           "example": "Cohen"
-        },
-        "age": {
-          "type": "number",
-          "example": 25
-      }
+        }
       }
     },
     "UserLogin": {
