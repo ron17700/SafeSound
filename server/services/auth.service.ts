@@ -18,7 +18,7 @@ export const AuthService = {
     async register({userName, email, password, file}: RegisterData) {
         const existUser = await User.exists({email});
         if (existUser) {
-            throw new Error('Invalid credentials');
+            throw new Error('User already exists');
         }
 
         const salt = await bcrypt.genSalt(10);

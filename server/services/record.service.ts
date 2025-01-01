@@ -16,18 +16,18 @@ export const RecordService = {
         return Record.findById(id);
     },
 
-    async addRecord(recordData: IRecord & { file: string, isPublic: boolean,}) {
-        const { userId, name, file, isPublic } = recordData;
+    async addRecord(recordData: IRecord & { file: string, isPublic: boolean, longitude: number, latitude: number }) {
+        const { userId, name, file, isPublic, longitude, latitude } = recordData;
 
         const newRecord = new Record({
             userId,
             name,
             image: file,
             public: isPublic,
-            // location: {
-            //     type: 'Point',
-            //     coordinates: [parseFloat(lon), parseFloat(lat)]
-            // }
+            location: {
+                type: 'Point',
+                coordinates: [longitude, latitude]
+            }
         });
 
         try {
@@ -145,7 +145,25 @@ export const RecordService = {
         await record.save();
     },
 
-    getAllPublicRecords(userId: string) {
-        return Record.find({ public: true, userId: { $ne: userId } }).populate('userId', '-password -refreshToken');
+    async getAllPublicRecords(userId: string) {
+        const records = await Record.find({ public: true, userId: { $ne: userId } }).populate('userId', '-password -refreshToken');
+
+        const recordObjs: any = [];
+        records.forEach((record) => {
+            recordObjs.push({
+                id: record.id,
+                userId: record.userId,
+                name: record.name,
+                image: record.image,
+                recordClass: record.recordClass,
+                public: record.public,
+                createdAt: record.createdAt,
+                location: record.location,
+                latitude: record.location ? record.location.coordinates[0] : 0,
+                longitude: record.location ? record.location.coordinates[1] : 0,
+            })
+       });
+
+        return recordObjs;
     }
 };

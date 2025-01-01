@@ -55,6 +55,32 @@ Authorization: Bearer {{accessToken}}
 
 ###
 
+
+#Get all chunks by recordId
+GET http://localhost:3001/record/{recordId}/chunk
+Authorization: Bearer {{accessToken}}
+
+###
+
+#Get all chunks by recordId
+GET http://localhost:3001/record/{recordId}/chunk/{chunkId}
+Authorization: Bearer {{accessToken}}
+
+###
+
+# Add a chunk to a record
+POST http://localhost:3001/record/{{recordId}}/chunk
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "startTime": "startTime",
+  "endTime": "endTime",
+  "audio": "audio"
+}
+
+###
+
 # Upload an image for record
 POST http://localhost:3001/upload/file/{id}
 Authorization: Bearer {{accessToken}}
@@ -73,10 +99,6 @@ Authorization: Bearer {{accessToken}}
 ###
 
 # Like a record
-POST http://localhost:3000/:id/like
+POST http://localhost:3001/record/:id/like
 Authorization: Bearer <your_token_here>
 Content-Type: application/json
-
-{
-  "id": "<record_id_here>"
-}
