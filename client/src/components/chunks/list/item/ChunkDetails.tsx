@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Box,
   Typography,
   CircularProgress,
-  Card,
   CardContent,
 } from '@mui/material';
 import api, { API_BASE_URL } from '../../../../api/apiService';
+import { PageWrapper } from '../../../shared/styles/wrappers';
+import { ChunkDetailsCard } from '../../../shared/styles/cards';
+import { StyledAudio } from '../../../shared/styles/audio';
+import { PaddedTitle } from '../../../shared/styles/inputs';
 
 const ChunkDetails: React.FC = () => {
   const { recordId, chunkId } = useParams<{
@@ -20,11 +22,7 @@ const ChunkDetails: React.FC = () => {
   useEffect(() => {
     const fetchChunkDetails = async () => {
       try {
-        const response = await api.get(`/record/${recordId}/chunk/${chunkId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        });
+        const response = await api.get(`/record/${recordId}/chunk/${chunkId}`);
 
         if (response.status === 200) {
           setChunk(response.data);
@@ -42,16 +40,16 @@ const ChunkDetails: React.FC = () => {
   }, [chunkId, recordId]);
 
   return (
-    <Box marginLeft="2vw" marginTop="12vh">
+    <PageWrapper>
       {loading ? (
         <CircularProgress />
       ) : chunk ? (
-        <Card style={{ padding: '20px' }}>
+        <ChunkDetailsCard>
           <CardContent>
             <Typography variant="h4" gutterBottom>
               {chunk.name}
             </Typography>
-            <audio crossOrigin="anonymous" controls style={{ width: '100%' }}>
+            <StyledAudio crossOrigin="anonymous" controls>
               <source
                 src={`${API_BASE_URL}/${chunk.audioFilePath.replace(
                   /\\/g,
@@ -60,16 +58,16 @@ const ChunkDetails: React.FC = () => {
                 type="audio/mp3"
               />
               Your browser does not support the audio element.
-            </audio>
-            <Typography variant="body1" marginTop="20px">
+            </StyledAudio>
+            <PaddedTitle variant="body1">
               <strong>Summary:</strong> {chunk.summary}
-            </Typography>
+            </PaddedTitle>
           </CardContent>
-        </Card>
+        </ChunkDetailsCard>
       ) : (
         <Typography>No chunk data found</Typography>
       )}
-    </Box>
+    </PageWrapper>
   );
 };
 

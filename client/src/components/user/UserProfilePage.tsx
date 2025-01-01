@@ -3,11 +3,15 @@ import {
   Box,
   Typography,
   TextField,
-  Button,
   CircularProgress,
+  Card,
 } from '@mui/material';
 import api, { API_BASE_URL } from '../../api/apiService';
 import { refreshAccessToken } from '../../api/apiLogic';
+import { showSwal } from '../shared/Swal';
+import { StatusCodes } from 'http-status-codes';
+import { AddRecordButton, ConfirmButton } from '../shared/styles/buttons';
+import { StyledHeader } from '../shared/styles/inputs';
 
 interface UserProfile {
   id: string;
@@ -35,13 +39,9 @@ const UserProfilePage: React.FC = () => {
         return;
       }
 
-      const response = await api.get(`/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        },
-      });
+      const response = await api.get(`/user/${userId}`);
 
-      if (response.status === 200) {
+      if (response.status === StatusCodes.OK) {
         setUserProfile(response.data);
         setUpdatedUsername(response.data.userName);
       } else {
@@ -83,15 +83,10 @@ const UserProfilePage: React.FC = () => {
       if (updatedUsername) formData.append('userName', updatedUsername);
       if (selectedFile) formData.append('file', selectedFile);
 
-      const response = await api.put(`/user/${userId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.put(`/user/${userId}`, formData);
 
-      if (response.status === 200) {
-        alert('Profile updated successfully!');
+      if (response.status === StatusCodes.OK) {
+        showSwal('Profile updated successfully!');
 
         setImagePreview(null);
         setUpdatedUsername('');
@@ -116,60 +111,73 @@ const UserProfilePage: React.FC = () => {
   }
 
   return (
-    <Box
-      padding="16px"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      marginTop={7}
-    >
-      <img
-        crossOrigin="anonymous"
-        src={userImageUrl}
-        alt="User Profile"
-        style={{ width: 100, height: 100, marginBottom: 2 }}
-      />
-      <Typography variant="h6">{userProfile.email}</Typography>
-      <TextField
-        label="Username"
-        variant="outlined"
-        value={updatedUsername}
-        onChange={(e) => setUpdatedUsername(e.target.value)}
-        sx={{ marginTop: 2, marginBottom: 2, width: '300px' }}
-      />
-      <Button variant="contained" component="label" sx={{ marginBottom: 2 }}>
-        Upload Profile Picture
-        <input type="file" hidden onChange={handleFileChange} />
-      </Button>
-      {imagePreview && (
-        <Box
-          marginTop={2}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <Typography variant="body1">Selected Image Preview:</Typography>
-          <img
-            src={imagePreview}
-            alt="Preview"
-            style={{
-              width: 150,
-              height: 150,
-              objectFit: 'cover',
-              borderRadius: '50%',
-            }}
-          />
-        </Box>
-      )}
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleUpdateProfile}
-        sx={{ width: '300px', marginTop: 2 }}
+    <Box padding="16px" paddingTop="10vh" margin={'auto'}>
+      <Card
+        style={{
+          padding: '20px',
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          marginTop: '2vh',
+          height: '80vh',
+          width: '70vw',
+        }}
       >
-        Update Profile
-      </Button>
+        <img
+          crossOrigin="anonymous"
+          src={userImageUrl}
+          alt="User Profile"
+          style={{ width: 150, height: 150, marginBottom: 2 }}
+        />
+        <Typography variant="h6">{userProfile.email}</Typography>
+        <TextField
+          label="Username"
+          variant="outlined"
+          value={updatedUsername}
+          onChange={(e) => setUpdatedUsername(e.target.value)}
+          sx={{
+            marginTop: 2,
+            marginBottom: 2,
+            width: '25vw',
+          }}
+        />
+        <ConfirmButton
+          variant="contained"
+          component="label"
+          sx={{ marginBottom: 1, width: '25vw', textAlign: 'center' }}
+        >
+          Upload Profile Picture
+          <input type="file" hidden onChange={handleFileChange} />
+        </ConfirmButton>
+        {imagePreview && (
+          <Box
+            marginTop={1}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+          >
+            <StyledHeader variant="body1">Selected Image Preview:</StyledHeader>
+            <img
+              src={imagePreview}
+              alt="Preview"
+              style={{
+                width: 125,
+                height: 125,
+                objectFit: 'cover',
+                borderRadius: '50%',
+                marginTop: '1vh',
+              }}
+            />
+          </Box>
+        )}
+        <AddRecordButton
+          sx={{ marginTop: 2, width: '25vw' }}
+          variant="contained"
+          onClick={handleUpdateProfile}
+        >
+          Update Profile
+        </AddRecordButton>
+      </Card>
     </Box>
   );
 };

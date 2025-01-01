@@ -40,3 +40,7 @@ export const StyledTitle = styled('div')(({ theme }) => ({
   color: theme.palette.text.primary,
   textAlign: 'center',
 }));
+
+export const PaddedTitle = styled(Typography)<TypographyProps>(() => ({
+  marginTop: '20px',
+}));

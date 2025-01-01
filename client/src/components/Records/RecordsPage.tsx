@@ -2,26 +2,17 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CircularProgress from '@mui/material/CircularProgress';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import TextField from '@mui/material/TextField';
-import DialogActions from '@mui/material/DialogActions';
 import Box from '@mui/material/Box';
 import api from '../../api/apiService';
 import RecordsList from './list/RecordsList';
-import { splitMp3IntoChunks } from '../../utils/audioUtils';
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { AddRecordButton } from '../shared/styles/buttons';
+import RecordDialog from './dialog/RecordDialog';
+import { ListWrapper, PaddedBox } from '../shared/styles/wrappers';
 
 const RecordsPage: React.FC = () => {
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isPublic, setIsPublic] = useState<boolean>(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [audio, setAudio] = useState<File | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [currentRecord, setCurrentRecord] = useState<any | null>(null);
 
@@ -42,87 +33,23 @@ const RecordsPage: React.FC = () => {
 
   const handleDialogOpen = () => setDialogOpen(true);
 
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-    setName('');
-    setIsPublic(false);
-    setPhoto(null);
-    setAudio(null);
-    setIsEditing(false);
-    setCurrentRecord(null);
-  };
-
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) setPhoto(event.target.files[0]);
-  };
-
-  const handleAudioUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) setAudio(event.target.files[0]);
-  };
+  const handleDialogClose = () => setDialogOpen(false);
 
   const handleEditRecord = (record: any) => {
     setIsEditing(true);
     setCurrentRecord(record);
-    setName(record.name || '');
-    setIsPublic(record.public || false);
-    setPhoto(null);
     setDialogOpen(true);
   };
 
-  const handleAddRecord = async () => {
-    if (!name) {
-      alert('Name is required');
-      return;
+  const handleSaveRecord = async (recordData: any) => {
+    if (isEditing && currentRecord) {
+      await api.put(`/record/${currentRecord._id}`, recordData);
+    } else {
+      await api.post('/record', recordData);
     }
 
-    const userId = localStorage.getItem('userId') || '';
-
-    try {
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('userId', userId);
-      formData.append('isPublic', JSON.stringify(isPublic));
-      if (photo) {
-        formData.append('file', photo);
-      }
-
-      if (isEditing && currentRecord) {
-        await api.put(`/record/${currentRecord._id}`, formData);
-      } else {
-        const recordResponse = await api.post('/record', formData);
-        const createdRecord = recordResponse.data;
-
-        if (audio) {
-          try {
-            const chunks = await splitMp3IntoChunks(audio, 10 * 60);
-            for (const [index, chunk] of chunks.entries()) {
-              const chunkStartTime =
-                new Date().getTime() + index * 10 * 60 * 1000;
-              const chunkEndTime = chunkStartTime + 10 * 60 * 1000;
-
-              const formData = new FormData();
-              formData.append('file', chunk);
-              formData.append(
-                'startTime',
-                new Date(chunkStartTime).toISOString()
-              );
-              formData.append('endTime', new Date(chunkEndTime).toISOString());
-
-              await api.post(`/chunk/${createdRecord._id}`, formData);
-            }
-          } catch (error) {
-            console.error('Error while splitting and uploading chunks:', error);
-          }
-        }
-      }
-
-      const response = await api.get('/record');
-      setRecords(response.data);
-
-      handleDialogClose();
-    } catch (error) {
-      console.error('Error creating or updating record:', error);
-    }
+    const response = await api.get('/record');
+    setRecords(response.data);
   };
 
   if (loading) {
@@ -139,19 +66,20 @@ const RecordsPage: React.FC = () => {
   }
 
   return (
-    <Box width="100%" padding="16px" style={{ paddingTop: '12vh' }}>
-      <Typography variant="h5" gutterBottom>
-        My Records
-      </Typography>
-      <Button
-        variant="contained"
-        startIcon={<AddCircleOutlineIcon />}
-        onClick={handleDialogOpen}
-        style={{ marginBottom: '16px' }}
-      >
-        Add Record
-      </Button>
-      <Box style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+    <Box width="100%" style={{ paddingTop: '12vh' }}>
+      <PaddedBox>
+        <Typography variant="h5" gutterBottom>
+          My Records
+        </Typography>
+        <AddRecordButton
+          variant="contained"
+          startIcon={<AddCircleOutlineIcon />}
+          onClick={handleDialogOpen}
+        >
+          Add Record
+        </AddRecordButton>
+      </PaddedBox>
+      <ListWrapper>
         {records.length === 0 ? (
           <Typography>No records available</Typography>
         ) : (
@@ -161,68 +89,14 @@ const RecordsPage: React.FC = () => {
             handleEditRecord={handleEditRecord}
           />
         )}
-      </Box>
-      <Dialog open={isDialogOpen} onClose={handleDialogClose}>
-        <DialogTitle>
-          {isEditing ? 'Update Record' : 'Add New Record'}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            fullWidth
-            required
-          />
-          {!isEditing && (
-            <>
-              <Box mt={2}>
-                <Typography variant="subtitle1">Photo (optional)</Typography>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                />
-              </Box>
-              <Box mt={2}>
-                <Typography variant="subtitle1">MP3 File (optional)</Typography>
-                <input
-                  type="file"
-                  accept="audio/mp3"
-                  onChange={handleAudioUpload}
-                />
-              </Box>
-            </>
-          )}
-          {isEditing && (
-            <Box mt={2}>
-              <Typography variant="subtitle1">Photo (optional)</Typography>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-              />
-            </Box>
-          )}
-          <Box mt={2}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isPublic}
-                  onChange={(e: any) => setIsPublic(e.target.checked)}
-                />
-              }
-              label="Make Public"
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleAddRecord}>
-            {isEditing ? 'Update' : 'Save'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </ListWrapper>
+      <RecordDialog
+        open={isDialogOpen}
+        onClose={handleDialogClose}
+        onSave={handleSaveRecord}
+        isEditing={isEditing}
+        currentRecord={currentRecord}
+      />
     </Box>
   );
 };

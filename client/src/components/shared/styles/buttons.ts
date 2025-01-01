@@ -1,4 +1,4 @@
-import Button from '@mui/material/Button';
+import Button, { ButtonProps } from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 
 export const StyledActiveButton = styled(Button)(({ theme }) => ({
@@ -22,7 +22,7 @@ export const StyledPassiveButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const ConfirmButton = styled(Button)(() => ({
+export const ConfirmButton = styled(Button)<ButtonProps>(() => ({
   backgroundColor: '#8EAAB0',
   color: '#FFFFFF',
 }));

@@ -7,14 +7,13 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Box,
   CircularProgress,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
 import api from '../../../api/apiService';
+import { StatusCodes } from 'http-status-codes';
+import { getClassIcon } from '../../../logic/record';
+import { ListWrapper, PageWrapper } from '../../shared/styles/wrappers';
 
 interface Chunk {
   _id: string;
@@ -26,19 +25,6 @@ interface Chunk {
   name: string;
   summary: string;
 }
-
-const getClassIcon = (chunkClass: string) => {
-  switch (chunkClass) {
-    case 'Good':
-      return <CheckCircleIcon style={{ color: 'green' }} />;
-    case 'Bad':
-      return <ErrorIcon style={{ color: 'red' }} />;
-    case 'Natural':
-      return <StarHalfIcon />;
-    default:
-      return null;
-  }
-};
 
 const ChunksList: React.FC = () => {
   const navigate = useNavigate();
@@ -53,7 +39,7 @@ const ChunksList: React.FC = () => {
       try {
         const response = await api.get(`/record/${recordId}`);
 
-        if (response.status === 200) {
+        if (response.status === StatusCodes.OK) {
           setRecordName(response.data.name);
         } else {
           console.error('Failed to fetch record details');
@@ -69,13 +55,9 @@ const ChunksList: React.FC = () => {
   useEffect(() => {
     const fetchChunks = async () => {
       try {
-        const response: any = await api.get(`/chunk/${recordId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-          },
-        });
+        const response: any = await api.get(`/chunk/${recordId}`);
 
-        if (response.status === 200) {
+        if (response.status === StatusCodes.OK) {
           setChunks(response.data);
         } else {
           console.error('Failed to fetch chunks');
@@ -95,23 +77,28 @@ const ChunksList: React.FC = () => {
   };
 
   return (
-    <Box marginLeft="2vw" marginTop="12vh">
+    <PageWrapper>
       <Typography variant="h5" gutterBottom>
-        Chunks for Record {recordName || recordId}
+        Chunks for Record: {recordName}
       </Typography>
       {loading ? (
         <CircularProgress />
       ) : chunks.length === 0 ? (
         <Typography>No chunks available</Typography>
       ) : (
-        <List>
+        <ListWrapper
+          style={{
+            paddingLeft: 0,
+            marginLeft: 0,
+          }}
+        >
           {chunks.map((chunk) => (
             <Card
               key={chunk._id}
-              style={{
+              sx={{
                 marginBottom: '8px',
                 backgroundColor: '#f5f5f5',
-                width: '50vw',
+                maxHeight: '80vh',
               }}
               onClick={() => handleChunkClick(chunk._id)}
             >
@@ -139,9 +126,9 @@ const ChunksList: React.FC = () => {
               </CardContent>
             </Card>
           ))}
-        </List>
+        </ListWrapper>
       )}
-    </Box>
+    </PageWrapper>
   );
 };
 

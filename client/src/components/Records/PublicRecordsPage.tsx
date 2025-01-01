@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import api from '../../api/apiService';
 import RecordsList from './list/RecordsList';
 import { parseAccessTokenToPayload } from '../../logic/user';
+import { ListWrapper, PaddedBox } from '../shared/styles/wrappers';
 
 const PublicRecordsPage: React.FC = () => {
   const [records, setRecords] = useState<any[]>([]);
@@ -41,11 +42,12 @@ const PublicRecordsPage: React.FC = () => {
 
   return (
     <Box width="100%" padding="16px" style={{ paddingTop: '12vh' }}>
-      <Typography variant="h5" gutterBottom>
-        Public Records
-      </Typography>
-
-      <Box style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
+      <PaddedBox>
+        <Typography variant="h5" gutterBottom>
+          Public Records
+        </Typography>
+      </PaddedBox>
+      <ListWrapper sx={{ maxHeight: 'calc(100vh - 215px)' }}>
         {records.length === 0 ? (
           <Typography>No records available</Typography>
         ) : (
@@ -55,7 +57,7 @@ const PublicRecordsPage: React.FC = () => {
             handleAddFavorite={handleAddFavorite}
           />
         )}
-      </Box>
+      </ListWrapper>
     </Box>
   );
 };

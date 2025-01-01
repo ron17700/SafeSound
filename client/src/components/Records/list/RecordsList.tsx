@@ -6,18 +6,15 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Box,
   IconButton,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import ErrorIcon from '@mui/icons-material/Error';
 import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../../../api/apiService';
-import CustomIcon from '../../../assets/icons/natural';
+import { getClassIcon } from '../../../logic/record';
 
 interface Record {
   _id: string;
@@ -38,19 +35,6 @@ interface RecordsListProps {
   handleEditRecord?: (record: Record) => void;
 }
 
-const getClassIcon = (className: string | undefined) => {
-  switch (className) {
-    case 'Good':
-      return <CheckCircleIcon style={{ color: 'green' }} />;
-    case 'Bad':
-      return <ErrorIcon style={{ color: 'red' }} />;
-    case 'Natural':
-      return <CustomIcon />;
-    default:
-      return null;
-  }
-};
-
 const RecordsList: React.FC<RecordsListProps> = ({
   records,
   setRecords,
@@ -70,73 +54,71 @@ const RecordsList: React.FC<RecordsListProps> = ({
   };
 
   return (
-    <Box padding="16px">
-      <List>
-        {records?.map((record: Record) => (
-          <Card
-            key={record._id}
-            style={{
-              marginBottom: '16px',
-              cursor: 'pointer',
-              backgroundColor: '#f5f5f5',
-            }}
-          >
-            <CardContent>
-              <ListItem onClick={() => navigate(`/records/${record._id}`)}>
-                <ListItemAvatar>
-                  {getClassIcon(record.recordClass)}
-                </ListItemAvatar>
-                <img
-                  src={`${API_BASE_URL}/${(record.image || '').replace(
-                    /\\/g,
-                    '/'
-                  )}`}
-                  crossOrigin="anonymous"
-                  draggable="false"
-                  alt="Record Image"
-                  style={{
-                    width: 50,
-                    height: 50,
-                    marginRight: '16px',
-                  }}
-                />
+    <List>
+      {records?.map((record: Record) => (
+        <Card
+          key={record._id}
+          style={{
+            marginBottom: '16px',
+            cursor: 'pointer',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <CardContent>
+            <ListItem onClick={() => navigate(`/records/${record._id}`)}>
+              <ListItemAvatar>
+                {getClassIcon(record.recordClass)}
+              </ListItemAvatar>
+              <img
+                src={`${API_BASE_URL}/${(record.image || '').replace(
+                  /\\/g,
+                  '/'
+                )}`}
+                crossOrigin="anonymous"
+                draggable="false"
+                alt="Record Image"
+                style={{
+                  width: 50,
+                  height: 50,
+                  marginRight: '16px',
+                }}
+              />
 
-                <ListItemText
-                  primary={record.name}
-                  secondary={`Created: ${new Date(
-                    record.createdAt
-                  ).toLocaleDateString()}`}
-                />
-                {!handleAddFavorite && (
-                  <>
-                    <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (handleEditRecord) handleEditRecord(record);
-                      }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={(e) => handleDelete(e, record._id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
-                )}
-                {handleAddFavorite && (
-                  <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
-                    {record.isFavorite ? (
-                      <StarIcon style={{ color: '#FFD700' }} />
-                    ) : (
-                      <StarBorderIcon style={{ color: '#FFD700' }} />
-                    )}
+              <ListItemText
+                primary={record.name}
+                secondary={`Created: ${new Date(
+                  record.createdAt
+                ).toLocaleDateString()}`}
+              />
+              {!handleAddFavorite && (
+                <>
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (handleEditRecord) handleEditRecord(record);
+                    }}
+                  >
+                    <EditIcon />
                   </IconButton>
-                )}
-              </ListItem>
-            </CardContent>
-          </Card>
-        ))}
-      </List>
-    </Box>
+                  <IconButton onClick={(e) => handleDelete(e, record._id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+              )}
+              {handleAddFavorite && (
+                <IconButton onClick={(e) => handleAddFavorite(e, record._id)}>
+                  {record.isFavorite ? (
+                    <StarIcon style={{ color: '#FFD700' }} />
+                  ) : (
+                    <StarBorderIcon style={{ color: '#FFD700' }} />
+                  )}
+                </IconButton>
+              )}
+            </ListItem>
+          </CardContent>
+        </Card>
+      ))}
+    </List>
   );
 };
 
