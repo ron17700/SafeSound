@@ -36,6 +36,11 @@ const RecordsPage: React.FC = () => {
 
   const handleDialogClose = () => setDialogOpen(false);
 
+  const handleAddRecord = (): void => {
+    setIsEditing(false);
+    handleDialogOpen();
+  };
+  
   const handleEditRecord = (record: any) => {
     setIsEditing(true);
     setCurrentRecord(record);
@@ -45,7 +50,7 @@ const RecordsPage: React.FC = () => {
   const handleSaveRecord = async (recordData: any) => {
     const { name, isPublic, photo, audio } = recordData;
     const userId = localStorage.getItem('userId') || '';
-  
+
     try {
       const formData = new FormData();
       formData.append('name', name);
@@ -54,7 +59,7 @@ const RecordsPage: React.FC = () => {
       if (photo) {
         formData.append('file', photo);
       }
-  
+
       let createdRecord;
       if (isEditing && currentRecord) {
         await api.put(`/record/${currentRecord._id}`, formData);
@@ -63,7 +68,7 @@ const RecordsPage: React.FC = () => {
         const recordResponse = await api.post('/record', formData);
         createdRecord = recordResponse.data;
       }
-  
+
       if (audio) {
         try {
           const chunks = await splitMp3IntoChunks(audio, 10 * 60);
@@ -71,22 +76,25 @@ const RecordsPage: React.FC = () => {
             const chunkStartTime =
               new Date().getTime() + index * 10 * 60 * 1000;
             const chunkEndTime = chunkStartTime + 10 * 60 * 1000;
-  
+
             const chunkFormData = new FormData();
             chunkFormData.append('file', chunk);
             chunkFormData.append(
               'startTime',
               new Date(chunkStartTime).toISOString()
             );
-            chunkFormData.append('endTime', new Date(chunkEndTime).toISOString());
-  
+            chunkFormData.append(
+              'endTime',
+              new Date(chunkEndTime).toISOString()
+            );
+
             await api.post(`/chunk/${createdRecord._id}`, chunkFormData);
           }
         } catch (error) {
           console.error('Error while splitting and uploading chunks:', error);
         }
       }
-  
+
       const response = await api.get('/record');
       setRecords(response.data);
     } catch (error) {
@@ -116,7 +124,7 @@ const RecordsPage: React.FC = () => {
         <AddRecordButton
           variant="contained"
           startIcon={<AddCircleOutlineIcon />}
-          onClick={handleDialogOpen}
+          onClick={handleAddRecord}
         >
           Add Record
         </AddRecordButton>

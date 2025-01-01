@@ -104,14 +104,16 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
             <Typography variant="subtitle1">Photo (optional)</Typography>
             <input type="file" accept="image/*" onChange={handlePhotoUpload} />
           </Box>
-          <Box mt={2}>
-            <Typography variant="subtitle1">MP3 File (optional)</Typography>
-            <input
-              type="file"
-              accept="audio/mp3"
-              onChange={handleAudioUpload}
-            />
-          </Box>
+          {!isEditing && (
+            <Box mt={2}>
+              <Typography variant="subtitle1">MP3 File (optional)</Typography>
+              <input
+                type="file"
+                accept="audio/mp3"
+                onChange={handleAudioUpload}
+              />
+            </Box>
+          )}
           <Box mt={2}>
             <FormControlLabel
               control={
