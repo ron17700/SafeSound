@@ -5,10 +5,8 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   if (refreshToken) {
     try {
       const response = await getRefreshToken(refreshToken);
-      const { accessToken, newRefreshToken } = response.data;
-
+      const { accessToken } = response.data;
       localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
 
       return accessToken;
     } catch (error) {

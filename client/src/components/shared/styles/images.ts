@@ -19,3 +19,9 @@ export const RecordsImage = styled('img')(() => ({
   marginBottom: 2,
   alignSelf: 'center',
 }));
+
+export const Logo = styled('img')(() => ({
+  width: '5%',
+  height: '5%',
+  alignSelf: 'center',
+}));

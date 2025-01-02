@@ -16,7 +16,7 @@
   "dependencies": {
     "@speechmatics/batch-client": "^5.0.1",
     "@types/form-data": "^2.5.2",
-    "axios": "^0.24.0",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

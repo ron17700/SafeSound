@@ -17,6 +17,8 @@ import {
 import { Card } from '../shared/styles/cards';
 import { login } from '../../api/authApi';
 import { StyledForm } from '../shared/styles/forms';
+import { showSwal } from '../shared/Swal';
+import { parseAccessTokenToPayload } from '../../logic/user';
 
 interface LoginProps {
   handleAccessToken: (token: string) => void;
@@ -33,20 +35,26 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
   const saveTokens = (accessToken: string, refreshToken: string) => {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem(
+      'userId',
+      parseAccessTokenToPayload(accessToken).userId
+    );
   };
 
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await login(email, password);
+
       saveTokens(response.data.accessToken, response.data.refreshToken);
       handleAccessToken(response.data.accessToken);
-      alert('User logged in successfully!');
+
+      showSwal('User logged in successfully!');
     } catch (error: any) {
       console.error(
         'Error during login:',
         error.response?.data || error.message
       );
-      alert('Login failed!');
+      showSwal('Login failed!', 'error');
     }
   };
 

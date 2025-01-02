@@ -1,24 +1,12 @@
 import axios from 'axios';
 import api, { API_BASE_URL } from './apiService';
 
-export const register = async (
-  email: string,
-  password: string,
-  firstName: string,
-  lastName: string,
-  profileImage: string
-) => {
-  return axios.post(`${API_BASE_URL}/register`, {
-    email,
-    password,
-    firstName,
-    lastName,
-    profileImage,
-  });
+export const register = async (formData: FormData) => {
+  return axios.post(`${API_BASE_URL}/auth/register`, formData);
 };
 
 export const login = async (email: string, password: string) => {
-  return await axios.post(`${API_BASE_URL}/login`, {
+  return await axios.post(`${API_BASE_URL}/auth/login`, {
     email,
     password,
   });
@@ -26,7 +14,9 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async (refreshToken: string) => {
   try {
-    const response = await api.post(`${API_BASE_URL}/logout`, { refreshToken });
+    const response = await api.post(`${API_BASE_URL}/auth/logout`, {
+      refreshToken,
+    });
     return response;
   } catch (error: any) {
     console.error(
@@ -37,5 +27,7 @@ export const logout = async (refreshToken: string) => {
   }
 };
 export const getRefreshToken = async (refreshToken: string) => {
-  return await axios.post(`${API_BASE_URL}/refresh-token`, { refreshToken });
+  return await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+    refreshToken,
+  });
 };

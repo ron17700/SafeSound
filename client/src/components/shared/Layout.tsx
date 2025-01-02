@@ -1,23 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemButton from '@mui/material/ListItemButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AlbumIcon from '@mui/icons-material/Album';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import GroupIcon from '@mui/icons-material/Group';
 import PersonIcon from '@mui/icons-material/Person';
 import { StyledAppbar, StyledDrawer } from './styles/layout';
-import { BoxWrapper } from './styles/wrappers';
+import { BoxWrapper, StyledToolbar } from './styles/wrappers';
 import { logout } from '../../api/authApi';
 import { useNavigate } from 'react-router-dom';
+import { Logo } from './styles/images';
+import { AppHeader } from './styles/inputs';
+import { showSwal } from './Swal';
+import { parseAccessTokenToPayload } from '../../logic/user';
+import { API_BASE_URL } from '../../api/apiService';
+
+const SafeSoundLogo = new URL(
+  '../../assets/images/SafeSound.png',
+  import.meta.url
+).href;
 
 const Layout: React.FC = () => {
   const navigate = useNavigate();
 
-  type MenuItemType = 'MY_RECORDS' | 'SHARED_WITH_ME' | 'MY_PROFILE' | 'LOGOUT';
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfileImage = () => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        const profileImagePath = parseAccessTokenToPayload(token).profileImage;
+        const userImage = `${API_BASE_URL}/${profileImagePath.replace(
+          /\\/g,
+          '/'
+        )}`;
+        setUserImageUrl(userImage);
+      }
+    };
+
+    fetchProfileImage();
+    window.addEventListener('storage', fetchProfileImage);
+
+    return () => {
+      window.removeEventListener('storage', fetchProfileImage);
+    };
+  }, []);
+
+  type MenuItemType = 'MY_RECORDS' | 'PUBLIC_RECORDS' | 'MY_PROFILE' | 'LOGOUT';
 
   interface MenuItem {
     type: MenuItemType;
@@ -28,9 +60,9 @@ const Layout: React.FC = () => {
   const menuItems: MenuItem[] = [
     { type: 'MY_RECORDS', text: 'My Records', icon: <AlbumIcon /> },
     {
-      type: 'SHARED_WITH_ME',
-      text: 'Shared With Me',
-      icon: <MailOutlineIcon />,
+      type: 'PUBLIC_RECORDS',
+      text: 'Public Records',
+      icon: <GroupIcon />,
     },
     { type: 'MY_PROFILE', text: 'My Profile', icon: <PersonIcon /> },
     { type: 'LOGOUT', text: 'Logout', icon: <LogoutIcon /> },
@@ -38,16 +70,18 @@ const Layout: React.FC = () => {
 
   const handleLogout = async (refreshToken: string) => {
     try {
-      const response = await logout(refreshToken);
+      await logout(refreshToken);
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
-      alert('User logged out successfully!');
+      localStorage.removeItem('userId');
+      window.dispatchEvent(new CustomEvent('logout'));
+      showSwal('User logged out successfully!');
     } catch (error: any) {
       console.error(
         'Error during logout:',
         error.response?.data || error.message
       );
-      alert('Logout failed!');
+      showSwal('Logout failed!', 'error');
     }
   };
   const onLogout = () => {
@@ -62,13 +96,13 @@ const Layout: React.FC = () => {
   const handleClickedItem = (itemType: MenuItemType) => {
     switch (itemType) {
       case 'MY_RECORDS':
-        console.log('Navigating to My Records...');
+        navigate('/records');
         break;
-      case 'SHARED_WITH_ME':
-        console.log('Navigating to Shared With Me...');
+      case 'PUBLIC_RECORDS':
+        navigate('/records/public');
         break;
       case 'MY_PROFILE':
-        console.log('Navigating to My Profile...');
+        navigate('/user/profile');
         break;
       case 'LOGOUT':
         onLogout();
@@ -95,11 +129,34 @@ const Layout: React.FC = () => {
         </List>
       </StyledDrawer>
       <StyledAppbar position="fixed">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            My Records
-          </Typography>
-        </Toolbar>
+        <StyledToolbar>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Logo src={SafeSoundLogo} alt="SafeSound Logo" />
+              <AppHeader variant="h5" component="div" sx={{ flexGrow: 1 }}>
+                SafeSound
+              </AppHeader>
+            </div>
+            <img
+              crossOrigin="anonymous"
+              src={userImageUrl || ''}
+              alt="user image"
+              style={{
+                width: '50px',
+                borderRadius: '50%',
+                border: '1px solid #103A49',
+                marginRight: '1vw',
+              }}
+            />
+          </div>
+        </StyledToolbar>
       </StyledAppbar>
     </BoxWrapper>
   );

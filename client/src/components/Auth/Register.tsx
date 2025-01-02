@@ -29,6 +29,7 @@ import { useDropzone } from 'react-dropzone';
 import { StyledForm } from '../shared/styles/forms';
 import Modal from 'react-modal';
 import { StyledImage, UploadedImage } from '../shared/styles/images';
+import { showSwal } from '../shared/Swal';
 
 const Register: React.FC = () => {
   const [emailError, setEmailError] = useState(false);
@@ -38,12 +39,13 @@ const Register: React.FC = () => {
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     useState('');
-  const [nameError, setNameError] = useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = useState('');
+  const [userNameError, setUserNameError] = useState(false);
+  const [userNameErrorMessage, setUserNameErrorMessage] = useState('');
 
   const navigate = useNavigate();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useEffect(() => {
@@ -59,6 +61,7 @@ const Register: React.FC = () => {
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
+      setImageFile(file);
       setModalIsOpen(true);
     }
   }, []);
@@ -72,15 +75,17 @@ const Register: React.FC = () => {
   const confirmImage = () => setModalIsOpen(false);
   const removeImage = () => {
     setImagePreview(null);
+    setImageFile(null);
     setModalIsOpen(false);
   };
+
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
     const password = document.getElementById('password') as HTMLInputElement;
     const confirmPassword = document.getElementById(
       'confirmPassword'
     ) as HTMLInputElement;
-    const name = document.getElementById('name') as HTMLInputElement;
+    const userName = document.getElementById('userName') as HTMLInputElement;
 
     let isValid = true;
 
@@ -111,34 +116,28 @@ const Register: React.FC = () => {
       setConfirmPasswordErrorMessage('');
     }
 
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage('Name is required.');
+    if (!userName.value || userName.value.length < 3) {
+      setUserNameError(true);
+      setUserNameErrorMessage('User Name must be at least 3 characters long.');
       isValid = false;
     } else {
-      setNameError(false);
-      setNameErrorMessage('');
+      setUserNameError(false);
+      setUserNameErrorMessage('');
     }
 
     return isValid;
   };
 
-  const handleRegister = async (
-    email: string,
-    password: string,
-    firstName: string,
-    lastName: string,
-    profileImage: string
-  ) => {
+  const handleRegister = async (formData: FormData) => {
     try {
-      await register(email, password, firstName, lastName, profileImage);
-      alert('User registered successfully!');
+      await register(formData);
+      showSwal('User registered successfully!');
     } catch (error: any) {
       console.error(
         'Error during registration:',
         error.response?.data || error.message
       );
-      alert('Registration failed!');
+      showSwal('Registration failed!', 'error');
       throw error;
     }
   };
@@ -152,18 +151,13 @@ const Register: React.FC = () => {
     }
 
     const data = new FormData(event.currentTarget);
-    const name = data.get('name')?.toString().trim() || '';
-    const [firstName = '', lastName = ''] = name.split(' ').filter(Boolean);
-    const profileImage = imagePreview ? imagePreview : '';
-    try {
-      await handleRegister(
-        data.get('email') as string,
-        data.get('password') as string,
-        firstName,
-        lastName,
-        profileImage
-      );
 
+    if (imageFile) {
+      data.append('file', imageFile);
+    }
+
+    try {
+      await handleRegister(data);
       navigate('/login');
     } catch (error) {
       console.error('Registration failed:', error);
@@ -180,17 +174,17 @@ const Register: React.FC = () => {
           <StyledDiv>
             <StyledBox>
               <FormControl>
-                <FormLabel htmlFor="name">Full name</FormLabel>
+                <FormLabel htmlFor="userName">User Name</FormLabel>
                 <StyledTextField
-                  autoComplete="name"
-                  name="name"
+                  autoComplete="username"
+                  name="userName"
                   required
                   fullWidth
-                  id="name"
-                  placeholder="Jon Snow"
-                  error={nameError}
-                  helperText={nameErrorMessage}
-                  color={nameError ? 'error' : 'primary'}
+                  id="userName"
+                  placeholder="your_unique_name"
+                  error={userNameError}
+                  helperText={userNameErrorMessage}
+                  color={userNameError ? 'error' : 'primary'}
                   size="small"
                 />
               </FormControl>
