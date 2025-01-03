@@ -1,44 +1,53 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User, {IUser} from '../models/user.model';
+import {UserService} from "./user.service";
 
 interface RegisterData {
     userName: string;
     email: string;
     password: string;
     file?: string;
+    profileImage?: string;
+    isGoogleUser: boolean;
 }
 
 interface LoginData {
     email: string;
     password: string;
+    isGoogleUser: boolean;
 }
 
 export const AuthService = {
-    async register({userName, email, password, file}: RegisterData) {
-        const existUser = await User.exists({email});
+    async register({userName, email, password, file, profileImage, isGoogleUser}: RegisterData) {
+        const existUser = await UserService.getUserByEmail(email)
         if (existUser) {
             throw new Error('User already exists');
         }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        const newUser = new User({userName, email, password: hashedPassword, profileImage: file});
-
+        let newUser: IUser;
+        if (isGoogleUser) {
+            newUser = new User({userName, email, password: password, profileImage: profileImage});
+        } else {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+            newUser = new User({userName, email, password: hashedPassword, profileImage: file});
+        }
         await newUser.save();
         const { password: _, refreshToken: __, ...userWithoutSensitiveData } = newUser.toObject();
         return {status: 201, data: {message: 'User registered successfully', user: userWithoutSensitiveData}};
     },
 
-    async login({email, password}: LoginData) {
-        const user: IUser | null = await User.findOne({email}).select('+password').exec();
+    async login({email, password, isGoogleUser}: LoginData) {
+        const user: IUser | null = await UserService.getUserByEmail(email)
         if (!user) {
             throw new Error('Invalid credentials');
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            throw new Error('Invalid credentials');
+        if (!isGoogleUser) {
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                throw new Error('Invalid credentials');
+            }
         }
 
         const accessToken = jwt.sign({
