@@ -3,6 +3,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import passport from "./middlewares/passport";
 import mongoSanitize from "express-mongo-sanitize";
 import swaggerUi from "swagger-ui-express"
 import swaggerDoc from "./defenitions/swagger.json";
@@ -19,6 +20,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(passport.initialize());
 app.use(mongoSanitize());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname, "./public")));

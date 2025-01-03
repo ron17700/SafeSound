@@ -8,6 +8,11 @@ export const UserService = {
         return user;
     },
 
+    async getUserByEmail(email: string) {
+        const user: IUser | null = await User.findOne({email}).select('+password').exec();
+        return user;
+    },
+
     async updateProfile(userId: string, userData: Partial<IUser> & { file: string }) {
         return User.findByIdAndUpdate(userId, {
             profileImage: userData.file,

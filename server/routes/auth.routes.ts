@@ -1,8 +1,9 @@
-import { Router } from 'express';
-import { AuthController } from '../controllers/auth.controller';
+import {Router} from 'express';
+import {AuthController} from '../controllers/auth.controller';
 
-import { isAuthorized } from '../middlewares/authorization';
+import {isAuthorized} from '../middlewares/authorization';
 import {uploadController} from "../controllers/upload.controller";
+import passport from "../middlewares/passport";
 
 const router = Router();
 
@@ -10,5 +11,8 @@ router.post('/register', [uploadController.upload, uploadController.verifyUpload
 router.post('/login', AuthController.login);
 router.post('/logout', isAuthorized, AuthController.logout);
 router.post('/refresh-token', AuthController.refreshToken);
+
+router.get('/login/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+router.get('/login/google/callback', passport.authenticate('google', { session: false }), AuthController.handleGoogleCallback)
 
 export default router;
