@@ -17,6 +17,7 @@ import { AppHeader } from './styles/inputs';
 import { showSwal } from './Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
 import { API_BASE_URL } from '../../api/apiService';
+import { ChatButton } from '../chat/ChatButton';
 
 const SafeSoundLogo = new URL(
   '../../assets/images/SafeSound.png',
@@ -143,6 +144,7 @@ const Layout: React.FC = () => {
               <AppHeader variant="h5" component="div" sx={{ flexGrow: 1 }}>
                 SafeSound
               </AppHeader>
+              <ChatButton />
             </div>
             <img
               crossOrigin="anonymous"
