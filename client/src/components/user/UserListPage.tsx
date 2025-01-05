@@ -20,7 +20,7 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
 
       const response = await api.get('/user');
       const otherUsers = response.data.filter(
-        (user: UserProfile) => user.id !== userId
+        (user: UserProfile) => user._id !== userId
       );
       setUsers(otherUsers);
     } catch (error) {
@@ -59,14 +59,14 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
       ) : (
         users.map((user) => (
           <Card
-            key={user.id}
+            key={user._id}
             style={{
               display: 'flex',
               alignItems: 'center',
               marginBottom: '16px',
               padding: '16px',
             }}
-            onClick={() => handleStartChat(user.id)} // Start chat with selected user
+            onClick={() => handleStartChat(user._id)} // Start chat with selected user
           >
             <img
               crossOrigin="anonymous"

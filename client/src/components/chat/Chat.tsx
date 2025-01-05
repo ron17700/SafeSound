@@ -1,48 +1,100 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { socket } from '../../utils/socket';
-import api from '../../api/apiService';
 
-export const Chat = ({ chatId }: { chatId: string }) => {
-  const [messages, setMessages] = useState<any[]>([]);
+interface Message {
+  _id: string;
+  sender: string;
+  status: string;
+  content:string
+  timestamp: Date;
+}
+
+export const Chat = ({
+  chatId,
+  onClose,
+  onGoBack,
+}: {
+  chatId: string;
+  onClose: () => void;
+  onGoBack: () => void;
+}) => {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const userId = localStorage.getItem('userId'); // Get the logged-in user ID
+  const userId = localStorage.getItem('userId');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const sentMessagesRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
-    socket.on('receiveMessage', (message) => {
-      setMessages((prev) => [...prev, message]);
+    if (!chatId || !userId) return;
+
+    socket.emit('getMessages', { chatId });
+
+    socket.on('messages', (fetchedMessages) => {
+      setMessages(fetchedMessages);
+
+      const updatedMessages = fetchedMessages.map((message: Message) => {
+        if (message.sender !== userId && message.status !== 'read') {
+          socket.emit('markAsRead', { chatId, messageId: message._id });
+          return { ...message, status: 'read' };
+        }
+        return message;
+      });
+
+      setMessages(updatedMessages);
     });
 
-    const fetchMessages = async () => {
-      try {
-        const response = await api.get(`/chat/messages/${chatId}`);
-        setMessages(response.data.messages);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    };
+    socket.on('receiveMessage', (message: Message) => {
+      setMessages((prevMessages) => {
+        if (!prevMessages.some((msg) => msg._id === message._id)) {
+          return [...prevMessages, message];
+        }
+        return prevMessages;
+      });
+    });
 
-    fetchMessages();
+    socket.on('messageStatusUpdated', ({ messageId, status }) => {
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === messageId ? { ...msg, status } : msg))
+      );
+    });
 
     return () => {
       socket.off('receiveMessage');
+      socket.off('messages');
+      socket.off('messageStatusUpdated');
     };
-  }, [chatId]);
+  }, [chatId, userId]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
   const sendMessage = () => {
-    if (!userId || !newMessage.trim()) return;
-
     const messageData = {
       chatId,
       senderId: userId,
       content: newMessage,
     };
 
-    socket.emit('sendMessage', messageData);
-    setMessages((prev) => [
-      ...prev,
-      { ...messageData, timestamp: new Date(), status: 'sent' },
-    ]);
+    if (!sentMessagesRef.current.has(newMessage)) {
+      sentMessagesRef.current.add(newMessage);
+    }
+
+    socket.emit('sendMessage', messageData, (responseMessage: { _id: string }) => {
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg._id === responseMessage._id ? { ...msg, status: 'read' } : msg
+        )
+      );
+    });
+
     setNewMessage('');
+  };
+
+  const markAsRead = (messageId: string) => {
+    socket.emit('markAsRead', { chatId, messageId });
   };
 
   return (
@@ -63,6 +115,9 @@ export const Chat = ({ chatId }: { chatId: string }) => {
     >
       <div
         style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           background: '#0078FF',
           color: '#fff',
           padding: '10px',
@@ -70,7 +125,31 @@ export const Chat = ({ chatId }: { chatId: string }) => {
           textAlign: 'center',
         }}
       >
-        Chat
+        <span>Chat</span>
+        <button
+          onClick={onGoBack}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#fff',
+            fontSize: '16px',
+            cursor: 'pointer',
+          }}
+        >
+          ←
+        </button>
+        <button
+          onClick={onClose}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: '#fff',
+            fontSize: '16px',
+            cursor: 'pointer',
+          }}
+        >
+          ✕
+        </button>
       </div>
       <div
         style={{
@@ -78,32 +157,40 @@ export const Chat = ({ chatId }: { chatId: string }) => {
           padding: '10px',
           overflowY: 'auto',
           display: 'flex',
-          flexDirection: 'column-reverse',
+          flexDirection: 'column',
         }}
       >
         {messages.map((message, index) => (
           <div
             key={index}
             style={{
-              alignSelf:
-                message.senderId === userId ? 'flex-end' : 'flex-start',
-              background: message.senderId === userId ? '#0078FF' : '#F0F0F0',
-              color: message.senderId === userId ? '#fff' : '#000',
+              alignSelf: message.sender === userId ? 'flex-end' : 'flex-start',
+              background: message.sender === userId ? '#0078FF' : '#F0F0F0',
+              color: message.sender === userId ? '#fff' : '#000',
               borderRadius: '12px',
               padding: '8px 12px',
               margin: '5px 0',
               maxWidth: '70%',
             }}
+            onClick={() => markAsRead(message._id)}
           >
             <p style={{ margin: 0 }}>{message.content}</p>
-            <small
-              style={{ fontSize: '10px', display: 'block', textAlign: 'right' }}
-            >
-              {message.status === 'read' ? '✓✓ Read' : '✓ Sent'}
-            </small>
+            {message.sender === userId && (
+              <small
+                style={{
+                  fontSize: '10px',
+                  display: 'block',
+                  textAlign: 'right',
+                }}
+              >
+                {message.status === 'read' ? '✓✓ Read' : '✓ Sent'}
+              </small>
+            )}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
+
       <div
         style={{
           display: 'flex',

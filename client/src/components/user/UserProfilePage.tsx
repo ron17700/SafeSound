@@ -13,12 +13,11 @@ import { showSwal } from '../shared/Swal';
 import { StatusCodes } from 'http-status-codes';
 import { AddRecordButton, ConfirmButton } from '../shared/styles/buttons';
 import { StyledHeader } from '../shared/styles/inputs';
-import { socket } from '../../utils/socket';
-import { Chat } from '../chat/Chat'; // Import Chat component
+import { Chat } from '../chat/Chat';
 import UserListPage from './UserListPage';
 
 export interface UserProfile {
-  id: string;
+  _id: string;
   userName: string;
   email: string;
   profileImage?: string | null;
@@ -31,17 +30,17 @@ const UserProfilePage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [isUserListOpen, setIsUserListOpen] = useState(false);
 
   const userImageUrl = `${API_BASE_URL}/${(
     userProfile?.profileImage || ''
   ).replace(/\\/g, '/')}`;
 
-  const [isUserListOpen, setIsUserListOpen] = useState(false);
-  const [chatId, setChatId] = useState<string | null>(null);
-
   const handleUserSelect = (selectedChatId: string) => {
     setChatId(selectedChatId);
     setIsUserListOpen(false); // Close the modal after selecting a user
+    setIsChatOpen(true); // Open the chat when a user is selected
   };
 
   const fetchUserProfile = async () => {
@@ -114,13 +113,13 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
-  const startChat = () => {
-    socket.emit('joinChat', {
-      userId: localStorage.getItem('userId'), // Pass current user ID
-      targetUserId: '6775bace8615640a0f2b34f5', // Target user ID
-    });
+  const closeChat = () => {
+    setIsChatOpen(false);
+  };
 
-    setIsChatOpen(true);
+  const goBack = () => {
+    setIsChatOpen(false);
+    setIsUserListOpen(true);
   };
 
   if (loading) {
@@ -219,7 +218,9 @@ const UserProfilePage: React.FC = () => {
         </Box>
       </Modal>
 
-      {chatId && <Chat chatId={chatId} />}
+      {isChatOpen && chatId && (
+        <Chat chatId={chatId} onClose={closeChat} onGoBack={goBack} />
+      )}
     </Box>
   );
 };

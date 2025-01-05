@@ -39,8 +39,31 @@ export const UserService = {
         }
         return Record.find({_id: {$in: user.favRecords}});
     },
-
     async getAllUsers() {
-        return User.find();
+        return User.aggregate([
+            {
+                $lookup: {
+                    from: 'chats',
+                    localField: '_id',
+                    foreignField: 'participants',
+                    as: 'chats'
+                }
+            },
+            {
+                $addFields: {
+                    hasChats: { $gt: [{ $size: '$chats' }, 0] },
+                    lastUpdated: { $max: '$chats.lastUpdated' }
+                }
+            },
+            {
+                $sort: { lastUpdated: -1 }
+            },
+            {
+                $project: {
+                    chats: 0,
+                    hasChats: 0
+                }
+            }
+        ]);
     }
 };
