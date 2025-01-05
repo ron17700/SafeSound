@@ -45,6 +45,20 @@ export const setupSocketHandlers = (io: Server) => {
             }
         });
 
+        // find all messages in a chat
+        socket.on('getMessages', async ({ chatId }) => {
+            try {
+                const chat = await Chat.findById(chatId);
+                if (chat) {
+                    socket.emit('messages', chat.messages);
+                } else {
+                    socket.emit('error', 'Chat not found');
+                }
+            } catch (error) {
+                socket.emit('error', 'Error fetching messages');
+            }
+        });
+
         socket.on('markAsRead', async ({ chatId, messageId }) => {
             try {
                 const chat = await Chat.findById(chatId);
