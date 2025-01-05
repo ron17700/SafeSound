@@ -2,10 +2,6 @@ import User, {IUser} from '../models/user.model';
 import {Record} from '../models/record.model';
 
 export const UserService = {
-    async getAllUsers() {
-        return User.find();
-    },
-    
     async getUserById(userId: string) {
         const user: IUser | null = await User.findById(userId);
         return user;
@@ -42,5 +38,9 @@ export const UserService = {
             throw new Error('User not found');
         }
         return Record.find({_id: {$in: user.favRecords}});
+    },
+
+    async getAllUsers() {
+        return User.find();
     }
 };

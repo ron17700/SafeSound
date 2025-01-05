@@ -23,10 +23,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000', // Frontend URL
-      methods: ['GET', 'POST'], // Allowed methods
+        origin: 'http://localhost:3000', // Frontend URL
+        methods: ['GET', 'POST'], // Allowed methods
     },
-  });
+});
 
 app.use(express.json());
 app.use(cors());

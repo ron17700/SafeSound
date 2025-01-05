@@ -1,4 +1,3 @@
-// server/socketHandlers.ts
 import { Server, Socket } from 'socket.io';
 import Chat from '../models/chat.model';
 
@@ -29,10 +28,18 @@ export const setupSocketHandlers = (io: Server) => {
             try {
                 const updatedChat = await Chat.findByIdAndUpdate(
                     chatId,
-                    { $push: { messages: message } },
+                    { $push: { messages: message },
+                        lastMessage: content,
+                        lastUpdated: new Date(),
+                    },
                     { new: true }
                 );
-                io.to(chatId).emit('receiveMessage', message); // Emit message to other participant
+
+                if (updatedChat) {
+                    io.to(chatId).emit('receiveMessage', message);
+                } else {
+                    socket.emit('error', 'Chat not found');
+                }
             } catch (error) {
                 socket.emit('error', 'Error sending message');
             }

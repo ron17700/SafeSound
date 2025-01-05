@@ -27,9 +27,7 @@ export const UserController = {
 
     async getAllUsers(req: Request, res: Response, next: NextFunction) {
         try {
-            const userId = req.params.id;
             const users = await UserService.getAllUsers();
-            
             res.json(users);
         } catch (err: any) {
             next(err);
