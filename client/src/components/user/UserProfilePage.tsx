@@ -5,9 +5,9 @@ import {
   TextField,
   CircularProgress,
   Card,
-  Button,
   Modal,
 } from '@mui/material';
+import ChatIcon from '@mui/icons-material/Chat';
 import api, { API_BASE_URL } from '../../api/apiService';
 import { showSwal } from '../shared/Swal';
 import { StatusCodes } from 'http-status-codes';
@@ -39,8 +39,8 @@ const UserProfilePage: React.FC = () => {
 
   const handleUserSelect = (selectedChatId: string) => {
     setChatId(selectedChatId);
-    setIsUserListOpen(false); // Close the modal after selecting a user
-    setIsChatOpen(true); // Open the chat when a user is selected
+    setIsUserListOpen(false);
+    setIsChatOpen(true);
   };
 
   const fetchUserProfile = async () => {
@@ -139,8 +139,10 @@ const UserProfilePage: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           marginTop: '2vh',
-          height: '80vh',
+          height: '70vh',
           width: '70vw',
+          position: 'relative',
+          paddingBottom: '80px',
         }}
       >
         <img
@@ -198,9 +200,20 @@ const UserProfilePage: React.FC = () => {
           Update Profile
         </AddRecordButton>
 
-        <Button variant="contained" onClick={() => setIsUserListOpen(true)}>
+        <ConfirmButton
+          variant="contained"
+          onClick={() => setIsUserListOpen(true)}
+          startIcon={<ChatIcon />}
+          sx={{
+            position: 'absolute',
+            bottom: '20px',
+            right: '20px',
+            backgroundColor: '#4A969D',
+            padding: '10px 20px',
+          }}
+        >
           Open Chat with Others
-        </Button>
+        </ConfirmButton>
       </Card>
 
       <Modal open={isUserListOpen} onClose={() => setIsUserListOpen(false)}>
@@ -209,9 +222,12 @@ const UserProfilePage: React.FC = () => {
             backgroundColor: 'white',
             padding: '16px',
             margin: 'auto',
-            marginTop: '10%',
             borderRadius: '8px',
-            maxWidth: '500px',
+            width: '50vw',
+            position: 'absolute', 
+            top: '50%',
+            left: '50%', 
+            transform: 'translate(-50%, -50%)',
           }}
         >
           <UserListPage onSelectUser={handleUserSelect} />

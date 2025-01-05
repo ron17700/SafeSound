@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Card, CircularProgress } from '@mui/material';
 import api, { API_BASE_URL } from '../../api/apiService';
-import { socket } from '../../utils/socket'; // Import socket
+import { socket } from '../../utils/socket';
 import { UserProfile } from './UserProfilePage';
 
 const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
@@ -41,7 +41,7 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
     });
 
     socket.once('chatJoined', ({ chatId }) => {
-      onSelectUser(chatId); // Pass the chat ID to the parent
+      onSelectUser(chatId);
     });
   };
 
@@ -50,7 +50,26 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
   }
 
   return (
-    <Box padding="16px" sx={{ overflowY: 'auto', height: '70vh' }}>
+    <Box
+      padding="16px"
+      sx={{
+        overflowY: 'auto',
+        height: '70vh',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: '#f1f1f1',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: '#888',
+          borderRadius: '10px',
+        },
+        '&::-webkit-scrollbar-thumb:hover': {
+          background: '#555',
+        },
+      }}
+    >
       <Typography variant="h6" marginBottom={2}>
         Choose a user to chat with:
       </Typography>
@@ -66,7 +85,7 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
               marginBottom: '16px',
               padding: '16px',
             }}
-            onClick={() => handleStartChat(user._id)} // Start chat with selected user
+            onClick={() => handleStartChat(user._id)}
           >
             <img
               crossOrigin="anonymous"
@@ -75,7 +94,7 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
                 '/'
               )}`}
               alt="User Profile"
-              style={{ marginRight: '16px', height:'50px' }}
+              style={{ marginRight: '16px', height: '50px' }}
             />
             <Typography>{user.userName}</Typography>
           </Card>
