@@ -23,5 +23,14 @@ export const UserController = {
         } catch (err: any) {
             next(err);
         }
+    },
+
+    async getAllUsers(req: Request, res: Response, next: NextFunction) {
+        try {
+            const users = await UserService.getAllUsers();
+            res.json(users);
+        } catch (err: any) {
+            next(err);
+        }
     }
 }

@@ -39,5 +39,9 @@ export const UserService = {
             throw new Error('User not found');
         }
         return Record.find({_id: {$in: user.favRecords}});
+    },
+
+    async getAllUsers() {
+        return User.find();
     }
 };
