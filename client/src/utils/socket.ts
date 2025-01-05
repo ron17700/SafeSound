@@ -1,3 +1,5 @@
+// socket.ts
 import { io } from 'socket.io-client';
+import { API_BASE_URL } from '../api/apiService';
 
-export const socket = io('http://your-server-url'); // Replace with your server URL
+export const socket = io(API_BASE_URL); // Ensure the server URL is correct

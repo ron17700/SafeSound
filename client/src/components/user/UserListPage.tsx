@@ -1,0 +1,88 @@
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Card, CircularProgress } from '@mui/material';
+import api, { API_BASE_URL } from '../../api/apiService';
+import { socket } from '../../utils/socket'; // Import socket
+import { UserProfile } from './UserProfilePage';
+
+const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
+  onSelectUser,
+}) => {
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const fetchUsers = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error('User ID is not available');
+        return;
+      }
+
+      const response = await api.get('/user');
+      const otherUsers = response.data.filter(
+        (user: UserProfile) => user.id !== userId
+      );
+      setUsers(otherUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleStartChat = (targetUserId: string) => {
+    socket.emit('joinChat', {
+      userId: localStorage.getItem('userId'),
+      targetUserId,
+    });
+
+    socket.once('chatJoined', ({ chatId }) => {
+      onSelectUser(chatId); // Pass the chat ID to the parent
+    });
+  };
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+  return (
+    <Box padding="16px" sx={{ overflowY: 'auto', height: '70vh' }}>
+      <Typography variant="h6" marginBottom={2}>
+        Choose a user to chat with:
+      </Typography>
+      {users.length === 0 ? (
+        <Typography>No other users available for chat.</Typography>
+      ) : (
+        users.map((user) => (
+          <Card
+            key={user.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '16px',
+              padding: '16px',
+            }}
+            onClick={() => handleStartChat(user.id)} // Start chat with selected user
+          >
+            <img
+              crossOrigin="anonymous"
+              src={`${API_BASE_URL}/${(user.profileImage || '').replace(
+                /\\/g,
+                '/'
+              )}`}
+              alt="User Profile"
+              style={{ marginRight: '16px', height:'50px' }}
+            />
+            <Typography>{user.userName}</Typography>
+          </Card>
+        ))
+      )}
+    </Box>
+  );
+};
+
+export default UserListPage;

@@ -1,32 +1,39 @@
 import { useState, useEffect } from 'react';
 import { socket } from '../../utils/socket';
+import api from '../../api/apiService';
 
-export const Chat = () => {
-  const [messages, setMessages] = useState<{ _id?: string; senderId: string; content: string; status?: string; timestamp?: Date }[]>([]);
+export const Chat = ({ chatId }: { chatId: string }) => {
+  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [chatId] = useState('12345'); // Replace with dynamic chat ID
+  const userId = localStorage.getItem('userId'); // Get the logged-in user ID
 
   useEffect(() => {
     socket.on('receiveMessage', (message) => {
       setMessages((prev) => [...prev, message]);
     });
 
-    socket.on('messageStatusUpdated', ({ messageId, status }) => {
-      setMessages((prev) =>
-        prev.map((msg) => (msg._id === messageId ? { ...msg, status } : msg))
-      );
-    });
+    const fetchMessages = async () => {
+      try {
+        const response = await api.get(`/chat/messages/${chatId}`);
+        setMessages(response.data.messages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
 
     return () => {
       socket.off('receiveMessage');
-      socket.off('messageStatusUpdated');
     };
-  }, []);
+  }, [chatId]);
 
   const sendMessage = () => {
+    if (!userId || !newMessage.trim()) return;
+
     const messageData = {
       chatId,
-      senderId: 'user-id',
+      senderId: userId,
       content: newMessage,
     };
 
@@ -79,10 +86,9 @@ export const Chat = () => {
             key={index}
             style={{
               alignSelf:
-                message.senderId === 'user-id' ? 'flex-end' : 'flex-start',
-              background:
-                message.senderId === 'user-id' ? '#0078FF' : '#F0F0F0',
-              color: message.senderId === 'user-id' ? '#fff' : '#000',
+                message.senderId === userId ? 'flex-end' : 'flex-start',
+              background: message.senderId === userId ? '#0078FF' : '#F0F0F0',
+              color: message.senderId === userId ? '#fff' : '#000',
               borderRadius: '12px',
               padding: '8px 12px',
               margin: '5px 0',

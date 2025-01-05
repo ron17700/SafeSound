@@ -5,17 +5,21 @@ import {
   TextField,
   CircularProgress,
   Card,
+  Button,
+  Modal,
 } from '@mui/material';
 import api, { API_BASE_URL } from '../../api/apiService';
-import { refreshAccessToken } from '../../api/apiLogic';
 import { showSwal } from '../shared/Swal';
 import { StatusCodes } from 'http-status-codes';
 import { AddRecordButton, ConfirmButton } from '../shared/styles/buttons';
 import { StyledHeader } from '../shared/styles/inputs';
+import { socket } from '../../utils/socket';
+import { Chat } from '../chat/Chat'; // Import Chat component
+import UserListPage from './UserListPage';
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
-  username: string;
+  userName: string;
   email: string;
   profileImage?: string | null;
 }
@@ -26,10 +30,19 @@ const UserProfilePage: React.FC = () => {
   const [updatedUsername, setUpdatedUsername] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const userImageUrl = `${API_BASE_URL}/${(
     userProfile?.profileImage || ''
   ).replace(/\\/g, '/')}`;
+
+  const [isUserListOpen, setIsUserListOpen] = useState(false);
+  const [chatId, setChatId] = useState<string | null>(null);
+
+  const handleUserSelect = (selectedChatId: string) => {
+    setChatId(selectedChatId);
+    setIsUserListOpen(false); // Close the modal after selecting a user
+  };
 
   const fetchUserProfile = async () => {
     try {
@@ -92,7 +105,6 @@ const UserProfilePage: React.FC = () => {
         setUpdatedUsername('');
 
         await fetchUserProfile();
-        await refreshAccessToken();
         window.dispatchEvent(new Event('storage'));
       } else {
         console.error('Failed to update profile');
@@ -100,6 +112,15 @@ const UserProfilePage: React.FC = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
     }
+  };
+
+  const startChat = () => {
+    socket.emit('joinChat', {
+      userId: localStorage.getItem('userId'), // Pass current user ID
+      targetUserId: '6775bace8615640a0f2b34f5', // Target user ID
+    });
+
+    setIsChatOpen(true);
   };
 
   if (loading) {
@@ -177,7 +198,28 @@ const UserProfilePage: React.FC = () => {
         >
           Update Profile
         </AddRecordButton>
+
+        <Button variant="contained" onClick={() => setIsUserListOpen(true)}>
+          Open Chat with Others
+        </Button>
       </Card>
+
+      <Modal open={isUserListOpen} onClose={() => setIsUserListOpen(false)}>
+        <Box
+          style={{
+            backgroundColor: 'white',
+            padding: '16px',
+            margin: 'auto',
+            marginTop: '10%',
+            borderRadius: '8px',
+            maxWidth: '500px',
+          }}
+        >
+          <UserListPage onSelectUser={handleUserSelect} />
+        </Box>
+      </Modal>
+
+      {chatId && <Chat chatId={chatId} />}
     </Box>
   );
 };
