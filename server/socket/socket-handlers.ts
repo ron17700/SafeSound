@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import Chat from '../models/chat.model';
+import mongoose from 'mongoose';
 
 export const setupSocketHandlers = (io: Server) => {
     io.on('connection', (socket: Socket) => {
@@ -10,25 +11,37 @@ export const setupSocketHandlers = (io: Server) => {
             let chat = await Chat.findOne({ participants: { $all: [userId, targetUserId] } });
 
             if (!chat) {
-                // If chat doesn't exist, create one
                 chat = await Chat.create({
                     participants: [userId, targetUserId],
                     messages: [],
                 });
             }
 
-            socket.join(chat._id.toString());  // User joins the room for this chat
-            socket.emit('chatJoined', { chatId: chat._id.toString() });  // Emit the chat ID to the client
+            socket.join(chat._id.toString());
+            socket.emit('chatJoined', { chatId: chat._id.toString() });
+
+            // If the user joining is not the sender of the messages, mark their messages as read
+            if (userId !== targetUserId) {
+                chat.messages.forEach((message) => {
+                    if (message.sender === targetUserId) {
+                        message.status = 'read'; // Mark only the other user's messages as read
+                    }
+                });
+
+                await chat.save();
+                io.to(chat._id.toString()).emit('messageStatusUpdated', chat.messages);
+            }
         });
 
         // Handle sending a message
         socket.on('sendMessage', async ({ chatId, senderId, content }) => {
-            const message = { sender: senderId, content, timestamp: new Date(), status: 'sent' };
+            const message = { _id: new mongoose.Types.ObjectId(), sender: senderId, content, timestamp: new Date(), status: 'sent' };
 
             try {
                 const updatedChat = await Chat.findByIdAndUpdate(
                     chatId,
-                    { $push: { messages: message },
+                    {
+                        $push: { messages: message },
                         lastMessage: content,
                         lastUpdated: new Date(),
                     },
@@ -36,7 +49,14 @@ export const setupSocketHandlers = (io: Server) => {
                 );
 
                 if (updatedChat) {
+                    // Emit the message to the recipients and immediately include the status
                     io.to(chatId).emit('receiveMessage', message);
+
+                    // Emit the status change immediately for the sender
+                    io.to(chatId).emit('messageStatusUpdated', {
+                        messageId: message._id,
+                        status: 'sent',
+                    });
                 } else {
                     socket.emit('error', 'Chat not found');
                 }
@@ -45,7 +65,7 @@ export const setupSocketHandlers = (io: Server) => {
             }
         });
 
-        // find all messages in a chat
+        // Get all messages in a chat
         socket.on('getMessages', async ({ chatId }) => {
             try {
                 const chat = await Chat.findById(chatId);
@@ -59,6 +79,7 @@ export const setupSocketHandlers = (io: Server) => {
             }
         });
 
+        // Mark a message as read
         socket.on('markAsRead', async ({ chatId, messageId }) => {
             try {
                 const chat = await Chat.findById(chatId);
