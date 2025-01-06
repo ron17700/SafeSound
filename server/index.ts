@@ -16,7 +16,7 @@ dotenv.config({ path: path.join(__dirname, "./.env") });
 process.env.rootDir = __dirname;
 
 const PORT = process.env.PORT || 3001;
-const app = express();
+export const app = express();
 
 app.use(express.json());
 app.use(cors());
@@ -48,4 +48,6 @@ const start = async () => {
     });
 };
 
-start();
+if (require.main === module) {
+    start();
+}
