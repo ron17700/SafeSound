@@ -63,7 +63,9 @@ export const UserService = {
             {
                 $project: {
                     chats: 0,
-                    hasChats: 0
+                    hasChats: 0,
+                    password: 0,
+                    refreshToken: 0
                 }
             }
         ]);
