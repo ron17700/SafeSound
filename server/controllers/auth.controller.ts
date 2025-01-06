@@ -26,6 +26,7 @@ export const AuthController = {
     },
 
     async handleGoogleCallback(req: Request, res: Response, next: NextFunction) {
+        const redirectRoute = 'http://localhost:3000/auth/google/callback';
         const googleDefaultPass = 'NotNeededToSignInWithGoogle'
         const googleUser = req?.user as { email: string; userName: string; profileImage: string };
         if (!googleUser) {
@@ -36,7 +37,7 @@ export const AuthController = {
             if (existingUser) {
                 const response = await AuthService
                     .login({isGoogleUser: true, email: googleUser.email, password: googleDefaultPass })
-                return res.status(response.status).json(response.data);
+                res.redirect(`${redirectRoute}?accessToken=${response.data.accessToken}&refreshToken=${response.data.refreshToken}`);
             } else {
                 const registrationData = {
                     isGoogleUser: true,
@@ -50,9 +51,9 @@ export const AuthController = {
                 if (registerResponse.status === 201) {
                     const loginResponse = await AuthService
                         .login({ isGoogleUser: true, email: googleUser.email, password: googleDefaultPass });
-                    return res.status(loginResponse.status).json(loginResponse.data);
+                    res.redirect(`${redirectRoute}?accessToken=${loginResponse.data.accessToken}&refreshToken=${loginResponse.data.refreshToken}`);
                 }
-                return res.status(registerResponse.status).json(registerResponse.data);
+                res.redirect(`${redirectRoute}`);
             }
         } catch (err: any) {
             next(err);
