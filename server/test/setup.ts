@@ -37,15 +37,18 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   try {
-    const password = await bcrypt.hash('securePassword123', 10);
+    const existingUser = await User.findOne({ email: 'testuser@example.com' });
+    if (!existingUser) {
+      const password = await bcrypt.hash('securePassword123', 10);
 
-    await User.create<Partial<IUser>>({
-      _id: userId,
-      userName: 'testuser',
-      email: 'testuser@example.com',
-      password,
-      refreshToken,
-    });
+      await User.create<Partial<IUser>>({
+        _id: userId,
+        userName: 'testuser',
+        email: 'testuser@example.com',
+        password,
+        refreshToken,
+      });
+    }
   } catch (error) {
     console.error('Error inserting mock user:', error);
     throw error;

@@ -2,7 +2,7 @@ import {Chunk, IChunk, IChunkScheme, Status} from '../models/chunk.model';
 import {taskQueue} from "../index";
 
 export const ChunkService = {
-    async addChunk(recordId: string, chunkData: IChunk, audioFilePath: String) {
+    async addChunk(recordId: string, chunkData: IChunk, audioFilePath: string) {
         const newChunk = new Chunk({
             recordId: recordId,
             startTime: chunkData.startTime,
@@ -41,7 +41,7 @@ export const ChunkService = {
             return await Chunk.findById(id);
         } catch (error) {
             console.error('Error getting chunk', error);
-            throw new Error('Error deleting chunk');
+            throw new Error('Error getting chunk');
         }
     },
 
