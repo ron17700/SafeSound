@@ -39,5 +39,35 @@ export const UserService = {
             throw new Error('User not found');
         }
         return Record.find({_id: {$in: user.favRecords}});
+    },
+
+    async getAllUsers() {
+        return User.aggregate([
+            {
+                $lookup: {
+                    from: 'chats',
+                    localField: '_id',
+                    foreignField: 'participants',
+                    as: 'chats'
+                }
+            },
+            {
+                $addFields: {
+                    hasChats: { $gt: [{ $size: '$chats' }, 0] },
+                    lastUpdated: { $max: '$chats.lastUpdated' }
+                }
+            },
+            {
+                $sort: { lastUpdated: -1 }
+            },
+            {
+                $project: {
+                    chats: 0,
+                    hasChats: 0,
+                    password: 0,
+                    refreshToken: 0
+                }
+            }
+        ]);
     }
 };
