@@ -27,9 +27,8 @@ const UserProfilePage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const userImageUrl = `${API_BASE_URL}/${(
-    userProfile?.profileImage || ''
-  ).replace(/\\/g, '/')}`;
+  const userImageUrl= userProfile?.profileImage?.startsWith('http') ? userProfile?.profileImage
+      : (`${API_BASE_URL}/${(userProfile?.profileImage || '').replace(/\\/g, '/')}`)
 
   const fetchUserProfile = async () => {
     try {
