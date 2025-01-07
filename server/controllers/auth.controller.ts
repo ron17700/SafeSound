@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from '../services/auth.service';
+import {AuthService, RegisterData} from '../services/auth.service';
 import {UserService} from "../services/user.service";
+import {saveImageFromUrl} from "../services/Image-fetcher";
 
 export const AuthController = {
     async register(req: Request, res: Response, next: NextFunction) {
@@ -37,21 +38,21 @@ export const AuthController = {
             if (existingUser) {
                 const response = await AuthService
                     .login({isGoogleUser: true, email: googleUser.email, password: googleDefaultPass })
-                res.redirect(`${redirectRoute}?accessToken=${response.data.accessToken}&refreshToken=${response.data.refreshToken}`);
+                return res.redirect(`${redirectRoute}?accessToken=${response.data.accessToken}&refreshToken=${response.data.refreshToken}`);
             } else {
-                const registrationData = {
+                const registrationData: RegisterData ={
                     isGoogleUser: true,
                     userName: googleUser.userName,
                     email: googleUser.email,
                     password: googleDefaultPass,
-                    profileImage: googleUser.profileImage
                 };
-
+                const savedPath = await saveImageFromUrl(googleUser.profileImage);
+                if (savedPath) registrationData.profileImage = savedPath.toString();
                 const registerResponse = await AuthService.register(registrationData);
                 if (registerResponse.status === 201) {
                     const loginResponse = await AuthService
                         .login({ isGoogleUser: true, email: googleUser.email, password: googleDefaultPass });
-                    res.redirect(`${redirectRoute}?accessToken=${loginResponse.data.accessToken}&refreshToken=${loginResponse.data.refreshToken}`);
+                    return res.redirect(`${redirectRoute}?accessToken=${loginResponse.data.accessToken}&refreshToken=${loginResponse.data.refreshToken}`);
                 }
                 res.redirect(`${redirectRoute}`);
             }
