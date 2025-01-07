@@ -15,7 +15,7 @@ import {
   StyledDiv,
 } from '../shared/styles/wrappers';
 import { Card } from '../shared/styles/cards';
-import { login } from '../../api/authApi';
+import {login, loginWithGoogle} from '../../api/authApi';
 import { StyledForm } from '../shared/styles/forms';
 import { showSwal } from '../shared/Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
@@ -58,6 +58,19 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
     }
   };
 
+  const handleLoginWithGoogle = async (event) => {
+    event.preventDefault();
+    try {
+      await loginWithGoogle();
+    } catch (error: any) {
+      console.error(
+          'Error during login:',
+          error.response?.data || error.message
+      );
+      showSwal('Login failed!', 'error');
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -76,7 +89,7 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
 
       navigate('/');
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error('Login failed:', error);
     }
   };
 
@@ -164,10 +177,18 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
                   Log in
                 </StyledActiveButton>
                 <Divider>or</Divider>
+                <StyledPassiveButton
+                    type="submit"
+                    fullWidth
+                    variant="outlined"
+                    onClick={handleLoginWithGoogle}
+                >
+                  Continue with Google
+                </StyledPassiveButton>
                 <Link to="/register">
-                  <StyledPassiveButton fullWidth variant="outlined">
+                  <span>
                     Sign up
-                  </StyledPassiveButton>
+                  </span>
                 </Link>
               </StyledBox>
             </StyledDiv>

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from '../services/auth.service';
+import {AuthService, RegisterData} from '../services/auth.service';
 import {UserService} from "../services/user.service";
+import {saveImageFromUrl} from "../services/Image-fetcher";
 
 export const AuthController = {
     async register(req: Request, res: Response, next: NextFunction) {
@@ -26,6 +27,7 @@ export const AuthController = {
     },
 
     async handleGoogleCallback(req: Request, res: Response, next: NextFunction) {
+        const redirectRoute = 'http://localhost:3000/auth/google/callback';
         const googleDefaultPass = 'NotNeededToSignInWithGoogle'
         const googleUser = req?.user as { email: string; userName: string; profileImage: string };
         if (!googleUser) {
@@ -36,23 +38,23 @@ export const AuthController = {
             if (existingUser) {
                 const response = await AuthService
                     .login({isGoogleUser: true, email: googleUser.email, password: googleDefaultPass })
-                return res.status(response.status).json(response.data);
+                return res.redirect(`${redirectRoute}?accessToken=${response.data.accessToken}&refreshToken=${response.data.refreshToken}`);
             } else {
-                const registrationData = {
+                const registrationData: RegisterData ={
                     isGoogleUser: true,
                     userName: googleUser.userName,
                     email: googleUser.email,
                     password: googleDefaultPass,
-                    profileImage: googleUser.profileImage
                 };
-
+                const savedPath = await saveImageFromUrl(googleUser.profileImage);
+                if (savedPath) registrationData.profileImage = savedPath.toString();
                 const registerResponse = await AuthService.register(registrationData);
                 if (registerResponse.status === 201) {
                     const loginResponse = await AuthService
                         .login({ isGoogleUser: true, email: googleUser.email, password: googleDefaultPass });
-                    return res.status(loginResponse.status).json(loginResponse.data);
+                    return res.redirect(`${redirectRoute}?accessToken=${loginResponse.data.accessToken}&refreshToken=${loginResponse.data.refreshToken}`);
                 }
-                return res.status(registerResponse.status).json(registerResponse.data);
+                res.redirect(`${redirectRoute}`);
             }
         } catch (err: any) {
             next(err);

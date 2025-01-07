@@ -33,9 +33,8 @@ const UserProfilePage: React.FC = () => {
   const [chatId, setChatId] = useState<string | null>(null);
   const [isUserListOpen, setIsUserListOpen] = useState(false);
 
-  const userImageUrl = `${API_BASE_URL}/${(
-    userProfile?.profileImage || ''
-  ).replace(/\\/g, '/')}`;
+  const userImageUrl= userProfile?.profileImage?.startsWith('http') ? userProfile?.profileImage
+      : (`${API_BASE_URL}/${(userProfile?.profileImage || '').replace(/\\/g, '/')}`)
 
   const handleUserSelect = (selectedChatId: string) => {
     setChatId(selectedChatId);

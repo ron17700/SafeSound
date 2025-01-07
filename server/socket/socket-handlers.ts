@@ -1,26 +1,24 @@
 import { Server, Socket } from 'socket.io';
-import Chat from '../models/chat.model';
+import Chat, {IChat} from '../models/chat.model';
 import mongoose from 'mongoose';
 
 export const setupSocketHandlers = (io: Server) => {
     io.on('connection', (socket: Socket) => {
         console.log('a user connected');
 
-        // Handle user joining a chat
         socket.on('joinChat', async ({ userId, targetUserId }) => {
-            let chat = await Chat.findOne({ participants: { $all: [userId, targetUserId] } });
+            let chat: IChat | null = await Chat.findOne({ participants: { $all: [userId, targetUserId] } }).exec();
 
             if (!chat) {
                 chat = await Chat.create({
                     participants: [userId, targetUserId],
                     messages: [],
-                });
+                })
             }
 
             socket.join(chat._id.toString());
             socket.emit('chatJoined', { chatId: chat._id.toString() });
 
-            // If the user joining is not the sender of the messages, mark their messages as read
             if (userId !== targetUserId) {
                 chat.messages.forEach((message) => {
                     if (message.sender === targetUserId) {
@@ -33,14 +31,13 @@ export const setupSocketHandlers = (io: Server) => {
             }
         });
 
-        // Handle sending a message
         socket.on('sendMessage', async ({ chatId, senderId, content }) => {
             const message = { _id: new mongoose.Types.ObjectId(), sender: senderId, content, timestamp: new Date(), status: 'sent' };
 
             try {
                 const updatedChat = await Chat.findByIdAndUpdate(
                     chatId,
-                    { 
+                    {
                         $push: { messages: message },
                         lastMessage: content,
                         lastUpdated: new Date(),
@@ -52,7 +49,6 @@ export const setupSocketHandlers = (io: Server) => {
                     // Emit the message to the recipients and immediately include the status
                     io.to(chatId).emit('receiveMessage', message);
 
-                    // Emit the status change immediately for the sender
                     io.to(chatId).emit('messageStatusUpdated', {
                         messageId: message._id,
                         status: 'sent',
@@ -65,7 +61,6 @@ export const setupSocketHandlers = (io: Server) => {
             }
         });
 
-        // Get all messages in a chat
         socket.on('getMessages', async ({ chatId }) => {
             try {
                 const chat = await Chat.findById(chatId);
@@ -82,12 +77,12 @@ export const setupSocketHandlers = (io: Server) => {
         // Mark a message as read
         socket.on('markAsRead', async ({ chatId, messageId }) => {
             try {
-                const chat = await Chat.findById(chatId);
+                const chat: IChat | null = await Chat.findById(chatId).exec();
                 if (!chat) {
                     return socket.emit('error', 'Chat not found');
                 }
 
-                const message = chat.messages.id(messageId);
+                const message = chat.messages.find(message => message._id === messageId);
                 if (message) {
                     message.status = 'read';
                     await chat.save();

@@ -33,10 +33,8 @@ const Layout: React.FC = () => {
       const token = localStorage.getItem('accessToken');
       if (token) {
         const profileImagePath = parseAccessTokenToPayload(token).profileImage;
-        const userImage = `${API_BASE_URL}/${profileImagePath.replace(
-          /\\/g,
-          '/'
-        )}`;
+        const userImage = profileImagePath?.startsWith('http') ? profileImagePath
+            : `${API_BASE_URL}/${profileImagePath.replace(/\\/g, '/')}`;
         setUserImageUrl(userImage);
       }
     };

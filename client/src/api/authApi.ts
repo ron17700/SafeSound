@@ -12,6 +12,10 @@ export const login = async (email: string, password: string) => {
   });
 };
 
+export const loginWithGoogle = async () => {
+  window.open(`${API_BASE_URL}/auth/login/google`, "_self");
+};
+
 export const logout = async (refreshToken: string) => {
   try {
     const response = await api.post(`${API_BASE_URL}/auth/logout`, {
