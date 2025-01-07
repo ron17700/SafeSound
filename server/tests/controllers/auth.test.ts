@@ -1,6 +1,6 @@
 import request from 'supertest';
 import bcrypt from 'bcrypt';
-import {app} from '../../index';
+import app from '../../index';
 import User, { IUser } from '../../models/user.model';
 import { token, refreshToken, userId } from '../setup';
 

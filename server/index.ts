@@ -63,3 +63,5 @@ const start = async () => {
 if (require.main === module) {
     start();
 }
+
+export default app;

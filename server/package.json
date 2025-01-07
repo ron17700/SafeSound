@@ -8,10 +8,10 @@
   "scripts": {
     "start:dev": "npx nodemon",
     "start": "npx ts-node index.ts",
-    "test-code": "ts-node ./test-code.ts",
     "build": "rimraf ./dist && tsc -p ./tsconfig.json",
     "start:prod": "node index.js",
-    "test": "cp .env jest && jest --detectOpenHandles --forceExit --runInBand"
+    "test": "ts-node ./node_modules/jest/bin/jest.js --config jest.config.ts --coverage --detectOpenHandles --forceExit",
+    "test:watch": "ts-node ./node_modules/jest/bin/jest.js --config jest.config.ts --watchAll --coverage --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "@speechmatics/batch-client": "^5.0.1",

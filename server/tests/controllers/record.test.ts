@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app } from '../../index';
+import app from '../../index';
 import {IRecord, Record} from '../../models/record.model';
 import { token, userId } from '../setup';
 // import {ChunkService} from "../../services/chunk.service";

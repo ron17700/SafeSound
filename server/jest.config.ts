@@ -1,7 +1,12 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-export default {
-    preset: "ts-jest",
-    testEnvironment: "node",
-    roots: ["<rootDir>"],
+import type { Config } from 'jest';
+
+const config: Config = {
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    setupFilesAfterEnv: ['./tests/setup.ts'],
+    collectCoverage: true,
+    coverageDirectory: 'coverage',
+    coverageReporters: ['text', 'html'],
 };
 
+export default config;
