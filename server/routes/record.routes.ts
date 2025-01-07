@@ -18,4 +18,5 @@ router.get('/:recordId/chunk', [isAuthorized, ChunkController.getAllChunks]);
 router.get('/:recordId/chunk/:id', [isAuthorized, ChunkController.getChunk]);
 router.post('/:recordId/chunk', [isAuthorized, uploadController.upload, uploadController.verifyUpload, isAuthorized, ChunkController.addChunk]);
 
+router.post('/:recordId/chunk/:id/comment', [isAuthorized, ChunkController.addCommentToChunk]);
 export default router;

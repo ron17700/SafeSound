@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import Chat from '../models/chat.model';
+import Chat, {IChat} from '../models/chat.model';
 import mongoose from 'mongoose';
 
 export const setupSocketHandlers = (io: Server) => {
@@ -7,13 +7,13 @@ export const setupSocketHandlers = (io: Server) => {
         console.log('a user connected');
 
         socket.on('joinChat', async ({ userId, targetUserId }) => {
-            let chat = await Chat.findOne({ participants: { $all: [userId, targetUserId] } });
+            let chat: IChat | null = await Chat.findOne({ participants: { $all: [userId, targetUserId] } }).exec();
 
             if (!chat) {
                 chat = await Chat.create({
                     participants: [userId, targetUserId],
                     messages: [],
-                });
+                })
             }
 
             socket.join(chat._id.toString());
@@ -75,12 +75,12 @@ export const setupSocketHandlers = (io: Server) => {
 
         socket.on('markAsRead', async ({ chatId, messageId }) => {
             try {
-                const chat = await Chat.findById(chatId);
+                const chat: IChat | null = await Chat.findById(chatId).exec();
                 if (!chat) {
                     return socket.emit('error', 'Chat not found');
                 }
 
-                const message = chat.messages.id(messageId);
+                const message = chat.messages.find(message => message._id === messageId);
                 if (message) {
                     message.status = 'read';
                     await chat.save();

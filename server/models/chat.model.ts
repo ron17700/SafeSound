@@ -1,18 +1,23 @@
-import mongoose from 'mongoose';
+import mongoose, {Document, Model, Schema} from 'mongoose';
+import {IUser} from "./user.model";
+import {IMessage} from "./message.model";
 
-const MessageSchema = new mongoose.Schema({
-    sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    content: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now },
-    status: { type: String, enum: ['sent', 'read'], default: 'sent' },
-});
+export interface IChat extends Document {
+    _id: Schema.Types.ObjectId;
+    participants: Array<IUser>;
+    messages: Array<IMessage>,
+    lastMessage: string
+    lastUpdated: Date;
+}
 
-const ChatSchema = new mongoose.Schema({
+const ChatSchema = new mongoose.Schema<IChat>({
     participants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    messages: [MessageSchema],
+    messages: [{type: mongoose.Schema.Types.ObjectId, ref: 'Message'}],
     lastMessage: { type: String },
     lastUpdated: { type: Date, default: Date.now },
 });
 
-const Chat = mongoose.model('Chat', ChatSchema);
+const Chat: Model<IChat> = mongoose.model('Chat', ChatSchema);
+
 export default Chat;
+

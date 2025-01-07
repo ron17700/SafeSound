@@ -561,6 +561,53 @@
           }
         }
       }
+    },
+    "/record/:recordId/chunk/:id/comment": {
+      "post": {
+        "summary": "Add a comment to a record's chunk",
+        "description": "This endpoint adds a comment to an existing record's chunk",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recordId",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the chunk",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "User comment on chunk",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChunkComment"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Comment posted successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -680,6 +727,15 @@
         },
         "audio": {
           "type": "string"
+        }
+      }
+    },
+    "ChunkComment": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "type": "string",
+          "example": "This is great summary!"
         }
       }
     }

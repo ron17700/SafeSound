@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import User, {IUser} from '../models/user.model';
 import {UserService} from "./user.service";
 
-interface RegisterData {
+export interface RegisterData {
     userName: string;
     email: string;
     password: string;
