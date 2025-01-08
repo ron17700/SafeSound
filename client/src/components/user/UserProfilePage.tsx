@@ -15,6 +15,7 @@ import { AddRecordButton, ConfirmButton } from '../shared/styles/buttons';
 import { StyledHeader } from '../shared/styles/inputs';
 import { Chat } from '../chat/Chat';
 import UserListPage from './UserListPage';
+import {refreshAccessToken} from "../../api/apiLogic";
 
 export interface UserProfile {
   _id: string;
@@ -103,6 +104,7 @@ const UserProfilePage: React.FC = () => {
         setUpdatedUsername('');
 
         await fetchUserProfile();
+        await refreshAccessToken();
         window.dispatchEvent(new Event('storage'));
       } else {
         console.error('Failed to update profile');
