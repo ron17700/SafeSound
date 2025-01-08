@@ -12,6 +12,7 @@ export interface IRecord extends Document {
         type: string;
         coordinates: [number, number];
     };
+    numberOfComments: number;
 }
 
 export type RecordObj ={
@@ -61,7 +62,12 @@ const RecordSchema = new Schema<IRecord>(
                 type: [Number],
                 required: false
             }
+        },
+        numberOfComments: {
+            type: Number,
+            default: 0
         }
+
     },
     {
         timestamps: true

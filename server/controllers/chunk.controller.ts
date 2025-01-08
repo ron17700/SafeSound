@@ -65,5 +65,17 @@ export const ChunkController  = {
         } catch (err: any) {
             next(err);
         }
+    },
+
+    async addCommentToChunk (req: Request, res: Response, next: NextFunction) {
+        try {
+            const { userId, comment } = req.body;
+            const recordId = req.params.recordId;
+            const chunkId = req.params.id;
+            const updatedChunk = await ChunkService.addCommentToChunk(userId, recordId, chunkId, comment);
+            res.json(updatedChunk);
+        } catch (err: any) {
+            next(err);
+        }
     }
 }

@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import {IMessage} from "./message.model";
 
 export enum Class {
     Natural = "Natural",
@@ -31,6 +32,8 @@ export interface IChunkScheme extends Document {
     chunkClass: Class;
     summary: string;
     audioFilePath: string;
+    messages: Array<IMessage>;
+    numberOfComments: number;
 }
 
 const ChunkScheme = new Schema<IChunkScheme>(
@@ -59,7 +62,15 @@ const ChunkScheme = new Schema<IChunkScheme>(
         audioFilePath: {
             type: String,
             required: true
-        }
+        },
+        numberOfComments: {
+            type: Number,
+            default: 0
+        },
+        messages: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Message'
+        }],
     }
 );
 

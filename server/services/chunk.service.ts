@@ -1,5 +1,7 @@
 import {Chunk, IChunk, IChunkScheme, Status} from '../models/chunk.model';
 import {taskQueue} from "../index";
+import Message, {IMessage} from "../models/message.model";
+import {IRecord, Record} from "../models/record.model";
 
 export const ChunkService = {
     async addChunk(recordId: string, chunkData: IChunk, audioFilePath: string) {
@@ -38,7 +40,15 @@ export const ChunkService = {
 
     async getChunk(id: string): Promise<IChunkScheme | null> {
         try {
-            return await Chunk.findById(id);
+            return await Chunk.findById(id)
+                .populate({
+                    path: 'messages',
+                    populate: {
+                        path: 'sender',
+                        select: 'userName profileImage',
+                    },
+                })
+                .exec();
         } catch (error) {
             console.error('Error getting chunk', error);
             throw new Error('Error getting chunk');
@@ -52,5 +62,34 @@ export const ChunkService = {
             console.error('Error getting chunk', error);
             throw new Error('Error deleting chunk');
         }
+    },
+
+    async addCommentToChunk(userId: string, recordId: string, chunkId: string, comment: string): Promise<IChunkScheme | null> {
+        const existingChunk: IChunkScheme | null = await Chunk.findById(chunkId).exec();
+        if (!existingChunk) {
+            throw new Error('Chunk not found!');
+        }
+        const existingRecord: IRecord | null = await Record.findById(existingChunk.recordId).exec();
+        if (!existingRecord) {
+            throw new Error('Record not found!');
+        }
+        if (existingRecord._id != recordId) {
+            throw new Error('Chunk is not associated with the record!')
+        }
+
+        if (existingRecord.public !== true) {
+            throw new Error('Unauthorized!');
+        }
+
+        const newMessage = new Message({
+            sender: userId,
+            content: comment,
+        });
+        const savedMessage = await newMessage.save();
+        existingChunk.messages.push(<IMessage>savedMessage._id);
+        existingChunk.numberOfComments +=1;
+        existingRecord.numberOfComments+=1;
+        await existingRecord.save();
+        return await existingChunk.save();
     },
 }
