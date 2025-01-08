@@ -44,7 +44,6 @@ export const setupSocketHandlers = (io: Server) => {
                 content: content,
             });
             await message.save();
-
             try {
                 const updatedChat = await Chat.findByIdAndUpdate(
                     chatId,
@@ -58,7 +57,9 @@ export const setupSocketHandlers = (io: Server) => {
 
                 if (updatedChat) {
                     // Emit the message to the recipients and immediately include the status
-                    io.to(chatId).emit('receiveMessage', message);
+                    const populatedMessage = await Message.findById(message._id)
+                        .populate({path: 'sender', select: 'userName profileImage'});
+                    io.to(chatId).emit('receiveMessage', populatedMessage);
 
                     io.to(chatId).emit('messageStatusUpdated', {
                         messageId: message._id,
