@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { socket } from '../../utils/socket';
 import { Box } from '@mui/material';
+import {UserProfile} from "../user/UserProfilePage";
 
 interface Message {
   _id: string;
-  sender: string;
+  sender: UserProfile;
   status: string;
   content: string;
-  timestamp: Date;
+  createdAt: Date;
 }
 
 export const Chat = ({
@@ -34,7 +35,7 @@ export const Chat = ({
       setMessages(fetchedMessages);
 
       const updatedMessages = fetchedMessages.map((message: Message) => {
-        if (message.sender !== userId && message.status !== 'read') {
+        if (message.sender._id !== userId && message.status !== 'read') {
           socket.emit('markAsRead', { chatId, messageId: message._id });
           return { ...message, status: 'read' };
         }
@@ -52,7 +53,7 @@ export const Chat = ({
         return prevMessages;
       });
 
-      if (message.sender !== userId) {
+      if (message.sender._id !== userId) {
         socket.emit('markAsRead', { chatId, messageId: message._id });
       }
     });
@@ -197,11 +198,11 @@ export const Chat = ({
         }}
       >
         {messages.map((message, index) => {
-          const messageDate = formatDate(message.timestamp);
+          const messageDate = formatDate(message.createdAt);
           return (
             <div key={index}>
               {index === 0 ||
-              formatDate(messages[index - 1].timestamp) !== messageDate ? (
+              formatDate(messages[index - 1].createdAt) !== messageDate ? (
                 <div
                   style={{
                     textAlign: 'center',
@@ -218,15 +219,15 @@ export const Chat = ({
                 style={{
                   display: 'flex',
                   justifyContent:
-                    message.sender === userId ? 'flex-end' : 'flex-start',
+                    message.sender._id === userId ? 'flex-end' : 'flex-start',
                   marginBottom: '5px',
                 }}
               >
                 <div
                   style={{
                     background:
-                      message.sender === userId ? '#103A49' : '#F0F0F0',
-                    color: message.sender === userId ? '#fff' : '#000',
+                      message.sender._id === userId ? '#103A49' : '#F0F0F0',
+                    color: message.sender._id === userId ? '#fff' : '#000',
                     borderRadius: '12px',
                     padding: '8px 12px',
                     maxWidth: '70%',
@@ -243,7 +244,7 @@ export const Chat = ({
                     }}
                   >
                     {message.status === 'read' ? '✓✓' : '✓'}
-                    {new Date(message.timestamp).toLocaleTimeString([], {
+                    {new Date(message.createdAt).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
