@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User, { IUser } from '../models/user.model';
 import bcrypt from "bcrypt";
+import taskQueueInstance, {TaskQueue} from "../services/task.queue";
 
 dotenv.config();
 
@@ -21,6 +22,9 @@ const testSetup = {
 };
 
 beforeAll(async () => {
+  const taskQueue = taskQueueInstance;
+  console.log('Task queue started: ', taskQueue);
+
   const testUri = process.env.MONGO_URI_TEST;
   if (!testUri) {
     throw new Error('MONGO_URI_TEST is not defined in the .env file');
@@ -33,6 +37,7 @@ beforeAll(async () => {
     console.error('Error connecting to the test database:', error);
     throw error;
   }
+
 });
 
 beforeEach(async () => {
