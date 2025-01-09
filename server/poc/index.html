@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Tone Analyzer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+            color: #333;
+        }
+
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            margin: 10px 0;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .tone-positive {
+            color: green;
+        }
+
+        .tone-neutral {
+            color: gray;
+        }
+
+        .tone-negative {
+            color: red;
+        }
+
+        .summary {
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>JSON Tone Analyzer</h1>
+        <div class="upload-section" style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin: auto; width: 100%;">
+            <label for="jsonFile" style="font-weight: bold;">Upload JSON File:</label>
+            <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                <input type="file" id="jsonFile" accept="application/json" style="opacity: 0; position: absolute; left: 0; right: 0; width: 200px; height: 100%; cursor: pointer;" onchange="displayFileName()">
+                <button type="button" style="width: 200px; background-color: #4A969D; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Choose File</button>
+                <span id="fileName" style="font-style: italic; color: gray;">No file chosen</span>
+            </div>
+            <button onclick="analyzeFile()" style="background-color: #103A49; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Analyze</button>
+        </div>
+        <div class="result" id="result" style="display:none;">
+            <p>Overall Tone: <span id="overallTone"></span></p>
+            <p class="summary">Summary: <span id="summary"></span></p>
+        </div>
+    </div>
+
+    <script>
+        function displayFileName() {
+            const fileInput = document.getElementById("jsonFile");
+            const fileNameSpan = document.getElementById("fileName");
+            if (fileInput.files.length > 0) {
+                fileNameSpan.textContent = fileInput.files[0].name; // Display the uploaded file name
+            } else {
+                fileNameSpan.textContent = "No file chosen";
+            }
+        }
+
+        function analyzeFile() {
+            const fileInput = document.getElementById('jsonFile');
+            const resultDiv = document.getElementById('result');
+            const overallToneElem = document.getElementById('overallTone');
+            const summaryElem = document.getElementById('summary');
+
+            if (!fileInput.files[0]) {
+                alert('Please upload a file first.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const json = JSON.parse(event.target.result);
+                    const analysis = analyzeToneAndWords(json);
+
+                    overallToneElem.textContent = analysis.overallTone;
+                    overallToneElem.className = `tone-${analysis.overallTone}`;
+                    summaryElem.textContent = analysis.summary || 'No summary available';
+
+                    resultDiv.style.display = 'block';
+                } catch (error) {
+                    alert('Invalid JSON file. Please check the format.');
+                }
+            };
+
+            reader.readAsText(fileInput.files[0]);
+        }
+
+        function analyzeToneAndWords(response) {
+            if (typeof response === 'string') {
+                throw new Error('Invalid response');
+            }
+
+            const segments = response?.sentiment_analysis?.segments;
+            const summary = response?.sentiment_analysis?.summary?.overall;
+
+            let overallTone = 'neutral';
+            if (summary) {
+                const summaryNegativeCount = summary?.negative_count || 0;
+                const summaryPositiveCount = summary?.positive_count || 0;
+                const summaryNeutralCount = summary?.neutral_count || 0;
+
+                if (summaryNeutralCount > summaryNegativeCount && summaryNeutralCount > summaryPositiveCount) {
+                    overallTone = 'neutral';
+                } else if (summaryPositiveCount > summaryNegativeCount) {
+                    overallTone = 'positive';
+                } else {
+                    overallTone = 'negative';
+                }
+            }
+
+            return {
+                overallTone,
+                summary: response.summary?.content,
+            };
+        }
+    </script>
+</body>
+
+</html>
