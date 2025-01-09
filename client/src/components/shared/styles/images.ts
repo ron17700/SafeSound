@@ -25,3 +25,15 @@ export const Logo = styled('img')(() => ({
   height: '5%',
   alignSelf: 'center',
 }));
+
+export const UserImage = styled('img')(() => ({
+  marginRight: '16px',
+  height: '50px',
+}));
+
+
+export const ProfileImage = styled('img')(() => ({
+  width: 150,
+  height: 150,
+  marginBottom: 2,
+}));

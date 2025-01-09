@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Card, CircularProgress } from '@mui/material';
+import { Typography, Card, CircularProgress } from '@mui/material';
 import api, { API_BASE_URL } from '../../api/apiService';
 import { socket } from '../../utils/socket';
 import { UserProfile } from './UserProfilePage';
+import { UsersContainer } from '../shared/styles/wrappers';
+import { UserImage } from '../shared/styles/images';
+import { UserCard } from '../shared/styles/cards';
 
 const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
   onSelectUser,
@@ -50,26 +53,7 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
   }
 
   return (
-    <Box
-      padding="16px"
-      sx={{
-        overflowY: 'auto',
-        height: '70vh',
-        '&::-webkit-scrollbar': {
-          width: '8px',
-        },
-        '&::-webkit-scrollbar-track': {
-          background: '#f1f1f1',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: '#888',
-          borderRadius: '10px',
-        },
-        '&::-webkit-scrollbar-thumb:hover': {
-          background: '#555',
-        },
-      }}
-    >
+    <UsersContainer>
       <Typography variant="h6" marginBottom={2}>
         Choose a user to chat with:
       </Typography>
@@ -77,30 +61,20 @@ const UserListPage: React.FC<{ onSelectUser: (chatId: string) => void }> = ({
         <Typography>No other users available for chat.</Typography>
       ) : (
         users.map((user) => (
-          <Card
-            key={user._id}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '16px',
-              padding: '16px',
-            }}
-            onClick={() => handleStartChat(user._id)}
-          >
-            <img
+          <UserCard key={user._id} onClick={() => handleStartChat(user._id)}>
+            <UserImage
               crossOrigin="anonymous"
               src={`${API_BASE_URL}/${(user.profileImage || '').replace(
                 /\\/g,
                 '/'
               )}`}
               alt="User Profile"
-              style={{ marginRight: '16px', height: '50px' }}
             />
             <Typography>{user.userName}</Typography>
-          </Card>
+          </UserCard>
         ))
       )}
-    </Box>
+    </UsersContainer>
   );
 };
 

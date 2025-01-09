@@ -6,10 +6,11 @@ import {
   ChatFooter,
   ChatHeader,
   ChatWrapper,
-  MessageBubble,
+  MessageContentWrapper,
   MessageDateWrapper,
-  MessagesWrapper,
+  MessageText,
   MessageTimestamp,
+  MessageWrapper,
 } from '../shared/styles/wrappers';
 import {
   CloseButton,
@@ -149,34 +150,13 @@ export const Chat = ({
               formatDate(messages[index - 1].createdAt) !== messageDate ? (
                 <MessageDateWrapper>{messageDate}</MessageDateWrapper>
               ) : null}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent:
-                    message.sender._id === userId ? 'flex-end' : 'flex-start',
-                  marginBottom: '5px',
-                }}
-              >
-                <div
-                  style={{
-                    background:
-                      message.sender._id === userId ? '#103A49' : '#F0F0F0',
-                    color: message.sender._id === userId ? '#fff' : '#000',
-                    borderRadius: '12px',
-                    padding: '8px 12px',
-                    maxWidth: '70%',
-                    wordWrap: 'break-word',
-                  }}
+              <MessageWrapper isCurrentUser={message.sender._id === userId}>
+                <MessageContentWrapper
+                  isCurrentUser={message.sender._id === userId}
                   onClick={() => markAsRead(message._id)}
                 >
-                  <p style={{ margin: 0 }}>{message.content}</p>
-                  <small
-                    style={{
-                      fontSize: '10px',
-                      display: 'block',
-                      textAlign: 'right',
-                    }}
-                  >
+                  <MessageText>{message.content}</MessageText>
+                  <MessageTimestamp>
                     {message.sender._id === userId && (
                       <>{message.status === 'read' ? '✓✓' : '✓'}</>
                     )}
@@ -184,9 +164,9 @@ export const Chat = ({
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                  </small>
-                </div>
-              </div>
+                  </MessageTimestamp>
+                </MessageContentWrapper>
+              </MessageWrapper>
             </div>
           );
         })}

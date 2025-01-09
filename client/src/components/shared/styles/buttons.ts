@@ -59,3 +59,22 @@ export const SendButton = styled('button')(() => ({
   borderRadius: '4px',
   cursor: 'pointer',
 }));
+
+export const UpdateButton = styled(AddRecordButton)(() => ({
+  marginTop: '16px',
+  width: '25vw',
+}));
+
+export const ChatButton = styled(ConfirmButton)(() => ({
+  position: 'absolute',
+  bottom: '20px',
+  right: '20px',
+  backgroundColor: '#4A969D',
+  padding: '10px 20px',
+}));
+
+export const StyledConfirmButton = styled(ConfirmButton)(() => ({
+  marginBottom: '8px',
+  width: '25vw',
+  textAlign: 'center',
+}));
