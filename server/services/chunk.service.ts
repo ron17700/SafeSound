@@ -17,7 +17,12 @@ export const ChunkService = {
             const result: IChunkScheme = await newChunk.save();
 
             // Add task to queue
-            taskQueue.addTask(result);
+            if (taskQueue && taskQueue.addTask) {
+                taskQueue.addTask(result);
+            } else {
+                console.error('taskQueue is not initialized');
+            }
+
             return result;
         } catch (error) {
             console.error('Error adding chunk', error);

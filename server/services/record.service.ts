@@ -16,7 +16,7 @@ export const RecordService = {
         return Record.findById(id);
     },
 
-    async addRecord(recordData: IRecord & { file: string, isPublic: boolean, longitude: number, latitude: number }) {
+    async addRecord(recordData: Partial<IRecord> & { file: string, isPublic: boolean, longitude: number, latitude: number }) {
         const { userId, name, file, isPublic, longitude, latitude } = recordData;
 
         if (!userId || !name) {

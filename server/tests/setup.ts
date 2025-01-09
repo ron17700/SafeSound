@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User, { IUser } from '../models/user.model';
 import bcrypt from "bcrypt";
-import taskQueueInstance, {TaskQueue} from "../services/task.queue";
+import taskQueueInstance from "../services/task.queue";
 
 dotenv.config();
 
@@ -42,14 +42,14 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   try {
-    const existingUser = await User.findOne({ email: 'testuser@example.com' });
+    const existingUser = await User.findById(userId);
     if (!existingUser) {
       const password = await bcrypt.hash('securePassword123', 10);
 
       await User.create<Partial<IUser>>({
         _id: userId,
         userName: 'testuser',
-        email: 'testuser@example.com',
+        email: `testuser${Date.now()}@example.com`,
         password,
         refreshToken,
       });

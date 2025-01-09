@@ -5,6 +5,11 @@ import User, { IUser } from '../../models/user.model';
 import { token, refreshToken, userId } from '../setup';
 
 describe('Authentication Controller Tests', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('should register a new user successfully', async () => {
         const res = await request(app)
             .post('/auth/register')

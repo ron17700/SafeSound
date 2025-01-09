@@ -18,6 +18,11 @@ export const RecordController  = {
             const id = req.params.id;
             const userId = req.body.userId;
             const record = await RecordService.getRecord(userId, id);
+
+            if (!record) {
+                return res.status(404).json({ message: 'Record not found' });
+            }
+
             res.json(record);
         } catch (err: any) {
             next(err);

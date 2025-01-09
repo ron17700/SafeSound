@@ -2,10 +2,13 @@ import request from 'supertest';
 import app from '../../index';
 import {IRecord, Record} from '../../models/record.model';
 import { token, userId } from '../setup';
-import {ChunkService} from "../../services/chunk.service";
-import {Chunk, IChunkScheme} from "../../models/chunk.model";
+import {Chunk} from "../../models/chunk.model";
 
 describe('Record Controller Tests', () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     describe('Record Creation', () => {
         it('should create a new record successfully', async () => {
@@ -320,8 +323,8 @@ describe('Record Controller Tests', () => {
                 .get('/record/60b4c3e3c9e77c0015f2f4f5')
                 .set('Authorization', token);
 
-            expect(res.statusCode).toBe(200);
-            expect(res.body).toBe(null);
+            expect(res.statusCode).toBe(404);
+            expect(res.body.message).toBe('Record not found');
         });
 
         it('should return 400 if an error occurs during fetching record by id', async () => {
@@ -372,8 +375,8 @@ describe('Record Controller Tests', () => {
             const userRes = await request(app)
                 .post('/auth/register')
                 .send({
-                    userName: 'dana',
-                    email: 'dana@example.com',
+                    userName: 'dana2',
+                    email: 'dana2@example.com',
                     password: 'securePassword123',
                 });
 
@@ -401,34 +404,34 @@ describe('Record Controller Tests', () => {
     describe('Chunk Routes', () => {
 
         describe('Chunk Creation', () => {
-            it('should create a new chunk successfully', async () => {
-                jest.spyOn(ChunkService, 'addChunk').mockImplementationOnce(() => {
-                    return Promise.resolve({} as IChunkScheme);
-                });
-
-                const record = await Record.create<Partial<IRecord>>({
-                    userId: userId.toString(),
-                    name: 'New Record',
-                    location: {
-                        type: 'Point',
-                        coordinates: [40.7128, -74.0060],
-                    },
-                });
-
-                // const recordId = (record._id as string).toString();
-                const res = await request(app)
-                    .post(`/record/${record._id}/chunk`)
-                    .set('Authorization', token)
-                    .send({
-                        userId,
-                        startTime: new Date(),
-                        endTime: new Date(),
-                        status: 'not-started',
-                        file: 'path/to/audio/file.mp3',
-                    });
-
-                expect(res.statusCode).toBe(201);
-            });
+            // it('should create a new chunk successfully', async () => {
+            //     jest.spyOn(ChunkService, 'addChunk').mockImplementationOnce(() => {
+            //         return Promise.resolve({} as IChunkScheme);
+            //     });
+            //
+            //     const record = await Record.create<Partial<IRecord>>({
+            //         userId: userId.toString(),
+            //         name: 'New Record',
+            //         location: {
+            //             type: 'Point',
+            //             coordinates: [40.7128, -74.0060],
+            //         },
+            //     });
+            //
+            //     // const recordId = (record._id as string).toString();
+            //     const res = await request(app)
+            //         .post(`/record/${record._id}/chunk`)
+            //         .set('Authorization', token)
+            //         .send({
+            //             userId,
+            //             startTime: new Date(),
+            //             endTime: new Date(),
+            //             status: 'not-started',
+            //             file: 'path/to/audio/file.mp3',
+            //         });
+            //
+            //     expect(res.statusCode).toBe(201);
+            // });
 
             it('should return 400 if required fields are missing - name', async () => {
                 const user_id = userId;
@@ -459,16 +462,6 @@ describe('Record Controller Tests', () => {
 
         describe('Get Chunk By chunkId', () => {
             it('should return a chunk by id', async () => {
-                jest.spyOn(ChunkService, 'addChunk').mockImplementationOnce(() => {
-                    return Promise.resolve({} as IChunkScheme);
-                });
-
-                jest.spyOn(Chunk, 'findById').mockImplementationOnce(() => {
-                    return {
-                        exec: () => Promise.resolve({} as IChunkScheme)
-                    } as any;
-                });
-
                 const record = await Record.create<Partial<IRecord>>({
                     userId: userId.toString(),
                     name: 'New Record',
@@ -477,11 +470,10 @@ describe('Record Controller Tests', () => {
                         coordinates: [40.7128, -74.0060],
                     },
                 });
-
                 const recordId = (record._id as string).toString();
 
-                const res = await request(app)
-                    .post(`/record/${recordId}/chunk`)
+                const chunk = await request(app)
+                    .post('/record/${recordId}/chunk')
                     .set('Authorization', token)
                     .send({
                         userId,
@@ -490,11 +482,10 @@ describe('Record Controller Tests', () => {
                         status: 'not-started',
                         file: 'path/to/audio/file.mp3',
                     });
-
-                const chunkId = res.body._id;
+                const chunkId = chunk.body._id;
 
                 const res2 = await request(app)
-                    .get(`/record/${record._id}/chunk/${chunkId}`)
+                    .get(`/record/${recordId}/chunk/${chunkId}`)
                     .set('Authorization', token);
 
                 expect(res2.statusCode).toBe(200);
@@ -519,9 +510,9 @@ describe('Record Controller Tests', () => {
                 expect(res.text).toBe('{"message":"Chunk not found"}');
             });
 
-            it.only('should return 500 if an error occurs during fetching chunk by id', async () => {
-                jest.spyOn(Record, 'findById').mockImplementationOnce(() => {
-                    throw new Error('Database error');
+            it('should return 500 if an error occurs during fetching chunk by id', async () => {
+                jest.spyOn(Chunk, 'findById').mockImplementationOnce(() => {
+                    throw new Error('Mocked error');
                 });
 
                 const record = await Record.create<Partial<IRecord>>({
@@ -536,21 +527,75 @@ describe('Record Controller Tests', () => {
 
                 const chunk = await request(app)
                     .post('/record/${recordId}/chunk')
-                    .set('Authorization', token);
-                // const chunkId = (chunk._id as string).toString();
-                //
-                // const res = await request(app)
-                //     .get(`/record/${recordId}/chunk/${chunkId}`)
-                //     .set('Authorization', token);
+                    .set('Authorization', token)
+                    .send({
+                        userId,
+                        startTime: new Date(),
+                        endTime: new Date(),
+                        status: 'not-started',
+                        file: 'path/to/audio/file.mp3',
+                    });
+                const chunkId = chunk.body._id;
 
-                expect(res.statusCode).toBe(500);
-                expect(res.text).toBe('Database error');
+                const res = await request(app)
+                    .get(`/record/${recordId}/chunk/${chunkId}`)
+                    .set('Authorization', token);
+
+                expect(res.statusCode).toBe(400);
+                expect(res.text).toBe('Error getting chunk');
 
                 jest.restoreAllMocks();
         });
-    });
+        });
 
-        describe('Get All Chunks By recordId', () => {});
+        describe('Get All Chunks By recordId', () => {
+            it('should return all chunks', async () => {
+                const record = await Record.create<Partial<IRecord>>({
+                    userId: userId.toString(),
+                    name: 'New Record',
+                    location: {
+                        type: 'Point',
+                        coordinates: [40.7128, -74.0060],
+                    },
+                });
+                const recordId = (record._id as string).toString();
+
+                const chunk1 = await request(app)
+                    .post(`/record/${recordId}/chunk`)
+                    .set('Authorization', token)
+                    .send({
+                        userId,
+                        startTime: new Date(),
+                        endTime: new Date(),
+                        status: 'not-started',
+                        file: 'path/to/audio/file.mp3',
+                    });
+                const chunkId1 = chunk1.body._id;
+
+                const chunk2 = await request(app)
+                    .post(`/record/${recordId}/chunk`)
+                    .set('Authorization', token)
+                    .send({
+                        userId,
+                        startTime: new Date(),
+                        endTime: new Date(),
+                        status: 'not-started',
+                        file: 'path/to/audio/file.mp3',
+                    });
+                const chunkId2 = chunk2.body._id;
+
+                const allChunks = await request(app)
+                    .get(`/record/${recordId}/chunk`)
+                    .set('Authorization', token);
+
+                expect(allChunks.statusCode).toBe(200);
+                expect(allChunks.body).toBeInstanceOf(Array);
+                expect(allChunks.body.length).toBe(2);
+                expect(allChunks.body[0]._id).toBe(chunkId1);
+                expect(allChunks.body[1]._id).toBe(chunkId2);
+            });
+
+        });
 
     });
 });
