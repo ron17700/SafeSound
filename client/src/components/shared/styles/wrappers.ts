@@ -112,3 +112,105 @@ export const StyledOverlay = {
 export const StyledToolbar = styled(Toolbar)(() => ({
   padding: '0px !important',
 }));
+
+export const MessagesWrapper = styled(Box)(() => ({
+  flex: 1,
+  padding: '10px',
+  overflowY: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: '#888',
+    borderRadius: '10px',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background: '#555',
+  },
+  zIndex: 10,
+}));
+
+export const MessageDateWrapper = styled('div')(() => ({
+  textAlign: 'center',
+  fontSize: '12px',
+  marginBottom: '8px',
+  color: '#888',
+  borderBottom: '1px solid #ddd',
+}));
+
+export const ChatHeader = styled('div')(() => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  backgroundColor: '#4A969D',
+  color: '#fff',
+  padding: '10px',
+  fontWeight: 'bold',
+  textAlign: 'center',
+}));
+
+export const ChatBody = styled(Box)(() => ({
+  flex: 1,
+  padding: '10px',
+  overflowY: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: '#888',
+    borderRadius: '10px',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background: '#555',
+  },
+}));
+
+export const ChatFooter = styled('div')(() => ({
+  display: 'flex',
+  borderTop: '1px solid #ddd',
+  padding: '10px',
+}));
+
+export const MessageBubble = styled('div')(
+  ({ isSender }: { isSender: boolean }) => ({
+    background: isSender ? '#103A49' : '#F0F0F0',
+    color: isSender ? '#fff' : '#000',
+    borderRadius: '12px',
+    padding: '8px 12px',
+    maxWidth: '70%',
+    wordWrap: 'break-word',
+    marginBottom: '5px',
+    alignSelf: isSender ? 'flex-end' : 'flex-start',
+  })
+);
+
+export const MessageTimestamp = styled('small')(() => ({
+  fontSize: '10px',
+  display: 'block',
+  textAlign: 'right',
+}));
+
+export const ChatWrapper = styled('div')(() => ({
+  position: 'fixed',
+  bottom: '90px',
+  right: '20px',
+  width: '400px',
+  height: '50vh',
+  background: '#fff',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+  zIndex: 10,
+}));

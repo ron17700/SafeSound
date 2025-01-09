@@ -31,3 +31,31 @@ export const AddRecordButton = styled(Button)(() => ({
   marginTop: '5px',
   backgroundColor: '#103A49',
 }));
+
+export const GoBackButton = styled(Button)(() => ({
+  background: 'transparent',
+  border: 'none',
+  color: '#fff',
+  fontSize: '16px',
+  cursor: 'pointer',
+  marginRight: 'auto',
+}));
+
+export const CloseButton = styled(Button)(() => ({
+  background: 'transparent',
+  border: 'none',
+  color: '#fff',
+  fontSize: '16px',
+  cursor: 'pointer',
+  marginLeft: '8px',
+}));
+
+export const SendButton = styled('button')(() => ({
+  marginLeft: '8px',
+  background: '#103A49',
+  color: '#fff',
+  border: 'none',
+  padding: '8px 12px',
+  borderRadius: '4px',
+  cursor: 'pointer',
+}));

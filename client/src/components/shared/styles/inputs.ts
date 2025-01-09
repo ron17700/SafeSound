@@ -44,3 +44,12 @@ export const StyledTitle = styled('div')(({ theme }) => ({
 export const PaddedTitle = styled(Typography)<TypographyProps>(() => ({
   marginTop: '20px',
 }));
+
+export const InputField = styled('input')(() => ({
+  flex: 1,
+  border: 'none',
+  outline: 'none',
+  padding: '8px',
+  borderRadius: '4px',
+  background: '#F9F9F9',
+}));

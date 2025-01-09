@@ -108,7 +108,7 @@ export const setupSocketHandlers = (io: Server) => {
                     return socket.emit('error', 'Chat not found');
                 }
 
-                const message = chat.messages.find(message => message._id === messageId);
+                const message = chat.messages.find((message: any) => message._id.toString() === messageId);
                 if (message) {
                     message.status = 'read';
                     await chat.save();

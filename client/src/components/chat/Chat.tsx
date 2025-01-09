@@ -1,7 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { socket } from '../../utils/socket';
-import { Box } from '@mui/material';
-import {UserProfile} from "../user/UserProfilePage";
+import { UserProfile } from '../user/UserProfilePage';
+import {
+  ChatBody,
+  ChatFooter,
+  ChatHeader,
+  ChatWrapper,
+  MessageBubble,
+  MessageDateWrapper,
+  MessagesWrapper,
+  MessageTimestamp,
+} from '../shared/styles/wrappers';
+import {
+  CloseButton,
+  GoBackButton,
+  SendButton,
+} from '../shared/styles/buttons';
+import { InputField } from '../shared/styles/inputs';
 
 interface Message {
   _id: string;
@@ -118,102 +133,21 @@ export const Chat = ({
   };
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '90px',
-        right: '20px',
-        width: '400px',
-        maxHeight: '500px',
-        background: '#fff',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        zIndex: 10,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: '#4A969D',
-          color: '#fff',
-          padding: '10px',
-          fontWeight: 'bold',
-          textAlign: 'center',
-        }}
-      >
-        <button
-          onClick={onGoBack}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: '#fff',
-            fontSize: '16px',
-            cursor: 'pointer',
-            marginRight: 'auto', 
-          }}
-        >
-          ←
-        </button>
-        <span style={{ alignSelf: 'center' }}>Chat</span>
-        <button
-          onClick={onClose}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: '#fff',
-            fontSize: '16px',
-            cursor: 'pointer',
-            marginLeft: '8px',
-          }}
-        >
-          ✕
-        </button>
-      </div>
+    <ChatWrapper>
+      <ChatHeader>
+        <GoBackButton onClick={onGoBack}>←</GoBackButton>
+        <span>Chat</span>
+        <CloseButton onClick={onClose}>✕</CloseButton>
+      </ChatHeader>
 
-      <Box
-        sx={{
-          flex: 1,
-          padding: '10px',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          '&::-webkit-scrollbar': {
-            width: '8px',
-          },
-          '&::-webkit-scrollbar-track': {
-            background: '#f1f1f1',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: '#888',
-            borderRadius: '10px',
-          },
-          '&::-webkit-scrollbar-thumb:hover': {
-            background: '#555',
-          },
-        }}
-      >
+      <ChatBody>
         {messages.map((message, index) => {
           const messageDate = formatDate(message.createdAt);
           return (
             <div key={index}>
               {index === 0 ||
               formatDate(messages[index - 1].createdAt) !== messageDate ? (
-                <div
-                  style={{
-                    textAlign: 'center',
-                    fontSize: '12px',
-                    marginBottom: '8px',
-                    color: '#888',
-                    borderBottom: '1px solid #ddd',
-                  }}
-                >
-                  {messageDate}
-                </div>
+                <MessageDateWrapper>{messageDate}</MessageDateWrapper>
               ) : null}
               <div
                 style={{
@@ -243,7 +177,9 @@ export const Chat = ({
                       textAlign: 'right',
                     }}
                   >
-                    {message.status === 'read' ? '✓✓' : '✓'}
+                    {message.sender._id === userId && (
+                      <>{message.status === 'read' ? '✓✓' : '✓'}</>
+                    )}
                     {new Date(message.createdAt).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit',
@@ -254,45 +190,19 @@ export const Chat = ({
             </div>
           );
         })}
-        <div ref={messagesEndRef} />
-      </Box>
 
-      <div
-        style={{
-          display: 'flex',
-          borderTop: '1px solid #ddd',
-          padding: '10px',
-        }}
-      >
-        <input
+        <div ref={messagesEndRef} />
+      </ChatBody>
+
+      <ChatFooter>
+        <InputField
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
-          style={{
-            flex: 1,
-            border: 'none',
-            outline: 'none',
-            padding: '8px',
-            borderRadius: '4px',
-            background: '#F9F9F9',
-          }}
         />
-        <button
-          onClick={sendMessage}
-          style={{
-            marginLeft: '8px',
-            background: '#103A49',
-            color: '#fff',
-            border: 'none',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
-          Send
-        </button>
-      </div>
-    </div>
+        <SendButton onClick={sendMessage}>Send</SendButton>
+      </ChatFooter>
+    </ChatWrapper>
   );
 };
