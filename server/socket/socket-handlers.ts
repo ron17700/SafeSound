@@ -1,13 +1,20 @@
 import { Server, Socket } from 'socket.io';
 import Chat, {IChat} from '../models/chat.model';
-import mongoose from 'mongoose';
+import Message from "../models/message.model";
 
 export const setupSocketHandlers = (io: Server) => {
     io.on('connection', (socket: Socket) => {
         console.log('a user connected');
 
         socket.on('joinChat', async ({ userId, targetUserId }) => {
-            let chat: IChat | null = await Chat.findOne({ participants: { $all: [userId, targetUserId] } }).exec();
+            let chat: IChat | null = await Chat.findOne({ participants: { $all: [userId, targetUserId] } })
+                .populate({
+                    path: 'messages',
+                    populate: {
+                        path: 'sender',
+                        select: 'userName profileImage',
+                    },
+                }).exec()
 
             if (!chat) {
                 chat = await Chat.create({
@@ -32,8 +39,11 @@ export const setupSocketHandlers = (io: Server) => {
         });
 
         socket.on('sendMessage', async ({ chatId, senderId, content }) => {
-            const message = { _id: new mongoose.Types.ObjectId(), sender: senderId, content, timestamp: new Date(), status: 'sent' };
-
+            const message = new Message({
+                sender: senderId,
+                content: content,
+            });
+            await message.save();
             try {
                 const updatedChat = await Chat.findByIdAndUpdate(
                     chatId,
@@ -46,7 +56,10 @@ export const setupSocketHandlers = (io: Server) => {
                 );
 
                 if (updatedChat) {
-                    io.to(chatId).emit('receiveMessage', message);
+                    // Emit the message to the recipients and immediately include the status
+                    const populatedMessage = await Message.findById(message._id)
+                        .populate({path: 'sender', select: 'userName profileImage'});
+                    io.to(chatId).emit('receiveMessage', populatedMessage);
 
                     io.to(chatId).emit('messageStatusUpdated', {
                         messageId: message._id,
@@ -62,7 +75,14 @@ export const setupSocketHandlers = (io: Server) => {
 
         socket.on('getMessages', async ({ chatId }) => {
             try {
-                const chat = await Chat.findById(chatId);
+                const chat: IChat | null = await Chat.findById(chatId)
+                    .populate({
+                        path: 'messages',
+                        populate: {
+                            path: 'sender',
+                            select: 'userName profileImage',
+                        },
+                    }).exec();
                 if (chat) {
                     socket.emit('messages', chat.messages);
                 } else {
@@ -73,14 +93,22 @@ export const setupSocketHandlers = (io: Server) => {
             }
         });
 
+        // Mark a message as read
         socket.on('markAsRead', async ({ chatId, messageId }) => {
             try {
-                const chat: IChat | null = await Chat.findById(chatId).exec();
+                const chat: IChat | null = await Chat.findById(chatId)
+                    .populate({
+                        path: 'messages',
+                        populate: {
+                            path: 'sender',
+                            select: 'userName profileImage',
+                        },
+                    }).exec();
                 if (!chat) {
                     return socket.emit('error', 'Chat not found');
                 }
 
-                const message = chat.messages.find(message => message._id === messageId);
+                const message = chat.messages.find((message: any) => message._id.toString() === messageId);
                 if (message) {
                     message.status = 'read';
                     await chat.save();
