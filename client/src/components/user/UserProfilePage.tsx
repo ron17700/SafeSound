@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box,
   Typography,
-  TextField,
   CircularProgress,
-  Card,
+  Modal,
 } from '@mui/material';
+import ChatIcon from '@mui/icons-material/Chat';
 import api, { API_BASE_URL } from '../../api/apiService';
-import { refreshAccessToken } from '../../api/apiLogic';
 import { showSwal } from '../shared/Swal';
 import { StatusCodes } from 'http-status-codes';
-import { AddRecordButton, ConfirmButton } from '../shared/styles/buttons';
-import { StyledHeader } from '../shared/styles/inputs';
+import { ChatButton, StyledConfirmButton, UpdateButton } from '../shared/styles/buttons';
+import { PreviewImage,  StyledUserTextField } from '../shared/styles/inputs';
+import { Chat } from '../chat/Chat';
+import UserListPage from './UserListPage';
+import {refreshAccessToken} from "../../api/apiLogic";
+import { ImagePreviewContainer, ProfileContainer, UserListModal } from '../shared/styles/wrappers';
+import { ProfileCard } from '../shared/styles/cards';
+import { ProfileImage } from '../shared/styles/images';
 
-interface UserProfile {
-  id: string;
-  username: string;
+export interface UserProfile {
+  _id: string;
+  userName: string;
   email: string;
   profileImage?: string | null;
 }
@@ -26,9 +30,18 @@ const UserProfilePage: React.FC = () => {
   const [updatedUsername, setUpdatedUsername] = useState<string>('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatId, setChatId] = useState<string | null>(null);
+  const [isUserListOpen, setIsUserListOpen] = useState(false);
 
   const userImageUrl= userProfile?.profileImage?.startsWith('http') ? userProfile?.profileImage
       : (`${API_BASE_URL}/${(userProfile?.profileImage || '').replace(/\\/g, '/')}`)
+
+  const handleUserSelect = (selectedChatId: string) => {
+    setChatId(selectedChatId);
+    setIsUserListOpen(false);
+    setIsChatOpen(true);
+  };
 
   const fetchUserProfile = async () => {
     try {
@@ -101,6 +114,15 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
+  const closeChat = () => {
+    setIsChatOpen(false);
+  };
+
+  const goBack = () => {
+    setIsChatOpen(false);
+    setIsUserListOpen(true);
+  };
+
   if (loading) {
     return <CircularProgress />;
   }
@@ -110,74 +132,52 @@ const UserProfilePage: React.FC = () => {
   }
 
   return (
-    <Box padding="16px" paddingTop="10vh" margin={'auto'}>
-      <Card
-        style={{
-          padding: '20px',
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          marginTop: '2vh',
-          height: '80vh',
-          width: '70vw',
-        }}
+    <ProfileContainer>
+    <ProfileCard>
+      <ProfileImage
+        crossOrigin="anonymous"
+        src={userImageUrl}
+        alt="User Profile"
+      />
+      <Typography variant="h6">{userProfile.email}</Typography>
+      <StyledUserTextField
+        label="Username"
+        variant="outlined"
+        value={updatedUsername}
+        onChange={(e) => setUpdatedUsername(e.target.value)}
+      />
+      <StyledConfirmButton component="label">
+        Upload Profile Picture
+        <input type="file" hidden onChange={handleFileChange} />
+      </StyledConfirmButton>
+      {imagePreview && (
+        <ImagePreviewContainer>
+          <Typography variant="body1">Selected Image Preview:</Typography>
+          <PreviewImage src={imagePreview} alt="Preview" />
+        </ImagePreviewContainer>
+      )}
+      <UpdateButton variant="contained" onClick={handleUpdateProfile}>
+        Update Profile
+      </UpdateButton>
+      <ChatButton
+        variant="contained"
+        onClick={() => setIsUserListOpen(true)}
+        startIcon={<ChatIcon />}
       >
-        <img
-          crossOrigin="anonymous"
-          src={userImageUrl}
-          alt="User Profile"
-          style={{ width: 150, height: 150, marginBottom: 2 }}
-        />
-        <Typography variant="h6">{userProfile.email}</Typography>
-        <TextField
-          label="Username"
-          variant="outlined"
-          value={updatedUsername}
-          onChange={(e) => setUpdatedUsername(e.target.value)}
-          sx={{
-            marginTop: 2,
-            marginBottom: 2,
-            width: '25vw',
-          }}
-        />
-        <ConfirmButton
-          variant="contained"
-          component="label"
-          sx={{ marginBottom: 1, width: '25vw', textAlign: 'center' }}
-        >
-          Upload Profile Picture
-          <input type="file" hidden onChange={handleFileChange} />
-        </ConfirmButton>
-        {imagePreview && (
-          <Box
-            marginTop={1}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-          >
-            <StyledHeader variant="body1">Selected Image Preview:</StyledHeader>
-            <img
-              src={imagePreview}
-              alt="Preview"
-              style={{
-                width: 125,
-                height: 125,
-                objectFit: 'cover',
-                borderRadius: '50%',
-                marginTop: '1vh',
-              }}
-            />
-          </Box>
-        )}
-        <AddRecordButton
-          sx={{ marginTop: 2, width: '25vw' }}
-          variant="contained"
-          onClick={handleUpdateProfile}
-        >
-          Update Profile
-        </AddRecordButton>
-      </Card>
-    </Box>
+        Open Chat with Others
+      </ChatButton>
+    </ProfileCard>
+
+    <Modal open={isUserListOpen} onClose={() => setIsUserListOpen(false)}>
+      <UserListModal>
+        <UserListPage onSelectUser={handleUserSelect} />
+      </UserListModal>
+    </Modal>
+
+    {isChatOpen && chatId && (
+      <Chat chatId={chatId} onClose={closeChat} onGoBack={goBack} />
+    )}
+  </ProfileContainer>
   );
 };
 

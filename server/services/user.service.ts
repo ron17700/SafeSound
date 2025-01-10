@@ -2,7 +2,6 @@ import User, {IUser} from '../models/user.model';
 import {Record} from '../models/record.model';
 
 export const UserService = {
-
     async getUserById(userId: string) {
         const user: IUser | null = await User.findById(userId);
         return user;
@@ -40,7 +39,6 @@ export const UserService = {
         }
         return Record.find({_id: {$in: user.favRecords}});
     },
-
     async getAllUsers() {
         return User.aggregate([
             {

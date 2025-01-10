@@ -44,3 +44,26 @@ export const StyledTitle = styled('div')(({ theme }) => ({
 export const PaddedTitle = styled(Typography)<TypographyProps>(() => ({
   marginTop: '20px',
 }));
+
+export const InputField = styled('input')(() => ({
+  flex: 1,
+  border: 'none',
+  outline: 'none',
+  padding: '8px',
+  borderRadius: '4px',
+  background: '#F9F9F9',
+}));
+
+export const StyledUserTextField = styled(TextField)(() => ({
+  marginTop: '16px',
+  marginBottom: '16px',
+  width: '25vw',
+}));
+
+export const PreviewImage = styled('img')(() => ({
+  width: 125,
+  height: 125,
+  objectFit: 'cover',
+  borderRadius: '50%',
+  marginTop: '1vh',
+}));

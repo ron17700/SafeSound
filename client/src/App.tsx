@@ -83,9 +83,6 @@ const App: React.FC = () => {
     );
   }
 
-  console.log('accessToken');
-  console.log(accessToken);
-
   return (
     <ThemeProvider theme={theme}>
       <Router>
