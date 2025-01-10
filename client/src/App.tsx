@@ -19,7 +19,7 @@ import theme from './styles/theme';
 import PublicRecordsPage from './components/records/PublicRecordsPage';
 import UserProfilePage from './components/user/UserProfilePage';
 import ChunkDetails from './components/chunks/list/item/ChunkDetails';
-import GoogleCallbackHandler from "./components/Auth/GoogleCallbackHandler";
+import GoogleCallbackHandler from './components/Auth/GoogleCallbackHandler';
 
 const SafeSoundLogo = new URL('./assets/images/SafeSound.png', import.meta.url)
   .href;
@@ -34,7 +34,6 @@ const App: React.FC = () => {
     };
 
     window.addEventListener('logout', handleLogoutEvent);
-
 
     return () => {
       window.removeEventListener('logout', handleLogoutEvent);
@@ -83,9 +82,6 @@ const App: React.FC = () => {
     );
   }
 
-  console.log('accessToken');
-  console.log(accessToken);
-
   return (
     <ThemeProvider theme={theme}>
       <Router>
@@ -118,9 +114,14 @@ const App: React.FC = () => {
               )
             }
           />
-          <Route path="/auth/google/callback" element={<GoogleCallbackHandler handleAccessToken={handleAccessToken} />} />
+          <Route
+            path="/auth/google/callback"
+            element={
+              <GoogleCallbackHandler handleAccessToken={handleAccessToken} />
+            }
+          />
 
-            <Route
+          <Route
             path="/records/public"
             element={
               accessToken ? (

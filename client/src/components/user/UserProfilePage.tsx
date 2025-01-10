@@ -13,9 +13,9 @@ import { StatusCodes } from 'http-status-codes';
 import { AddRecordButton, ConfirmButton } from '../shared/styles/buttons';
 import { StyledHeader } from '../shared/styles/inputs';
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
-  username: string;
+  userName: string;
   email: string;
   profileImage?: string | null;
 }

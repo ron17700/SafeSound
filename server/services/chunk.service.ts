@@ -57,12 +57,12 @@ export const ChunkService = {
 
     async getAllChunks(recordId: string): Promise<IChunkScheme[] | null> {
         try {
-            return await Chunk.find({ recordId }).sort({ timeStamp: 1 }).exec();
+          return await Chunk.find({ recordId }).sort({ timeStamp: 1 }).exec();
         } catch (error) {
-            console.error('Error getting chunk', error);
-            throw new Error('Error deleting chunk');
+          console.error('Error getting chunk', error);
+          throw new Error('Error deleting chunk');
         }
-    },
+      },
 
     async addCommentToChunk(userId: string, recordId: string, chunkId: string, comment: string): Promise<IChunkScheme | null> {
         const existingChunk: IChunkScheme | null = await Chunk.findById(chunkId).exec();
@@ -90,6 +90,14 @@ export const ChunkService = {
         existingChunk.numberOfComments +=1;
         existingRecord.numberOfComments+=1;
         await existingRecord.save();
-        return await existingChunk.save();
+        await existingChunk.save();
+
+        return await Chunk.findById(chunkId).populate({
+            path: 'messages',
+            populate: {
+                path: 'sender',
+                select: 'userName profileImage',
+            },
+        }).exec();
     },
 }

@@ -15,7 +15,13 @@ export const Card = styled(MuiCard)(({ theme }) => ({
   boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.1)',
 }));
 
-export const ChunkDetailsCard = styled(MuiCard)(({ theme }) => ({
+export const ChunkDetailsCard = styled(MuiCard)(() => ({
   padding: '20px',
-  maxHeight:'80vh'
+  maxHeight: '80vh',
+}));
+
+export const CommentsCard = styled(MuiCard)(() => ({
+  padding: '10px',
+  maxHeight: '80vh',
+  marginTop: '3vh',
 }));

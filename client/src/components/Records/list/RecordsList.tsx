@@ -22,9 +22,10 @@ interface Record {
   createdAt: string;
   updatedAt: string;
   name: string;
-  public?: boolean;
-  image?: string | null;
-  recordClass?: string;
+  public: boolean;
+  image: string | null;
+  recordClass: string;
+  numberOfComments: number;
   isFavorite?: boolean;
 }
 
@@ -65,7 +66,13 @@ const RecordsList: React.FC<RecordsListProps> = ({
           }}
         >
           <CardContent>
-            <ListItem onClick={() => navigate(`/records/${record._id}`)}>
+            <ListItem
+              onClick={() =>
+                navigate(`/records/${record._id}`, {
+                  state: { recordName: record.name },
+                })
+              }
+            >
               <ListItemAvatar>
                 {getClassIcon(record.recordClass)}
               </ListItemAvatar>
@@ -85,7 +92,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
               />
 
               <ListItemText
-                primary={record.name}
+                primary={`${record.name} (${record.numberOfComments})`}
                 secondary={`Created: ${new Date(
                   record.createdAt
                 ).toLocaleDateString()}`}

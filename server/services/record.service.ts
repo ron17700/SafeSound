@@ -159,6 +159,7 @@ export const RecordService = {
                 public: record.public,
                 createdAt: record.createdAt,
                 location: record.location,
+                numberOfComments: record.numberOfComments,
                 latitude: record.location ? record.location.coordinates[0] : 0,
                 longitude: record.location ? record.location.coordinates[1] : 0,
             })
