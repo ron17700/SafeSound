@@ -31,9 +31,13 @@ export const UserImage = styled('img')(() => ({
   height: '50px',
 }));
 
-
 export const ProfileImage = styled('img')(() => ({
   width: 150,
   height: 150,
   marginBottom: 2,
+}));
+
+export const GoogleIcon = styled('img')(() => ({
+  width: 20,
+  height: 20,
 }));

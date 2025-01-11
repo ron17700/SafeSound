@@ -6,6 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   StyledActiveButton,
+  StyledGoogleLoginButton,
   StyledPassiveButton,
 } from '../shared/styles/buttons';
 import { StyledHeader, StyledTextField } from '../shared/styles/inputs';
@@ -19,6 +20,7 @@ import { login, loginWithGoogle } from '../../api/authApi';
 import { StyledForm } from '../shared/styles/forms';
 import { showSwal } from '../shared/Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
+import { GoogleIcon } from '../shared/styles/images';
 
 const GoogleLogo = new URL(
   '../../assets/images/googleLogo.png',
@@ -176,36 +178,21 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
                 <StyledActiveButton
                   type="submit"
                   fullWidth
-                  variant="contained"
+                  variant="outlined"
                   onClick={validateInputs}
                 >
                   Log in
                 </StyledActiveButton>
                 <Divider>or</Divider>
-                <StyledPassiveButton
+                <StyledGoogleLoginButton
                   type="submit"
                   fullWidth
                   variant="outlined"
                   onClick={handleLoginWithGoogle}
-                  startIcon={
-                    <img
-                      src={GoogleLogo}
-                      alt="Google Icon"
-                      style={{ width: 20, height: 20 }}
-                    />
-                  }
-                  style={{
-                    borderColor: '#ddd',
-                    color: '#555',
-                    textTransform: 'none',
-                    fontWeight: 500,
-                    fontSize: '16px',
-                  
-                    padding: '10px 20px',
-                  }}
+                  startIcon={<GoogleIcon src={GoogleLogo} alt="Google Icon" />}
                 >
                   Continue with Google
-                </StyledPassiveButton>
+                </StyledGoogleLoginButton>
                 <Divider>or</Divider>
                 <Link to="/register">
                   <StyledPassiveButton fullWidth variant="outlined">

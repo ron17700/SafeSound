@@ -28,8 +28,8 @@ export const StyledUploadImage = styled('div')<StyledUploadImageProps>(
     padding: '10px',
     backgroundColor: isDragActive ? '#f0f8ff' : '#f9f9f9',
     textAlign: 'center',
-    marginTop: '10px',
-    marginBottom: '10px',
+    marginTop: '5px',
+    marginBottom: '5px',
     cursor: 'pointer',
   })
 );

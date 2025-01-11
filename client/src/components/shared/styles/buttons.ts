@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 
 export const StyledActiveButton = styled(Button)(({ theme }) => ({
   backgroundColor: '#79747E',
+  borderColor: '#ddd',
   color: '#FFFFFF',
   '&:hover': {
     backgroundColor: theme.palette.grey[600],
@@ -13,13 +14,21 @@ export const StyledActiveButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-export const StyledPassiveButton = styled(Button)(({ theme }) => ({
+export const StyledPassiveButton = styled(Button)(() => ({
   backgroundColor: 'white',
   border: 'none',
   color: '#555',
-  '&:hover': {
-    backgroundColor: theme.palette.grey[200],
-  },
+}));
+
+export const StyledGoogleLoginButton = styled(Button)(() => ({
+  backgroundColor: 'white',
+  border: 'none',
+  color: '#555',
+  borderColor: '#ddd',
+  textTransform: 'none',
+  fontWeight: 500,
+  fontSize: '16px',
+  padding: '10px 20px',
 }));
 
 export const ConfirmButton = styled(Button)<ButtonProps>(() => ({
