@@ -148,6 +148,7 @@ const Layout: React.FC = () => {
               alt="user image"
               style={{
                 width: '50px',
+                height: '50px',
                 borderRadius: '50%',
                 border: '1px solid #103A49',
                 marginRight: '1vw',

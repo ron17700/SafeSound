@@ -109,6 +109,7 @@ const RecordsPage: React.FC = () => {
         justifyContent="center"
         alignItems="center"
         height="100vh"
+        margin="auto"
       >
         <CircularProgress />
       </Box>
