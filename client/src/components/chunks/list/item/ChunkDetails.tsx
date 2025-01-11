@@ -70,9 +70,6 @@ const ChunkDetails: React.FC = () => {
         }
       );
 
-      console.log('response add comment');
-      console.log(response);
-
       if (response.status === StatusCodes.OK) {
         setChunk(response.data);
         setNewComment('');

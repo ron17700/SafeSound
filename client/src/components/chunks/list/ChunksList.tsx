@@ -67,9 +67,6 @@ const ChunksList: React.FC = () => {
     if (recordId) fetchChunks();
   }, [recordId]);
 
-  console.log('chunks');
-  console.log(chunks);
-
   const handleChunkClick = (chunk: Chunk) => {
     navigate(`/records/${recordId}/chunks/${chunk._id}`, {
       state: { chunkName: chunk.name },
