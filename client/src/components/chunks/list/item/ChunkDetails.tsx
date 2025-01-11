@@ -11,7 +11,12 @@ import {
 } from '@mui/material';
 import { API_BASE_URL } from '../../../../api/apiService';
 import { PageWrapper, SummaryWrapper } from '../../../shared/styles/wrappers';
-import { ChunkDetailsCard, CommentsCard } from '../../../shared/styles/cards';
+import {
+  ChunkContent,
+  ChunkDetailsCard,
+  CommentsCard,
+  CommentsContent,
+} from '../../../shared/styles/cards';
 import { StyledAudio } from '../../../shared/styles/audio';
 import api from '../../../../api/apiService';
 import { StatusCodes } from 'http-status-codes';
@@ -90,7 +95,7 @@ const ChunkDetails: React.FC = () => {
       ) : chunk ? (
         <>
           <ChunkDetailsCard>
-            <CardContent>
+            <ChunkContent>
               <Typography variant="h4" gutterBottom>
                 Chunk {chunkName} ({chunk.numberOfComments})
               </Typography>
@@ -117,12 +122,12 @@ const ChunkDetails: React.FC = () => {
               <SummaryWrapper>
                 <Typography variant="body2">{chunk.summary}</Typography>
               </SummaryWrapper>
-            </CardContent>
+            </ChunkContent>
           </ChunkDetailsCard>
 
           {isPublic && (
             <CommentsCard>
-              <CardContent>
+              <CommentsContent>
                 <Typography variant="h5" gutterBottom>
                   Comments
                 </Typography>
@@ -167,7 +172,7 @@ const ChunkDetails: React.FC = () => {
                     ))
                   )}
                 </List>
-                <Typography variant="h6" gutterBottom sx={{ marginTop: 2}}>
+                <Typography variant="h6" gutterBottom sx={{ marginTop: 2 }}>
                   Add a new comment
                 </Typography>
                 <TextField
@@ -179,7 +184,7 @@ const ChunkDetails: React.FC = () => {
                   disabled={sending}
                   multiline
                   rows={2}
-                  sx={{ marginBottom: 1}}
+                  sx={{ marginBottom: 1 }}
                 />
                 <AddRecordButton
                   variant="contained"
@@ -189,7 +194,7 @@ const ChunkDetails: React.FC = () => {
                 >
                   {sending ? 'Sending...' : 'Send'}
                 </AddRecordButton>
-              </CardContent>
+              </CommentsContent>
             </CommentsCard>
           )}
         </>

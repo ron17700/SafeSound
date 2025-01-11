@@ -1,3 +1,4 @@
+import { CardContent } from '@mui/material';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 
@@ -25,7 +26,7 @@ export const CommentsCard = styled(MuiCard)(() => ({
   padding: '10px',
   height: '47vh',
   marginTop: '2vh',
-  paddingBottom: '0vh'
+  paddingBottom: '0vh',
 }));
 
 export const UserCard = styled(MuiCard)(() => ({
@@ -45,4 +46,41 @@ export const ProfileCard = styled(MuiCard)(() => ({
   width: '65vw',
   position: 'relative',
   paddingBottom: '80px',
+}));
+
+export const ChunkContent = styled(CardContent)(() => ({
+  height: '29vh',
+  overflowY: 'auto',
+  padding: '2px',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: '#888',
+    borderRadius: '10px',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background: '#555',
+  },
+}));
+
+export const CommentsContent = styled(CardContent)(() => ({
+  height: '43vh',
+  overflowY: 'auto',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: '#888',
+    borderRadius: '10px',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background: '#555',
+  },
 }));
