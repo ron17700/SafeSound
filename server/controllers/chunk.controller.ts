@@ -10,32 +10,8 @@ export const ChunkController  = {
             if (!audioFilePath) {
                 throw new Error('Audio file is required');
             }
-            const chunk = ChunkService.addChunk(recordId, chunkData, audioFilePath);
+            const chunk = await ChunkService.addChunk(recordId, chunkData, audioFilePath);
             res.status(201).json(chunk);
-        } catch (err: any) {
-            next(err);
-        }
-    },
-
-    async updateChunk (req: Request, res: Response, next: NextFunction) {
-        try {
-            const updatedChunk = await ChunkService.updateChunk(req.params.id, req.body);
-            if (!updatedChunk) {
-                return res.status(404).json({ message: 'Chunk not found' });
-            }
-            res.json(updatedChunk);
-        } catch (err: any) {
-            next(err);
-        }
-    },
-
-    async deleteChunk (req: Request, res: Response, next: NextFunction) {
-        try {
-            const deletedChunk = await ChunkService.deleteChunk(req.params.id);
-            if (!deletedChunk) {
-                return res.status(404).json({ message: 'Chunk not found' });
-            }
-            res.json({ message: 'Chunk deleted successfully' });
         } catch (err: any) {
             next(err);
         }

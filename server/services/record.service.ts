@@ -1,4 +1,4 @@
-import {IRecord, Record} from '../models/record.model';
+import {IRecord, Record, RecordObj} from '../models/record.model';
 import { Chunk, Class } from '../models/chunk.model';
 import * as fs from "node:fs";
 import User from "../models/user.model";
@@ -16,8 +16,12 @@ export const RecordService = {
         return Record.findById(id);
     },
 
-    async addRecord(recordData: IRecord & { file: string, isPublic: boolean, longitude: number, latitude: number }) {
+    async addRecord(recordData: Partial<IRecord> & { file: string, isPublic: boolean, longitude: number, latitude: number }) {
         const { userId, name, file, isPublic, longitude, latitude } = recordData;
+
+        if (!userId || !name) {
+            throw new Error('Missing required fields');
+        }
 
         const newRecord = new Record({
             userId,
@@ -135,7 +139,7 @@ export const RecordService = {
             overallTone = Class.Bad;
         }
 
-        let record = await Record.findById(id);
+        const record = await Record.findById(id);
 
         if (!record) {
             throw new Error('Record not found');
@@ -148,7 +152,7 @@ export const RecordService = {
     async getAllPublicRecords(userId: string) {
         const records = await Record.find({ public: true, userId: { $ne: userId } }).populate('userId', '-password -refreshToken');
 
-        const recordObjs: any = [];
+        const recordObjs: Array<RecordObj> = [];
         records.forEach((record) => {
             recordObjs.push({
                 _id: record.id,

@@ -15,6 +15,21 @@ export interface IRecord extends Document {
     numberOfComments: number;
 }
 
+export type RecordObj ={
+    _id: string;
+    userId: string;
+    name?: string;
+    image?: string;
+    recordClass: Class;
+    public?: boolean;
+    createdAt: Date;
+    location?: {
+        type: string;
+        coordinates: [number, number];
+    };
+    latitude?: number;
+    longitude?: number;
+}
 const RecordSchema = new Schema<IRecord>(
     {
         userId: {

@@ -60,4 +60,8 @@ const start = async () => {
     });
 };
 
-start();
+if (require.main === module) {
+    start();
+}
+
+export default app;

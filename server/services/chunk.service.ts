@@ -4,7 +4,7 @@ import Message, {IMessage} from "../models/message.model";
 import {IRecord, Record} from "../models/record.model";
 
 export const ChunkService = {
-    async addChunk(recordId: string, chunkData: IChunk, audioFilePath: String) {
+    async addChunk(recordId: string, chunkData: IChunk, audioFilePath: string) {
         const newChunk = new Chunk({
             recordId: recordId,
             startTime: chunkData.startTime,
@@ -17,7 +17,12 @@ export const ChunkService = {
             const result: IChunkScheme = await newChunk.save();
 
             // Add task to queue
-            taskQueue.addTask(result);
+            if (taskQueue && taskQueue.addTask) {
+                taskQueue.addTask(result);
+            } else {
+                console.error('taskQueue is not initialized');
+            }
+
             return result;
         } catch (error) {
             console.error('Error adding chunk', error);
@@ -51,7 +56,7 @@ export const ChunkService = {
                 .exec();
         } catch (error) {
             console.error('Error getting chunk', error);
-            throw new Error('Error deleting chunk');
+            throw new Error('Error getting chunk');
         }
     },
 

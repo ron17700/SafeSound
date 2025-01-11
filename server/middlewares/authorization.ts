@@ -12,7 +12,7 @@ export const isAuthorized = async (req: Request, res: Response, next: NextFuncti
 
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-        const user = await User.findById(decodedToken.userId);
+        const user = await User.findOne({_id:decodedToken.userId});
         if (!user) {
             return res.status(403).json({ error: "Not Authorized!" });
         }
