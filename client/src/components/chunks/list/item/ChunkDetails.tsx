@@ -10,7 +10,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { API_BASE_URL } from '../../../../api/apiService';
-import { PageWrapper } from '../../../shared/styles/wrappers';
+import { PageWrapper, SummaryWrapper } from '../../../shared/styles/wrappers';
 import { ChunkDetailsCard, CommentsCard } from '../../../shared/styles/cards';
 import { StyledAudio } from '../../../shared/styles/audio';
 import api from '../../../../api/apiService';
@@ -25,7 +25,7 @@ const ChunkDetails: React.FC = () => {
   }>();
   const location = useLocation();
 
-  const { chunkName } = location.state || '';
+  const { chunkName = '', isPublic = false } = location.state;
   const [chunk, setChunk] = useState<Chunk | null>(null);
   const [newComment, setNewComment] = useState('');
   const [sending, setSending] = useState(false);
@@ -114,91 +114,84 @@ const ChunkDetails: React.FC = () => {
               >
                 Summary:
               </Typography>
-              <div
-                style={{
-                  height: '10vh',
-                  border: '1px solid #ddd',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: '#f9f9f9',
-                  overflow: 'auto',
-                }}
-              >
+              <SummaryWrapper>
                 <Typography variant="body2">{chunk.summary}</Typography>
-              </div>
+              </SummaryWrapper>
             </CardContent>
           </ChunkDetailsCard>
 
-          <CommentsCard>
-            <CardContent>
-              <Typography variant="h5" gutterBottom>
-                Comments
-              </Typography>
-              <List
-                sx={{
-                  height: '20vh',
-                  overflow: 'auto',
-                  '&::-webkit-scrollbar': {
-                    width: '8px',
-                  },
-                  '&::-webkit-scrollbar-track': {
-                    background: '#f1f1f1',
-                  },
-                  '&::-webkit-scrollbar-thumb': {
-                    background: '#888',
-                    borderRadius: '10px',
-                  },
-                  '&::-webkit-scrollbar-thumb:hover': {
-                    background: '#555',
-                  },
-                }}
-              >
-                {chunk.messages.length === 0 ? (
-                  <Typography>No comments yet.</Typography>
-                ) : (
-                  chunk.messages.map((message) => (
-                    <ListItem key={message._id}>
-                      <ListItemText
-                        primary={message.content}
-                        secondary={`By ${
-                          message.sender?.userName
-                        } on ${new Date(
-                          message.createdAt
-                        ).toLocaleString()} at ${new Date(
-                          message.createdAt
-                        ).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}`}
-                      />
-                    </ListItem>
-                  ))
-                )}
-              </List>
-              <Typography variant="h6" gutterBottom sx={{ marginTop: 3 }}>
-                Add a new comment
-              </Typography>
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Write your comment..."
-                value={newComment}
-                onChange={handleCommentChange}
-                disabled={sending}
-                multiline
-                rows={2}
-                sx={{ marginBottom: 2 }}
-              />
-              <AddRecordButton
-                variant="contained"
-                color="primary"
-                onClick={handleSendComment}
-                disabled={sending}
-              >
-                {sending ? 'Sending...' : 'Send'}
-              </AddRecordButton>
-            </CardContent>
-          </CommentsCard>
+          {isPublic && (
+            <CommentsCard>
+              <CardContent>
+                <Typography variant="h5" gutterBottom>
+                  Comments
+                </Typography>
+                <List
+                  sx={{
+                    height: '15vh',
+                    overflow: 'auto',
+                    '&::-webkit-scrollbar': {
+                      width: '8px',
+                    },
+                    '&::-webkit-scrollbar-track': {
+                      background: '#f1f1f1',
+                    },
+                    '&::-webkit-scrollbar-thumb': {
+                      background: '#888',
+                      borderRadius: '10px',
+                    },
+                    '&::-webkit-scrollbar-thumb:hover': {
+                      background: '#555',
+                    },
+                  }}
+                >
+                  {chunk.messages.length === 0 ? (
+                    <Typography>No comments yet.</Typography>
+                  ) : (
+                    chunk.messages.map((message) => (
+                      <ListItem key={message._id}>
+                        <ListItemText
+                          primary={message.content}
+                          secondary={`By ${
+                            message.sender?.userName
+                          } on ${new Date(
+                            message.createdAt
+                          ).toLocaleDateString()} at ${new Date(
+                            message.createdAt
+                          ).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}`}
+                        />
+                      </ListItem>
+                    ))
+                  )}
+                </List>
+                <Typography variant="h6" gutterBottom sx={{ marginTop: 2}}>
+                  Add a new comment
+                </Typography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Write your comment..."
+                  value={newComment}
+                  onChange={handleCommentChange}
+                  disabled={sending}
+                  multiline
+                  rows={2}
+                  sx={{ marginBottom: 1}}
+                />
+                <AddRecordButton
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSendComment}
+                  disabled={sending}
+                >
+                  {sending ? 'Sending...' : 'Send'}
+                </AddRecordButton>
+              </CardContent>
+            </CommentsCard>
+          )}
         </>
       ) : (
         <Typography>No chunk data found</Typography>

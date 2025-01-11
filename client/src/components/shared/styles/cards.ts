@@ -1,4 +1,4 @@
-import MuiCard, { CardProps } from '@mui/material/Card';
+import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 
 export const Card = styled(MuiCard)(({ theme }) => ({
@@ -16,20 +16,22 @@ export const Card = styled(MuiCard)(({ theme }) => ({
 }));
 
 export const ChunkDetailsCard = styled(MuiCard)(() => ({
-  padding: '20px',
-  maxHeight: '80vh',
+  padding: '10px',
+  paddingBottom: '3vh',
+  height: '30vh',
 }));
 
 export const CommentsCard = styled(MuiCard)(() => ({
   padding: '10px',
-  maxHeight: '80vh',
-  marginTop: '3vh',
+  height: '47vh',
+  marginTop: '2vh',
+  paddingBottom: '0vh'
 }));
 
 export const UserCard = styled(MuiCard)(() => ({
   display: 'flex',
   alignItems: 'center',
-  marginBottom: '16px',
+  marginBottom: '10px',
   padding: '16px',
 }));
 
@@ -40,7 +42,7 @@ export const ProfileCard = styled(MuiCard)(() => ({
   flexDirection: 'column',
   marginTop: '2vh',
   height: '70vh',
-  width: '70vw',
+  width: '65vw',
   position: 'relative',
   paddingBottom: '80px',
 }));

@@ -41,7 +41,7 @@ const ChunksList: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { recordName } = location.state || '';
+  const { recordName = '', isPublic = '' } = location.state;
 
   const { id: recordId } = useParams<{ id: string }>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
@@ -69,7 +69,7 @@ const ChunksList: React.FC = () => {
 
   const handleChunkClick = (chunk: Chunk) => {
     navigate(`/records/${recordId}/chunks/${chunk._id}`, {
-      state: { chunkName: chunk.name },
+      state: { chunkName: chunk.name, isPublic: isPublic },
     });
   };
 
@@ -106,18 +106,26 @@ const ChunksList: React.FC = () => {
                   </ListItemAvatar>
                   <ListItemText
                     primary={`Chunk ${chunk.name} (${chunk.numberOfComments})`}
-                    secondary={`${new Date(chunk.startTime).toLocaleTimeString(
-                      'en-GB',
-                      {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                      }
-                    )} - ${new Date(chunk.endTime).toLocaleTimeString('en-GB', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      second: '2-digit',
-                    })}`}
+                    secondary={
+                      <>
+                        <div>{`${new Date(chunk.startTime).toLocaleTimeString(
+                          'en-GB',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                          }
+                        )} - ${new Date(chunk.endTime).toLocaleTimeString(
+                          'en-GB',
+                          {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                          }
+                        )}`}</div>
+                        <div>{`Comments: ${chunk.numberOfComments}`}</div>
+                      </>
+                    }
                   />
                 </ListItem>
               </CardContent>

@@ -15,7 +15,7 @@ import {
   StyledDiv,
 } from '../shared/styles/wrappers';
 import { Card } from '../shared/styles/cards';
-import {login, loginWithGoogle} from '../../api/authApi';
+import { login, loginWithGoogle } from '../../api/authApi';
 import { StyledForm } from '../shared/styles/forms';
 import { showSwal } from '../shared/Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
@@ -64,8 +64,8 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
       await loginWithGoogle();
     } catch (error: any) {
       console.error(
-          'Error during login:',
-          error.response?.data || error.message
+        'Error during login:',
+        error.response?.data || error.message
       );
       showSwal('Login failed!', 'error');
     }
@@ -178,17 +178,34 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
                 </StyledActiveButton>
                 <Divider>or</Divider>
                 <StyledPassiveButton
-                    type="submit"
-                    fullWidth
-                    variant="outlined"
-                    onClick={handleLoginWithGoogle}
+                  type="submit"
+                  fullWidth
+                  variant="outlined"
+                  onClick={handleLoginWithGoogle}
+                  startIcon={
+                    <img
+                      src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                      alt="Google Icon"
+                      style={{ width: 20, height: 20 }}
+                    />
+                  }
+                  style={{
+                    borderColor: '#ddd',
+                    color: '#555',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontSize: '16px',
+                  
+                    padding: '10px 20px',
+                  }}
                 >
                   Continue with Google
                 </StyledPassiveButton>
+                <Divider>or</Divider>
                 <Link to="/register">
-                  <span>
-                    Sign up
-                  </span>
+                  <StyledPassiveButton fullWidth variant="outlined">
+                    <span>Sign up</span>
+                  </StyledPassiveButton>
                 </Link>
               </StyledBox>
             </StyledDiv>
