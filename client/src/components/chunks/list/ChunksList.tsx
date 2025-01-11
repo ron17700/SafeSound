@@ -3,19 +3,27 @@ import {
   Card,
   CardContent,
   Typography,
-  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   CircularProgress,
 } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../../../api/apiService';
 import { StatusCodes } from 'http-status-codes';
 import { getClassIcon } from '../../../logic/record';
 import { ListWrapper, PageWrapper } from '../../shared/styles/wrappers';
+import { UserProfile } from '../../user/UserProfilePage';
 
-interface Chunk {
+export interface Message {
+  _id: string;
+  sender: UserProfile;
+  status: string;
+  content: string;
+  createdAt: Date;
+}
+
+export interface Chunk {
   _id: string;
   startTime: string;
   endTime: string;
@@ -23,34 +31,21 @@ interface Chunk {
   status: string;
   chunkClass: string;
   name: string;
+  numberOfComments: number;
+  recordId: string;
   summary: string;
+  messages: Message[];
 }
 
 const ChunksList: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { recordName } = location.state || '';
 
   const { id: recordId } = useParams<{ id: string }>();
   const [chunks, setChunks] = useState<Chunk[]>([]);
-  const [recordName, setRecordName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchRecordName = async () => {
-      try {
-        const response = await api.get(`/record/${recordId}`);
-
-        if (response.status === StatusCodes.OK) {
-          setRecordName(response.data.name);
-        } else {
-          console.error('Failed to fetch record details');
-        }
-      } catch (error) {
-        console.error('Error fetching record details:', error);
-      }
-    };
-
-    if (recordId) fetchRecordName();
-  }, [recordId]);
 
   useEffect(() => {
     const fetchChunks = async () => {
@@ -72,8 +67,10 @@ const ChunksList: React.FC = () => {
     if (recordId) fetchChunks();
   }, [recordId]);
 
-  const handleChunkClick = (chunkId: string) => {
-    navigate(`/records/${recordId}/chunks/${chunkId}`);
+  const handleChunkClick = (chunk: Chunk) => {
+    navigate(`/records/${recordId}/chunks/${chunk._id}`, {
+      state: { chunkName: chunk.name },
+    });
   };
 
   return (
@@ -100,7 +97,7 @@ const ChunksList: React.FC = () => {
                 backgroundColor: '#f5f5f5',
                 maxHeight: '80vh',
               }}
-              onClick={() => handleChunkClick(chunk._id)}
+              onClick={() => handleChunkClick(chunk)}
             >
               <CardContent>
                 <ListItem>
@@ -108,7 +105,7 @@ const ChunksList: React.FC = () => {
                     {getClassIcon(chunk.chunkClass)}
                   </ListItemAvatar>
                   <ListItemText
-                    primary={chunk.name}
+                    primary={`Chunk ${chunk.name} (${chunk.numberOfComments})`}
                     secondary={`${new Date(chunk.startTime).toLocaleTimeString(
                       'en-GB',
                       {

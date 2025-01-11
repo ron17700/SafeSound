@@ -20,6 +20,12 @@ export const ChunkDetailsCard = styled(MuiCard)(() => ({
   maxHeight: '80vh',
 }));
 
+export const CommentsCard = styled(MuiCard)(() => ({
+  padding: '10px',
+  maxHeight: '80vh',
+  marginTop: '3vh',
+}));
+
 export const UserCard = styled(MuiCard)(() => ({
   display: 'flex',
   alignItems: 'center',
