@@ -29,6 +29,7 @@ export type RecordObj ={
     };
     latitude?: number;
     longitude?: number;
+    numberOfComments: number;
 }
 const RecordSchema = new Schema<IRecord>(
     {
