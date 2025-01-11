@@ -34,8 +34,8 @@ app.use(passport.initialize());
 app.use(mongoSanitize());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname, "./public")));
-app.use("/", mainRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+app.use("/", mainRoutes);
 app.use(errorHandler);
 
 setupSocketHandlers(io); // Set up the socket handlers
