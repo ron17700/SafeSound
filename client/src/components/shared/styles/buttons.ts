@@ -16,7 +16,7 @@ export const StyledActiveButton = styled(Button)(({ theme }) => ({
 export const StyledPassiveButton = styled(Button)(({ theme }) => ({
   backgroundColor: 'white',
   border: 'none',
-  color: '#333333',
+  color: '#555',
   '&:hover': {
     backgroundColor: theme.palette.grey[200],
   },

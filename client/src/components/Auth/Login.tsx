@@ -20,6 +20,11 @@ import { StyledForm } from '../shared/styles/forms';
 import { showSwal } from '../shared/Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
 
+const GoogleLogo = new URL(
+  '../../assets/images/googleLogo.png',
+  import.meta.url
+).href;
+
 interface LoginProps {
   handleAccessToken: (token: string) => void;
 }
@@ -184,7 +189,7 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
                   onClick={handleLoginWithGoogle}
                   startIcon={
                     <img
-                      src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                      src={GoogleLogo}
                       alt="Google Icon"
                       style={{ width: 20, height: 20 }}
                     />
