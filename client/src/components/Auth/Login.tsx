@@ -6,6 +6,7 @@ import FormControl from '@mui/material/FormControl';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   StyledActiveButton,
+  StyledGoogleLoginButton,
   StyledPassiveButton,
 } from '../shared/styles/buttons';
 import { StyledHeader, StyledTextField } from '../shared/styles/inputs';
@@ -15,10 +16,16 @@ import {
   StyledDiv,
 } from '../shared/styles/wrappers';
 import { Card } from '../shared/styles/cards';
-import {login, loginWithGoogle} from '../../api/authApi';
+import { login, loginWithGoogle } from '../../api/authApi';
 import { StyledForm } from '../shared/styles/forms';
 import { showSwal } from '../shared/Swal';
 import { parseAccessTokenToPayload } from '../../logic/user';
+import { GoogleIcon } from '../shared/styles/images';
+
+const GoogleLogo = new URL(
+  '../../assets/images/googleLogo.png',
+  import.meta.url
+).href;
 
 interface LoginProps {
   handleAccessToken: (token: string) => void;
@@ -64,8 +71,8 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
       await loginWithGoogle();
     } catch (error: any) {
       console.error(
-          'Error during login:',
-          error.response?.data || error.message
+        'Error during login:',
+        error.response?.data || error.message
       );
       showSwal('Login failed!', 'error');
     }
@@ -171,24 +178,26 @@ const Login: React.FC<LoginProps> = ({ handleAccessToken }) => {
                 <StyledActiveButton
                   type="submit"
                   fullWidth
-                  variant="contained"
+                  variant="outlined"
                   onClick={validateInputs}
                 >
                   Log in
                 </StyledActiveButton>
                 <Divider>or</Divider>
-                <StyledPassiveButton
-                    type="submit"
-                    fullWidth
-                    variant="outlined"
-                    onClick={handleLoginWithGoogle}
+                <StyledGoogleLoginButton
+                  type="submit"
+                  fullWidth
+                  variant="outlined"
+                  onClick={handleLoginWithGoogle}
+                  startIcon={<GoogleIcon src={GoogleLogo} alt="Google Icon" />}
                 >
                   Continue with Google
-                </StyledPassiveButton>
+                </StyledGoogleLoginButton>
+                <Divider>or</Divider>
                 <Link to="/register">
-                  <span>
-                    Sign up
-                  </span>
+                  <StyledPassiveButton fullWidth variant="outlined">
+                    <span>Sign up</span>
+                  </StyledPassiveButton>
                 </Link>
               </StyledBox>
             </StyledDiv>

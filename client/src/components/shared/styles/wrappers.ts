@@ -28,8 +28,8 @@ export const StyledUploadImage = styled('div')<StyledUploadImageProps>(
     padding: '10px',
     backgroundColor: isDragActive ? '#f0f8ff' : '#f9f9f9',
     textAlign: 'center',
-    marginTop: '10px',
-    marginBottom: '10px',
+    marginTop: '5px',
+    marginBottom: '5px',
     cursor: 'pointer',
   })
 );
@@ -68,7 +68,7 @@ export const DialogWrapper = styled(Box)(() => ({
 export const PageWrapper = styled(Box)(() => ({
   marginLeft: '7vw',
   marginTop: '12vh',
-  width: '70vw',
+  width: '65vw',
 }));
 
 export const PaddedBox = styled(Box)(() => ({
@@ -80,7 +80,7 @@ export const ListWrapper = styled(Box)(() => ({
   paddingLeft: '16px',
   maxHeight: 'calc(100vh - 225px)',
   overflowY: 'auto',
-  width: '70vw',
+  width: '65vw',
   marginLeft: '7vw',
   '&::-webkit-scrollbar': {
     width: '8px',
@@ -245,4 +245,27 @@ export const UserListModal = styled(Box)(() => ({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
+}));
+
+
+export const SummaryWrapper = styled('div')(() => ({
+  height: '8vh',
+  border: '1px solid #ddd',
+  padding: '8px',
+  borderRadius: '4px',
+  backgroundColor: '#f9f9f9',
+  overflow: 'auto',
+  '&::-webkit-scrollbar': {
+    width: '8px',
+  },
+  '&::-webkit-scrollbar-track': {
+    background: '#f1f1f1',
+  },
+  '&::-webkit-scrollbar-thumb': {
+    background: '#888',
+    borderRadius: '10px',
+  },
+  '&::-webkit-scrollbar-thumb:hover': {
+    background: '#555',
+  },
 }));

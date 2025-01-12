@@ -69,7 +69,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
             <ListItem
               onClick={() =>
                 navigate(`/records/${record._id}`, {
-                  state: { recordName: record.name },
+                  state: { recordName: record.name, isPublic: record.public },
                 })
               }
             >
@@ -92,10 +92,18 @@ const RecordsList: React.FC<RecordsListProps> = ({
               />
 
               <ListItemText
-                primary={`${record.name} (${record.numberOfComments})`}
-                secondary={`Created: ${new Date(
-                  record.createdAt
-                ).toLocaleDateString()}`}
+                primary={`${record.name}`}
+                secondary={
+                  <>
+                    <div>{`Created: ${new Date(
+                      record.createdAt
+                    ).toLocaleDateString()}
+                    `}</div>
+                    <div>
+                      {`Comments: ${record.numberOfComments}`}
+                    </div>
+                  </>
+                }
               />
               {!handleAddFavorite && (
                 <>

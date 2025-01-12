@@ -71,6 +71,11 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
       return;
     }
 
+    if(!audio) {
+      showSwal('Audio mp3 file is required', 'error');
+      return;
+    }
+
     const recordData: RecordData = {
       name,
       isPublic,
@@ -106,11 +111,12 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
           </Box>
           {!isEditing && (
             <Box mt={2}>
-              <Typography variant="subtitle1">MP3 File (optional)</Typography>
+              <Typography variant="subtitle1">MP3 File</Typography>
               <input
                 type="file"
                 accept="audio/mp3"
                 onChange={handleAudioUpload}
+                required
               />
             </Box>
           )}
