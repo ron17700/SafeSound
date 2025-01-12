@@ -12,7 +12,7 @@ export interface IUser extends Document {
     favRecords: string[];
 }
 
-const UserSchema= new Schema<IUser>(
+const UserSchema = new Schema<IUser>(
     {
         email: {
             type: String,
@@ -20,7 +20,7 @@ const UserSchema= new Schema<IUser>(
             unique: true,
             match: [/\S+@\S+\.\S+/, 'Invalid email format!'],
         },
-        userName:{
+        userName: {
             type: String,
         },
         password: {
@@ -31,11 +31,11 @@ const UserSchema= new Schema<IUser>(
         },
         refreshToken: {
             type: String,
-            select: false
+            select: false,
         },
         profileImage: {
             type: String,
-           default: 'default-files/default-profile-image.jpg'
+            default: 'default-files/default-profile-image.jpg',
         },
         role: {
             type: String,
@@ -45,10 +45,10 @@ const UserSchema= new Schema<IUser>(
         favRecords: [String],
     },
     {
-        timestamps: true
+        timestamps: true,
     }
 );
 
-const User: Model<IUser> = mongoose.model('User', UserSchema);
+const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
 
 export default User;
