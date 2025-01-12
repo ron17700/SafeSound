@@ -2,9 +2,9 @@ import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User, {IUser} from "../../models/user.model";
 import {refreshToken} from "../setup";
 import mongoose from "mongoose";
+import User, {IUser} from "../../models/user.model";
 
 describe('AuthService', () => {
 
