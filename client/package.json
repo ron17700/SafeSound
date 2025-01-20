@@ -51,7 +51,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --mode production",
+    "build:dev": "vite build --mode development",
     "serve": "vite preview",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix"
   },

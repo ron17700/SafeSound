@@ -16,10 +16,10 @@ router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 router.use('/default-files', express.static(path.join(__dirname, '../default-files')));
 
 // Serve React static files
-router.use(express.static(path.join(__dirname, '../../client/dist')));
+router.use(express.static(path.join(__dirname, '../../../client/dist')));
 
 router.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+    res.sendFile(path.join(__dirname, '../../../client/dist/index.html'));
 });
 
 export default router;
