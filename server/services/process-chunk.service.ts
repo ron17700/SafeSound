@@ -1,8 +1,8 @@
 import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
-import {analyzeToneAndWords, AnalysisResult} from "./transcribe-analyzer.service";
-import {RetrieveTranscriptResponse} from "@speechmatics/batch-client"; // Assume this service sends audio to Speechmatics and returns the result
+import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
+import {RetrieveTranscriptResponse} from "@speechmatics/batch-client";
 
 function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
@@ -29,14 +29,24 @@ export async function processChunk(chunk: IChunkScheme) {
         const analysisResult: AnalysisResult = analyzeToneAndWords(result);
 
         // Analyze result for tone and bad words
-        const chunkClass = analysisResult.overallTone === 'negative' ? Class.Bad : Class.Good;
+        const chunkClass = analysisResult.overallTone;
 
         // Update chunk with analysis result
-        await ChunkService.updateChunk(chunk.id, {
-            status: getRandomStatus(),
-            chunkClass: getRandomClass(),
-            summary: getRandomSummary(analysisResult.summary),
-        });
+
+        if (process.env.LOCAL_ENV) {
+            await ChunkService.updateChunk(chunk.id, {
+                status: getRandomStatus(),
+                chunkClass: getRandomClass(),
+                summary: getRandomSummary(analysisResult.summary),
+            });
+        } else {
+            await ChunkService.updateChunk(chunk.id, {
+                status: Status.Completed,
+                chunkClass: chunkClass,
+                summary: analysisResult.summary,
+            });
+        }
+
     } catch (error) {
         // Update chunk status to failed
         await ChunkService.updateChunk(chunk.id, { status: Status.Failed, summary: 'Failed analyzing audio' });

@@ -1,7 +1,8 @@
 import {RetrieveTranscriptResponse} from '@speechmatics/batch-client';
+import {Class} from "../models/chunk.model";
 
 export type AnalysisResult = {
-    overallTone: string;
+    overallTone: Class;
     summary: string;
 };
 
@@ -20,11 +21,11 @@ export function analyzeToneAndWords(response: RetrieveTranscriptResponse | strin
         const summaryNeutralCount = summary?.neutral_count || 0;
 
         if (summaryNeutralCount > summaryNegativeCount && summaryNeutralCount > summaryPositiveCount) {
-            overallTone = 'neutral';
+            overallTone = Class.Natural;
         } else if (summaryPositiveCount > summaryNegativeCount) {
-            overallTone = 'positive';
+            overallTone = Class.Good;
         } else {
-            overallTone = 'negative';
+            overallTone = Class.Bad;
         }
     }
 
