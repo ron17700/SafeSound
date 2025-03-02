@@ -1,6 +1,5 @@
 import { IChunkScheme } from '../models/chunk.model';
 import { processChunk } from './process-chunk.service';
-import { RecordService } from './record.service';
 
 export class TaskQueue {
     private queue: IChunkScheme[] = [];
@@ -31,8 +30,7 @@ export class TaskQueue {
         this.currentTasks++;
         try {
             // Save the chunk before processing
-            await processChunk(chunk);
-            await RecordService.defineRecordClass(chunk.recordId);
+            processChunk(chunk);
         } catch (error) {
             console.error('Error processing chunk', error);
         } finally {
