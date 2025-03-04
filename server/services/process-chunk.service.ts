@@ -3,6 +3,7 @@ import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
 import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
 import {RetrieveTranscriptResponse} from "@speechmatics/batch-client";
+import {RecordService} from "./record.service";
 
 function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
@@ -45,6 +46,7 @@ export async function processChunk(chunk: IChunkScheme) {
                 chunkClass: chunkClass,
                 summary: analysisResult.summary,
             });
+            await RecordService.defineRecordClass(chunk.recordId);
         }
 
     } catch (error) {
