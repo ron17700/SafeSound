@@ -64,7 +64,7 @@ afterEach(async () => {
   try {
     const collections = mongoose.connection.collections;
     for (const key in collections) {
-      await collections[key].deleteMany({});
+      await collections[key]?.deleteMany({});
     }
   } catch (error) {
     console.error('Error clearing test database:', error);

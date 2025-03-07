@@ -3,6 +3,7 @@ import app from '../../index';
 import {IRecord, Record} from '../../models/record.model';
 import { token, userId } from '../setup';
 import {Chunk} from "../../models/chunk.model";
+import { MongoError } from 'mongodb';
 
 describe('Record Controller Tests', () => {
 
@@ -39,10 +40,13 @@ describe('Record Controller Tests', () => {
             expect(res.text).toBe('Missing required fields');
         });
 
+        it('should return 500 if an error occurs during record creation - 11000 mongo error', async () => {
+            const duplicateKeyError = new MongoError('Duplicate key error');
+            duplicateKeyError.code = 11000;
 
-        it('should return 500 if an error occurs during record creation', async () => {
             jest.spyOn(Record.prototype, 'save').mockImplementationOnce(() => {
-                throw new Error('Database error');
+                const error = duplicateKeyError as MongoError;
+                throw error ;
             });
 
             const res = await request(app)
@@ -57,10 +61,63 @@ describe('Record Controller Tests', () => {
                 });
 
             expect(res.statusCode).toBe(400);
-            expect(res.text).toBe('Error adding record');
+            expect(res.body.message).toBe('Duplicate key error: A record with this key already exists.');
 
             jest.restoreAllMocks();
         });
+
+        it('should return 500 if an error occurs during record creation - 121 mongo error', async () => {
+            const duplicateKeyError = new MongoError('some error');
+            duplicateKeyError.code = 121;
+
+            jest.spyOn(Record.prototype, 'save').mockImplementationOnce(() => {
+                const error = duplicateKeyError as MongoError;
+                throw error ;
+            });
+
+            const res = await request(app)
+                .post('/record')
+                .set('Authorization', token)
+                .send({
+                    userId,
+                    name: 'New Record',
+                    isPublic: true,
+                    longitude: 40.7128,
+                    latitude: -74.0060,
+                });
+
+            expect(res.statusCode).toBe(400);
+            expect(res.body.message).toBe('Document failed validation.');
+
+            jest.restoreAllMocks();
+        });
+
+        it('should return 500 if an error occurs during record creation - general mongo error', async () => {
+            const duplicateKeyError = new MongoError('some error');
+            duplicateKeyError.code = 400;
+
+            jest.spyOn(Record.prototype, 'save').mockImplementationOnce(() => {
+                const error = duplicateKeyError as MongoError;
+                throw error ;
+            });
+
+            const res = await request(app)
+                .post('/record')
+                .set('Authorization', token)
+                .send({
+                    userId,
+                    name: 'New Record',
+                    isPublic: true,
+                    longitude: 40.7128,
+                    latitude: -74.0060,
+                });
+
+            expect(res.statusCode).toBe(500);
+            expect(res.body.message).toBe('An internal server error occurred.');
+
+            jest.restoreAllMocks();
+        });
+
     });
 
     describe('Record Update', () => {

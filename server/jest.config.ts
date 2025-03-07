@@ -7,6 +7,11 @@ const config: Config = {
     collectCoverage: true,
     coverageDirectory: 'coverage',
     coverageReporters: ['text', 'html'],
+    coveragePathIgnorePatterns: [
+        '/node_modules/',
+        'index.ts',
+    ],
+    testMatch: ['**/tests/**/*.test.ts', '**/tests/**/*.spec.ts'],
 };
 
 export default config;
