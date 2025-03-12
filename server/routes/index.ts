@@ -20,9 +20,27 @@ const defaultFilesPath = path.join(serverRoot, 'default-files');
 
 console.log("Serving uploads from:", uploadsPath);
 console.log("Serving default files from:", defaultFilesPath);
+router.use('/uploads', express.static(uploadsPath, {
+    setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Expires', '0');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Access-Control-Allow-Origin', '*'); // Allow external access
+    }
+}));
 
-router.use('/uploads', express.static(uploadsPath));
-router.use('/default-files', express.static(defaultFilesPath));
+router.use('/default-files', express.static(defaultFilesPath, {
+    setHeaders: (res) => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Expires', '0');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Access-Control-Allow-Origin', '*'); // Allow external access
+    }
+}));
+
+router.get('/test-image', (req, res) => {
+    res.sendFile(path.join(defaultFilesPath, 'default-record-image.jpg'));
+});
 
 // Serve React static files
 router.use(express.static(path.join(serverRoot, '../client/dist')));
