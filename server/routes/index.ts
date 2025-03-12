@@ -28,8 +28,10 @@ router.use('/uploads', express.static(uploadsPath, {
         res.setHeader('Access-Control-Allow-Origin', '*'); // Allow external access
     }
 }));
-
-router.use('/default-files', express.static(defaultFilesPath, {
+router.use('/default-files', (req, res, next) => {
+    console.log("Requesting file:", req.url);
+    next();
+}, express.static(defaultFilesPath, {
     fallthrough: false
 }));
 
