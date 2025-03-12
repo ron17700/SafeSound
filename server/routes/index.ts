@@ -29,21 +29,30 @@ router.use('/uploads', express.static(uploadsPath, {
     }
 }));
 router.use('/default-files', (req, res, next) => {
-    console.log("Requesting file:", req.url);
+    console.log(`🔍 Serving: ${req.originalUrl}`);
     next();
 }, express.static(defaultFilesPath, {
     fallthrough: false
 }));
 
 router.get('/test-image', (req, res) => {
-    res.sendFile(path.join(defaultFilesPath, 'default-record-image.jpg'));
+    const imagePath = path.join(defaultFilesPath, 'default-record-image.jpg');
+    res.setHeader('Content-Type', 'image/jpeg'); // ✅ Explicitly set content type
+    res.sendFile(imagePath, (err) => {
+        if (err) {
+            console.error("❌ Error sending file:", err);
+            // res.status(err.status).end();
+        }
+    });
 });
 
 // Serve React static files
 router.use(express.static(path.join(serverRoot, '../client/dist')));
 
-router.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../client/dist/index.html'));
+router.get('*', (req, res, next) => {
+    if (req.path.startsWith('/default-files') || req.path.startsWith('/uploads')) {
+        return next(); // ✅ Let Express handle static files
+    }
+    res.sendFile(path.join(serverRoot, '../client/dist/index.html'));
 });
-
 export default router;
