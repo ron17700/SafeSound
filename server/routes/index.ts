@@ -11,14 +11,21 @@ router.use("/record", recordRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/user", userRoutes);
 
-const serverRoot = path.resolve(__dirname, '..'); // Since `index.ts` is inside `server/routes/`, one level up gets `server/`
+// Get absolute path dynamically for server directory
+const serverRoot = path.resolve(__dirname, '..'); // Points to 'server/'
 
-// Serve the uploaded and default files statically
-router.use('/uploads', express.static(path.join(serverRoot, 'uploads')));
-router.use('/default-files', express.static(path.join(serverRoot, 'default-files')));
+// Serve static files
+const uploadsPath = path.join(serverRoot, 'uploads');
+const defaultFilesPath = path.join(serverRoot, 'default-files');
+
+console.log("Serving uploads from:", uploadsPath);
+console.log("Serving default files from:", defaultFilesPath);
+
+router.use('/uploads', express.static(uploadsPath));
+router.use('/default-files', express.static(defaultFilesPath));
 
 // Serve React static files
-router.use(express.static(path.join(__dirname, '../../../client/dist')));
+router.use(express.static(path.join(serverRoot, '../client/dist')));
 
 router.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../client/dist/index.html'));
