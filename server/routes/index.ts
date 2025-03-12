@@ -30,12 +30,7 @@ router.use('/uploads', express.static(uploadsPath, {
 }));
 
 router.use('/default-files', express.static(defaultFilesPath, {
-    setHeaders: (res) => {
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-        res.setHeader('Expires', '0');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('Access-Control-Allow-Origin', '*'); // Allow external access
-    }
+    fallthrough: false
 }));
 
 router.get('/test-image', (req, res) => {
