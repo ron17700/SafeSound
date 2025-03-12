@@ -35,7 +35,13 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:3000',  // Allow local frontend for testing
+        'http://node108.cs.colman.ac.il' // Allow the deployed frontend
+    ],
+    credentials: true, // If you have cookies or authentication
+}));
 app.use(passport.initialize());
 app.use(mongoSanitize());
 app.use(express.urlencoded({ extended: false }));
