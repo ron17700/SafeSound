@@ -21,8 +21,8 @@ process.env.rootDir = __dirname;
 const PORT = process.env.PORT || 3001;
 const app = express();
 app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    res.removeHeader('Cross-Origin-Opener-Policy');
+    res.removeHeader('Cross-Origin-Embedder-Policy');
     next();
 });
 
