@@ -12,6 +12,7 @@
     "start:poc": "npx ts-node poc",
     "test-code": "ts-node ./test-code.ts",
     "build": "rimraf ./dist && tsc -p ./tsconfig.json",
+    "copy-assets": "cp -r uploads dist/ && cp -r default-files dist/",
     "test": "ts-node ./node_modules/jest/bin/jest.js --config jest.config.ts --coverage --detectOpenHandles --forceExit",
     "test:watch": "ts-node ./node_modules/jest/bin/jest.js --config jest.config.ts --watchAll --coverage --detectOpenHandles --forceExit"
   },

@@ -5,7 +5,7 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": ".",
+    "outDir": "dist",
     "strict": true,
     "resolveJsonModule": true
   },
