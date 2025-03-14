@@ -49,10 +49,4 @@ router.get('/test-image', (req, res) => {
 // Serve React static files
 router.use(express.static(path.join(serverRoot, '../client/dist')));
 
-router.get('*', (req, res, next) => {
-    if (req.path.startsWith('/default-files') || req.path.startsWith('/uploads')) {
-        return next(); // ✅ Let Express handle static files
-    }
-    res.sendFile(path.join(serverRoot, '../client/dist/index.html'));
-});
 export default router;
