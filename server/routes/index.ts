@@ -36,6 +36,10 @@ router.use('/default-files', (req, res, next) => {
 }));
 
 router.get('/test-image', (req, res) => {
+    console.log('hello')
+    
+console.log("Serving uploads from:", uploadsPath);
+console.log("Serving default files from:", defaultFilesPath);
     const imagePath = path.join(defaultFilesPath, 'default-record-image.jpg');
     res.setHeader('Content-Type', 'image/jpeg'); // ✅ Explicitly set content type
     res.sendFile(imagePath, (err) => {
