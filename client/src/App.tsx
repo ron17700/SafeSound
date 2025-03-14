@@ -161,7 +161,7 @@ const App: React.FC = () => {
             }
           />
           <Route
-            path="/user/profile"
+            path="/users/profile"
             element={
               accessToken ? (
                 <>
