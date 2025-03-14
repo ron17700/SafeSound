@@ -36,10 +36,6 @@ router.use('/default-files', (req, res, next) => {
 }));
 
 router.get('/test-image', (req, res) => {
-    console.log('hello')
-    
-console.log("Serving uploads from:", uploadsPath);
-console.log("Serving default files from:", defaultFilesPath);
     const imagePath = path.join(defaultFilesPath, 'default-record-image.jpg');
     res.setHeader('Content-Type', 'image/jpeg'); // ✅ Explicitly set content type
     res.sendFile(imagePath, (err) => {
@@ -53,4 +49,10 @@ console.log("Serving default files from:", defaultFilesPath);
 // Serve React static files
 router.use(express.static(path.join(serverRoot, '../client/dist')));
 
+router.get('*', (req, res, next) => {
+    if (req.path.startsWith('/default-files') || req.path.startsWith('/uploads')) {
+        return next(); // ✅ Let Express handle static files
+    }
+    res.sendFile(path.join(serverRoot, '../client/dist/index.html'));
+});
 export default router;
