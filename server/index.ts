@@ -21,8 +21,8 @@ process.env.rootDir = __dirname;
 const PORT = process.env.PORT || 3001;
 const app = express();
 app.use((req, res, next) => {
-    res.removeHeader('Cross-Origin-Opener-Policy');
-    res.removeHeader('Cross-Origin-Embedder-Policy');
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
     next();
 });
 
@@ -35,13 +35,7 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
-app.use(cors({
-    origin: [
-        'http://localhost:3000',  // Allow local frontend for testing
-        'http://node108.cs.colman.ac.il' // Allow the deployed frontend
-    ],
-    credentials: true, // If you have cookies or authentication
-}));
+app.use(cors());
 app.use(passport.initialize());
 app.use(mongoSanitize());
 app.use(express.urlencoded({ extended: false }));
