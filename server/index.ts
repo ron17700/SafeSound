@@ -37,7 +37,7 @@ const io = new Server(server, {
 app.use(express.json());
 
 const allowedOrigins = [
-    "http://http://node108.cs.colman.ac.il",
+    "http://node108.cs.colman.ac.il",
     "http://localhost:3000",
 ];
 app.use(
