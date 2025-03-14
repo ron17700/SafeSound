@@ -41,6 +41,11 @@ app.use(mongoSanitize());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname, "./public")));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+
+app.use(express.static(path.resolve(__dirname, "./uploads")));
+app.use(express.static(path.resolve(__dirname, "./default-files")));
+app.use(express.static(path.resolve(__dirname, "../client/dist")));
+
 app.use("/", mainRoutes);
 app.use(errorHandler);
 

@@ -11,13 +11,6 @@ router.use("/record", recordRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/user", userRoutes);
 
-// Serve the uploaded and default files statically
-router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-router.use('/default-files', express.static(path.join(__dirname, '../default-files')));
-
-// Serve React static files
-router.use(express.static(path.join(__dirname, '../../../client/dist')));
-
 router.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../client/dist/index.html'));
 });
