@@ -7,7 +7,7 @@
   "license": "ISC",
   "scripts": {
     "start:dev": "npx nodemon",
-    "start:prod": "pm2 start ecosystem.config.js --env production",
+    "start:prod": "npm run build && pm2 start ecosystem.config.js --env production",
     "start": "npx ts-node index.ts",
     "start:poc": "npx ts-node poc",
     "test-code": "ts-node ./test-code.ts",
