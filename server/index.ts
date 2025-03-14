@@ -35,7 +35,24 @@ const io = new Server(server, {
 });
 
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = [
+    "http://http://node108.cs.colman.ac.il",
+    "http://localhost:3000",
+];
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.indexOf(origin) > -1) {
+                callback(null, true);
+            } else {
+                callback(new Error("CORS Error: Access denied for origin:" + origin));
+            }
+        },
+        credentials: true,
+    })
+);
+
 app.use(passport.initialize());
 app.use(mongoSanitize());
 app.use(express.urlencoded({ extended: false }));
