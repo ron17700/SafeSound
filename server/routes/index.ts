@@ -11,15 +11,20 @@ router.use("/record", recordRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/user", userRoutes);
 
+const resolveStaticPath = (relativePath: string) => {
+    return process.env.NODE_ENV === 'production'
+        ? path.join(__dirname, '../../', relativePath)
+        : path.join(process.cwd(), relativePath);
+};
+
 // Serve the uploaded and default files statically
-router.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
-router.use('/default-files', express.static(path.join(__dirname, '../../default-files')));
-
+router.use('/uploads', express.static(resolveStaticPath('uploads')));
+router.use('/default-files', express.static(resolveStaticPath('default-files')));
 // Serve React static files
-router.use(express.static(path.join(__dirname, '../../../client/dist')));
-
+router.use(express.static(resolveStaticPath('../client/dist')));
 router.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../../client/dist/index.html'));
+    res.sendFile(resolveStaticPath('../client/dist/index.html'));
 });
+
 
 export default router;
