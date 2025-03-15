@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Typography,
-  CircularProgress,
-  Modal,
-} from '@mui/material';
+import { Typography, CircularProgress, Modal } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import api, { API_BASE_URL } from '../../api/apiService';
 import { showSwal } from '../shared/Swal';
 import { StatusCodes } from 'http-status-codes';
-import { ChatButton, StyledConfirmButton, UpdateButton } from '../shared/styles/buttons';
-import { PreviewImage,  StyledUserTextField } from '../shared/styles/inputs';
+import {
+  ChatButton,
+  StyledConfirmButton,
+  UpdateButton,
+} from '../shared/styles/buttons';
+import { PreviewImage, StyledUserTextField } from '../shared/styles/inputs';
 import { Chat } from '../chat/Chat';
 import UserListPage from './UserListPage';
-import {refreshAccessToken} from "../../api/apiLogic";
-import { ImagePreviewContainer, ProfileContainer, UserListModal } from '../shared/styles/wrappers';
+import { refreshAccessToken } from '../../api/apiLogic';
+import {
+  ImagePreviewContainer,
+  ProfileContainer,
+  UserListModal,
+} from '../shared/styles/wrappers';
 import { ProfileCard } from '../shared/styles/cards';
 import { ProfileImage } from '../shared/styles/images';
 
@@ -32,15 +36,24 @@ const UserProfilePage: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatId, setChatId] = useState<string | null>(null);
+  const [selectedUserName, setSelectedUserName] = useState<string>('');
   const [isUserListOpen, setIsUserListOpen] = useState(false);
 
-  const userImageUrl= userProfile?.profileImage?.startsWith('http') ? userProfile?.profileImage
-      : (`${API_BASE_URL}/${(userProfile?.profileImage || '').replace(/\\/g, '/')}`)
+  const userImageUrl = userProfile?.profileImage?.startsWith('http')
+    ? userProfile?.profileImage
+    : `${API_BASE_URL}/${(userProfile?.profileImage || '').replace(
+        /\\/g,
+        '/'
+      )}`;
 
-  const handleUserSelect = (selectedChatId: string) => {
+  const handleUserSelect = (
+    selectedChatId: string,
+    selectedUserName: string
+  ) => {
     setChatId(selectedChatId);
     setIsUserListOpen(false);
     setIsChatOpen(true);
+    setSelectedUserName(selectedUserName)
   };
 
   const fetchUserProfile = async () => {
@@ -133,51 +146,51 @@ const UserProfilePage: React.FC = () => {
 
   return (
     <ProfileContainer>
-    <ProfileCard>
-      <ProfileImage
-        crossOrigin="anonymous"
-        src={userImageUrl}
-        alt="User Profile"
-      />
-      <Typography variant="h6">{userProfile.email}</Typography>
-      <StyledUserTextField
-        label="Username"
-        variant="outlined"
-        value={updatedUsername}
-        onChange={(e) => setUpdatedUsername(e.target.value)}
-      />
-      <StyledConfirmButton component="label">
-        Upload Profile Picture
-        <input type="file" hidden onChange={handleFileChange} />
-      </StyledConfirmButton>
-      {imagePreview && (
-        <ImagePreviewContainer>
-          <Typography variant="body1">Selected Image Preview:</Typography>
-          <PreviewImage src={imagePreview} alt="Preview" />
-        </ImagePreviewContainer>
+      <ProfileCard>
+        <ProfileImage
+          crossOrigin="anonymous"
+          src={userImageUrl}
+          alt="User Profile"
+        />
+        <Typography variant="h6">{userProfile.email}</Typography>
+        <StyledUserTextField
+          label="Username"
+          variant="outlined"
+          value={updatedUsername}
+          onChange={(e) => setUpdatedUsername(e.target.value)}
+        />
+        <StyledConfirmButton component="label">
+          Upload Profile Picture
+          <input type="file" hidden onChange={handleFileChange} />
+        </StyledConfirmButton>
+        {imagePreview && (
+          <ImagePreviewContainer>
+            <Typography variant="body1">Selected Image Preview:</Typography>
+            <PreviewImage src={imagePreview} alt="Preview" />
+          </ImagePreviewContainer>
+        )}
+        <UpdateButton variant="contained" onClick={handleUpdateProfile}>
+          Update Profile
+        </UpdateButton>
+        <ChatButton
+          variant="contained"
+          onClick={() => setIsUserListOpen(true)}
+          startIcon={<ChatIcon />}
+        >
+          Open Chat with Others
+        </ChatButton>
+      </ProfileCard>
+
+      <Modal open={isUserListOpen} onClose={() => setIsUserListOpen(false)}>
+        <UserListModal>
+          <UserListPage onSelectUser={handleUserSelect} />
+        </UserListModal>
+      </Modal>
+
+      {isChatOpen && chatId && (
+        <Chat chatId={chatId} onClose={closeChat} onGoBack={goBack} selectedUserName={selectedUserName}/>
       )}
-      <UpdateButton variant="contained" onClick={handleUpdateProfile}>
-        Update Profile
-      </UpdateButton>
-      <ChatButton
-        variant="contained"
-        onClick={() => setIsUserListOpen(true)}
-        startIcon={<ChatIcon />}
-      >
-        Open Chat with Others
-      </ChatButton>
-    </ProfileCard>
-
-    <Modal open={isUserListOpen} onClose={() => setIsUserListOpen(false)}>
-      <UserListModal>
-        <UserListPage onSelectUser={handleUserSelect} />
-      </UserListModal>
-    </Modal>
-
-    {isChatOpen && chatId && (
-      <Chat chatId={chatId} onClose={closeChat} onGoBack={goBack} />
-    )}
-  </ProfileContainer>
+    </ProfileContainer>
   );
 };
 
