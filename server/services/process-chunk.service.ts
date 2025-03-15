@@ -2,7 +2,7 @@ import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
 import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
-import {RetrieveTranscriptResponse} from "@speechmatics/batch-client";
+import { RetrieveTranscriptResponseAlternative } from './transcribe-analyzer.service';
 
 function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
@@ -25,7 +25,7 @@ export async function processChunk(chunk: IChunkScheme) {
         await ChunkService.updateChunk(chunk.id, { status: Status.InProgress });
 
         // Send audio to Speechmatics
-        const result: RetrieveTranscriptResponse | string  = await analyzeAudio(chunk.audioFilePath);
+        const result: RetrieveTranscriptResponseAlternative = await analyzeAudio(chunk.audioFilePath);
         const analysisResult: AnalysisResult = analyzeToneAndWords(result);
 
         // Analyze result for tone and bad words
