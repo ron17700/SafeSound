@@ -6,12 +6,13 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "start:dev": "npx nodemon",
+    "start:dev": "npm run build:client-dev && npx nodemon",
     "start:prod": "npm run build:client && npm run build && pm2 start ecosystem.config.js --env production",
     "start": "npx ts-node index.ts",
     "start:poc": "npx ts-node poc",
     "test-code": "ts-node ./test-code.ts",
     "build": "rimraf ./dist && tsc -p ./tsconfig.json",
+    "build:client-dev": "npm --prefix ../client run build:dev",
     "build:client": "npm --prefix ../client run build",
     "test": "ts-node ./node_modules/jest/bin/jest.js --config jest.config.ts --coverage --detectOpenHandles --forceExit",
     "test:watch": "ts-node ./node_modules/jest/bin/jest.js --config jest.config.ts --watchAll --coverage --detectOpenHandles --forceExit"
