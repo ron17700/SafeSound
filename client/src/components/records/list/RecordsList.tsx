@@ -15,6 +15,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../../../api/apiService';
 import { getClassIcon } from '../../../logic/record';
+import { showSwal } from '../../shared/Swal';
 
 interface Record {
   _id: string;
@@ -49,6 +50,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
       e.stopPropagation();
       await api.delete(`/record/${recordId}`);
       setRecords(records.filter((record) => record._id !== recordId));
+      showSwal('Record deleted successfully!');
     } catch (error) {
       console.error(`Failed to delete record: ${recordId}`, error);
     }

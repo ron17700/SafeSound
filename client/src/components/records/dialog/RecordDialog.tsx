@@ -134,7 +134,6 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
         </DialogContent>
         <DialogActions>
           <StyledPassiveButton onClick={onClose}>Cancel</StyledPassiveButton>
-          //TODO: fix updating will be without audio
           <StyledActiveButton variant="contained" onClick={handleSave}>
             {isEditing ? 'Update' : 'Save'}
           </StyledActiveButton>
