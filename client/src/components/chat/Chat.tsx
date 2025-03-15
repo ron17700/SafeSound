@@ -29,10 +29,12 @@ interface Message {
 
 export const Chat = ({
   chatId,
+  selectedUserName,
   onClose,
   onGoBack,
 }: {
   chatId: string;
+  selectedUserName: string;
   onClose: () => void;
   onGoBack: () => void;
 }) => {
@@ -137,7 +139,7 @@ export const Chat = ({
     <ChatWrapper>
       <ChatHeader>
         <GoBackButton onClick={onGoBack}>←</GoBackButton>
-        <span>Chat</span>
+        <span>{selectedUserName}</span>
         <CloseButton onClick={onClose}>✕</CloseButton>
       </ChatHeader>
 

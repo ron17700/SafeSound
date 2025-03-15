@@ -71,7 +71,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
       return;
     }
 
-    if(!audio) {
+    if(!isEditing && !audio) {
       showSwal('Audio mp3 file is required', 'error');
       return;
     }

@@ -9,6 +9,7 @@ import { AddRecordButton } from '../shared/styles/buttons';
 import RecordDialog from './dialog/RecordDialog';
 import { ListWrapper, PaddedBox } from '../shared/styles/wrappers';
 import { splitMp3IntoChunks } from '../../utils/audioUtils';
+import { showSwal } from '../shared/Swal';
 
 const RecordsPage: React.FC = () => {
   const [records, setRecords] = useState<any[]>([]);
@@ -40,7 +41,7 @@ const RecordsPage: React.FC = () => {
     setIsEditing(false);
     handleDialogOpen();
   };
-  
+
   const handleEditRecord = (record: any) => {
     setIsEditing(true);
     setCurrentRecord(record);
@@ -64,6 +65,7 @@ const RecordsPage: React.FC = () => {
       if (isEditing && currentRecord) {
         await api.put(`/record/${currentRecord._id}`, formData);
         createdRecord = currentRecord;
+        showSwal('Record updated successfully!');
       } else {
         const recordResponse = await api.post('/record', formData);
         createdRecord = recordResponse.data;
@@ -89,6 +91,7 @@ const RecordsPage: React.FC = () => {
             );
 
             await api.post(`/record/${createdRecord._id}/chunk`, chunkFormData);
+            showSwal('Record added successfully!');
           }
         } catch (error) {
           console.error('Error while splitting and uploading chunks:', error);
