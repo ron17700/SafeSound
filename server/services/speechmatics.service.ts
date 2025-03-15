@@ -1,6 +1,8 @@
 import { BatchClient } from '@speechmatics/batch-client';
 import { openAsBlob } from 'node:fs';
 import { mockData } from './mock';
+import path from "path";
+import fs from "fs";
 
 export async function analyzeAudio(audioFilePath: string) {
     let response;
@@ -32,6 +34,18 @@ export async function analyzeAudio(audioFilePath: string) {
                     }
                 },
             );
+
+            // Path to save the JSON file
+            const filePath = path.join(__dirname, 'response.json');
+
+            // Write the response data to the file
+            fs.writeFile(filePath, JSON.stringify(response, null, 2), (err) => {
+                if (err) {
+                    console.error('Error writing file:', err);
+                } else {
+                    console.log('JSON data successfully written to', filePath);
+                }
+            });
         }
 
         console.log('Transcription finished!', {client, file});
