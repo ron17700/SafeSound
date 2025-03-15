@@ -71,7 +71,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
       return;
     }
 
-    if(!audio) {
+    if(!isEditing && !audio) {
       showSwal('Audio mp3 file is required', 'error');
       return;
     }
@@ -134,6 +134,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
         </DialogContent>
         <DialogActions>
           <StyledPassiveButton onClick={onClose}>Cancel</StyledPassiveButton>
+          //TODO: fix updating will be without audio
           <StyledActiveButton variant="contained" onClick={handleSave}>
             {isEditing ? 'Update' : 'Save'}
           </StyledActiveButton>
