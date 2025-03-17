@@ -45,6 +45,11 @@ export const PaddedTitle = styled(Typography)<TypographyProps>(() => ({
   marginTop: '20px',
 }));
 
+export const FileText = styled(Typography)<TypographyProps>(() => ({
+  marginTop: '1px'
+}));
+
+
 export const InputField = styled('input')(() => ({
   flex: 1,
   border: 'none',
@@ -52,6 +57,10 @@ export const InputField = styled('input')(() => ({
   padding: '8px',
   borderRadius: '4px',
   background: '#F9F9F9',
+}));
+
+export const TransparentInputField = styled('input')(() => ({
+  display: 'none' 
 }));
 
 export const StyledUserTextField = styled(TextField)(() => ({

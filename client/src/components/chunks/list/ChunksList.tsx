@@ -8,6 +8,8 @@ import {
   ListItemText,
   CircularProgress,
 } from '@mui/material';
+import { IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import api from '../../../api/apiService';
 import { StatusCodes } from 'http-status-codes';
@@ -75,6 +77,9 @@ const ChunksList: React.FC = () => {
 
   return (
     <PageWrapper>
+      <IconButton onClick={() => navigate(-1)} aria-label="Go back">
+        <ArrowBackIcon />
+      </IconButton>
       <Typography variant="h5" gutterBottom>
         Chunks for Record: {recordName}
       </Typography>
@@ -114,6 +119,7 @@ const ChunksList: React.FC = () => {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit',
+                            timeZone: 'UTC',
                           }
                         )} - ${new Date(chunk.endTime).toLocaleTimeString(
                           'en-GB',
@@ -121,6 +127,7 @@ const ChunksList: React.FC = () => {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit',
+                            timeZone: 'UTC',
                           }
                         )}`}</div>
                         <div>{`Comments: ${chunk.numberOfComments}`}</div>

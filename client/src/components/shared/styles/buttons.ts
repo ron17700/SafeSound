@@ -1,10 +1,25 @@
 import Button, { ButtonProps } from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 
-export const StyledActiveButton = styled(Button)(({ theme }) => ({
+export const StyledActiveButton = styled(Button)<ButtonProps>(({ theme }) => ({
   backgroundColor: '#79747E',
   borderColor: '#ddd',
   color: '#FFFFFF',
+  '&:hover': {
+    backgroundColor: theme.palette.grey[600],
+  },
+  '&:disabled': {
+    backgroundColor: theme.palette.action.disabledBackground,
+    color: theme.palette.action.disabled,
+  },
+}));
+
+export const SmallActiveButton = styled(Button)<ButtonProps>(({ theme }) => ({
+  backgroundColor: '#79747E',
+  borderColor: '#ddd',
+  color: '#FFFFFF',
+  fontSize: '12px',
+  padding: '2px 5px',
   '&:hover': {
     backgroundColor: theme.palette.grey[600],
   },

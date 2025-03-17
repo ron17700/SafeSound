@@ -4,19 +4,19 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
 import api from '../../api/apiService';
-import RecordsList from './list/RecordsList';
+import RecordsList, { Record } from './list/RecordsList';
 import { AddRecordButton } from '../shared/styles/buttons';
-import RecordDialog from './dialog/RecordDialog';
+import RecordDialog, { RecordData } from './dialog/RecordDialog';
 import { ListWrapper, PaddedBox } from '../shared/styles/wrappers';
 import { splitMp3IntoChunks } from '../../utils/audioUtils';
 import { showSwal } from '../shared/Swal';
 
 const RecordsPage: React.FC = () => {
-  const [records, setRecords] = useState<any[]>([]);
+  const [records, setRecords] = useState<Record[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [currentRecord, setCurrentRecord] = useState<any | null>(null);
+  const [currentRecord, setCurrentRecord] = useState<Record | null>(null);
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -42,13 +42,13 @@ const RecordsPage: React.FC = () => {
     handleDialogOpen();
   };
 
-  const handleEditRecord = (record: any) => {
+  const handleEditRecord = (record: Record) => {
     setIsEditing(true);
     setCurrentRecord(record);
     setDialogOpen(true);
   };
 
-  const handleSaveRecord = async (recordData: any) => {
+  const handleSaveRecord = async (recordData: RecordData) => {
     const { name, isPublic, photo, audio } = recordData;
     const userId = localStorage.getItem('userId') || '';
 
@@ -74,13 +74,15 @@ const RecordsPage: React.FC = () => {
       if (audio) {
         try {
           const chunks = await splitMp3IntoChunks(audio, 10 * 60);
-          for (const [index, chunk] of chunks.entries()) {
-            const chunkStartTime =
-              new Date().getTime() + index * 10 * 60 * 1000;
-            const chunkEndTime = chunkStartTime + 10 * 60 * 1000;
+
+          let accumulatedTime = 0;
+
+          for (const { file, duration } of chunks) {
+            const chunkStartTime = accumulatedTime * 1000;
+            const chunkEndTime = (accumulatedTime + duration) * 1000;
 
             const chunkFormData = new FormData();
-            chunkFormData.append('file', chunk);
+            chunkFormData.append('file', file);
             chunkFormData.append(
               'startTime',
               new Date(chunkStartTime).toISOString()
@@ -91,8 +93,11 @@ const RecordsPage: React.FC = () => {
             );
 
             await api.post(`/record/${createdRecord._id}/chunk`, chunkFormData);
-            showSwal('Record added successfully!');
+
+            accumulatedTime += duration;
           }
+
+          showSwal('Record added successfully!');
         } catch (error) {
           console.error('Error while splitting and uploading chunks:', error);
         }

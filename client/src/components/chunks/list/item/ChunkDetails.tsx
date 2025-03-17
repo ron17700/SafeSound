@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
   Typography,
-  CardContent,
   List,
   ListItem,
   ListItemText,
   TextField,
   CircularProgress,
+  IconButton,
 } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { API_BASE_URL } from '../../../../api/apiService';
 import { PageWrapper, SummaryWrapper } from '../../../shared/styles/wrappers';
 import {
@@ -29,6 +30,7 @@ const ChunkDetails: React.FC = () => {
     chunkId: string;
   }>();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { chunkName = '', isPublic = false } = location.state;
   const [chunk, setChunk] = useState<Chunk | null>(null);
@@ -90,6 +92,9 @@ const ChunkDetails: React.FC = () => {
 
   return (
     <PageWrapper>
+      <IconButton onClick={() => navigate(-1)} aria-label="Go back">
+        <ArrowBackIcon />
+      </IconButton>
       {loading ? (
         <CircularProgress />
       ) : chunk ? (

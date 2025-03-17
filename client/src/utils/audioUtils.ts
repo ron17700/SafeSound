@@ -5,7 +5,7 @@ const ffmpeg = createFFmpeg({ log: true });
 export const splitMp3IntoChunks = async (
   audioFile: File,
   chunkDuration: number
-): Promise<File[]> => {
+): Promise<{ file: File; duration: number }[]> => {
   if (!ffmpeg.isLoaded()) {
     try {
       await ffmpeg.load();
@@ -16,7 +16,7 @@ export const splitMp3IntoChunks = async (
     }
   }
 
-  const chunks: File[] = [];
+  const chunks: { file: File; duration: number }[] = [];
   const fileName = audioFile.name;
 
   try {
@@ -49,8 +49,10 @@ export const splitMp3IntoChunks = async (
     const totalChunks = Math.ceil(totalDuration / chunkDuration);
     for (let i = 0; i < totalChunks; i++) {
       const start = i * chunkDuration;
+      const remainingTime = totalDuration - start;
+      const actualChunkDuration = Math.min(chunkDuration, remainingTime);
+
       const chunkName = `chunk_${i}.mp3`;
-      const chunkTime = Math.min(chunkDuration, totalDuration - start);
 
       await ffmpeg.run(
         '-i',
@@ -58,7 +60,7 @@ export const splitMp3IntoChunks = async (
         '-ss',
         start.toString(),
         '-t',
-        chunkTime.toString(),
+        actualChunkDuration.toString(),
         '-c',
         'copy',
         chunkName
@@ -68,8 +70,11 @@ export const splitMp3IntoChunks = async (
 
       // Convert Uint8Array to ArrayBuffer
       const arrayBuffer = chunkData.slice().buffer;
+      const chunkFile = new File([arrayBuffer], chunkName, {
+        type: 'audio/mp3',
+      });
 
-      chunks.push(new File([arrayBuffer], chunkName, { type: 'audio/mp3' }));
+      chunks.push({ file: chunkFile, duration: actualChunkDuration });
 
       // Clean up the chunk file from ffmpeg FS
       ffmpeg.FS('unlink', chunkName);
