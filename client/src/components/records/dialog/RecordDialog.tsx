@@ -9,6 +9,7 @@ import {
   Typography,
   FormControlLabel,
   Checkbox,
+  CircularProgress,
 } from '@mui/material';
 import { showSwal } from '../../shared/Swal';
 import {
@@ -18,16 +19,17 @@ import {
 } from '../../shared/styles/buttons';
 import { DialogWrapper } from '../../shared/styles/wrappers';
 import { FileText, TransparentInputField } from '../../shared/styles/inputs';
+import { Record } from '../list/RecordsList';
 
 interface RecordDialogProps {
   open: boolean;
   onClose: () => void;
   onSave: (recordData: RecordData) => Promise<void>;
   isEditing: boolean;
-  currentRecord: any;
+  currentRecord: Record | null;
 }
 
-interface RecordData {
+export interface RecordData {
   name: string;
   isPublic: boolean;
   photo: File | null;
@@ -45,6 +47,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
   const [isPublic, setIsPublic] = useState<boolean>(false);
   const [photo, setPhoto] = useState<File | null>(null);
   const [audio, setAudio] = useState<File | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isEditing && currentRecord) {
@@ -85,11 +88,18 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
       audio,
     };
 
+    setLoading(true);
     try {
       await onSave(recordData);
+      setName('');
+      setIsPublic(false);
+      setPhoto(null);
+      setAudio(null);
       onClose();
     } catch (error) {
       console.error('Failed to save record:', error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -100,6 +110,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
         </DialogTitle>
         <DialogContent>
           <TextField
+            disabled={loading}
             label="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -114,9 +125,14 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
               accept="image/*"
               id="photo-upload"
               onChange={handlePhotoUpload}
+              disabled={loading}
             />
             <label htmlFor="photo-upload">
-              <SmallActiveButton variant="contained" component="span">
+              <SmallActiveButton
+                disabled={loading}
+                variant="contained"
+                component="span"
+              >
                 Choose file
               </SmallActiveButton>
               <FileText variant="body2">
@@ -133,9 +149,14 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
                 onChange={handleAudioUpload}
                 id="audio-upload"
                 required
+                disabled={loading}
               />
               <label htmlFor="audio-upload">
-                <SmallActiveButton variant="contained" component="span">
+                <SmallActiveButton
+                  disabled={loading}
+                  variant="contained"
+                  component="span"
+                >
                   Choose file
                 </SmallActiveButton>
               </label>
@@ -150,6 +171,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
                 <Checkbox
                   checked={isPublic}
                   onChange={(e: any) => setIsPublic(e.target.checked)}
+                  disabled={loading}
                 />
               }
               label="Make Public"
@@ -157,9 +179,21 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <StyledPassiveButton onClick={onClose}>Cancel</StyledPassiveButton>
-          <ConfirmButton variant="contained" onClick={handleSave}>
-            {isEditing ? 'Update' : 'Save'}
+          <StyledPassiveButton disabled={loading} onClick={onClose}>
+            Cancel
+          </StyledPassiveButton>
+          <ConfirmButton
+            disabled={loading}
+            variant="contained"
+            onClick={handleSave}
+          >
+            {loading ? (
+              <CircularProgress size={24} sx={{ color: 'white' }} />
+            ) : isEditing ? (
+              'Update'
+            ) : (
+              'Save'
+            )}
           </ConfirmButton>
         </DialogActions>
       </DialogWrapper>

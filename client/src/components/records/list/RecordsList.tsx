@@ -17,7 +17,7 @@ import api, { API_BASE_URL } from '../../../api/apiService';
 import { getClassIcon } from '../../../logic/record';
 import { showSwal } from '../../shared/Swal';
 
-interface Record {
+export interface Record {
   _id: string;
   userId: string;
   createdAt: string;
