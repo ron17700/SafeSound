@@ -91,8 +91,9 @@ const RecordsPage: React.FC = () => {
             );
 
             await api.post(`/record/${createdRecord._id}/chunk`, chunkFormData);
-            showSwal('Record added successfully!');
           }
+
+          showSwal('Record added successfully!');
         } catch (error) {
           console.error('Error while splitting and uploading chunks:', error);
         }

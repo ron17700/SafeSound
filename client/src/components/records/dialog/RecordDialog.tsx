@@ -12,10 +12,12 @@ import {
 } from '@mui/material';
 import { showSwal } from '../../shared/Swal';
 import {
-  StyledActiveButton,
+  ConfirmButton,
+  SmallActiveButton,
   StyledPassiveButton,
 } from '../../shared/styles/buttons';
 import { DialogWrapper } from '../../shared/styles/wrappers';
+import { FileText, TransparentInputField } from '../../shared/styles/inputs';
 
 interface RecordDialogProps {
   open: boolean;
@@ -71,7 +73,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
       return;
     }
 
-    if(!isEditing && !audio) {
+    if (!isEditing && !audio) {
       showSwal('Audio mp3 file is required', 'error');
       return;
     }
@@ -107,17 +109,39 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
           />
           <Box mt={2}>
             <Typography variant="subtitle1">Photo (optional)</Typography>
-            <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+            <TransparentInputField
+              type="file"
+              accept="image/*"
+              id="photo-upload"
+              onChange={handlePhotoUpload}
+            />
+            <label htmlFor="photo-upload">
+              <SmallActiveButton variant="contained" component="span">
+                Choose file
+              </SmallActiveButton>
+              <FileText variant="body2">
+                {photo?.name || 'No photo chosen'}
+              </FileText>
+            </label>
           </Box>
           {!isEditing && (
             <Box mt={2}>
               <Typography variant="subtitle1">MP3 File</Typography>
-              <input
+              <TransparentInputField
                 type="file"
                 accept="audio/mp3"
                 onChange={handleAudioUpload}
+                id="audio-upload"
                 required
               />
+              <label htmlFor="audio-upload">
+                <SmallActiveButton variant="contained" component="span">
+                  Choose file
+                </SmallActiveButton>
+              </label>
+              <FileText variant="body2">
+                {audio?.name || 'No audio chosen'}
+              </FileText>
             </Box>
           )}
           <Box mt={2}>
@@ -134,9 +158,9 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
         </DialogContent>
         <DialogActions>
           <StyledPassiveButton onClick={onClose}>Cancel</StyledPassiveButton>
-          <StyledActiveButton variant="contained" onClick={handleSave}>
+          <ConfirmButton variant="contained" onClick={handleSave}>
             {isEditing ? 'Update' : 'Save'}
-          </StyledActiveButton>
+          </ConfirmButton>
         </DialogActions>
       </DialogWrapper>
     </Dialog>
