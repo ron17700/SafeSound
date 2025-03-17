@@ -74,13 +74,15 @@ const RecordsPage: React.FC = () => {
       if (audio) {
         try {
           const chunks = await splitMp3IntoChunks(audio, 10 * 60);
-          for (const [index, chunk] of chunks.entries()) {
-            const chunkStartTime =
-              new Date().getTime() + index * 10 * 60 * 1000;
-            const chunkEndTime = chunkStartTime + 10 * 60 * 1000;
+
+          let accumulatedTime = 0;
+
+          for (const { file, duration } of chunks) {
+            const chunkStartTime = accumulatedTime * 1000;
+            const chunkEndTime = (accumulatedTime + duration) * 1000;
 
             const chunkFormData = new FormData();
-            chunkFormData.append('file', chunk);
+            chunkFormData.append('file', file);
             chunkFormData.append(
               'startTime',
               new Date(chunkStartTime).toISOString()
@@ -91,6 +93,8 @@ const RecordsPage: React.FC = () => {
             );
 
             await api.post(`/record/${createdRecord._id}/chunk`, chunkFormData);
+
+            accumulatedTime += duration;
           }
 
           showSwal('Record added successfully!');
