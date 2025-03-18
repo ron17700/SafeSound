@@ -29,6 +29,21 @@ describe('Record Controller Tests', () => {
             expect(res.body.name).toBe('New Record');
         });
 
+        it('should not create a new record successfully', async () => {
+            const res = await request(app)
+                .post('/record')
+                .send({
+                    userId,
+                    name: 'New Record',
+                    isPublic: true,
+                    longitude: 40.7128,
+                    latitude: -74.0060,
+                });
+
+            expect(res.statusCode).toBe(403);
+            expect(res.body.error).toBe('Authorization header not found!');
+        });
+
         it('should return 400 if required fields are missing - name', async () => {
             const res = await request(app)
                 .post('/record')
