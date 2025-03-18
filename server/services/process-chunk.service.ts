@@ -4,17 +4,17 @@ import {analyzeAudio} from './speechmatics.service';
 import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
 import { RetrieveTranscriptResponseAlternative } from './transcribe-analyzer.service';
 
-function getRandomStatus(): Status {
+export function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
     return statuses[Math.floor(Math.random() * statuses.length)];
 }
 
-function getRandomClass(): Class {
+export function getRandomClass(): Class {
     const classes = [Class.Natural, Class.Good, Class.Bad];
     return classes[Math.floor(Math.random() * classes.length)];
 }
 
-function getRandomSummary(mockSummary: string): string {
+export function getRandomSummary(mockSummary: string): string {
     const summaries = ['I want to hug you tonight', 'May the odds be ever in your favor', 'I hate you!!!', mockSummary];
     return summaries[Math.floor(Math.random() * summaries.length)];
 }

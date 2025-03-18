@@ -39,7 +39,7 @@ export const RecordService = {
             return Record.findById(savedRecord._id).populate('userId', '-password -refreshToken');
         } catch (error) {
             console.error('Error adding record', error);
-            throw new Error('Error adding record');
+            throw error;
         }
     },
 
@@ -67,7 +67,7 @@ export const RecordService = {
             return await record.save();
         } catch (error) {
             console.error('Error updating record', error);
-            throw new Error('Error updating record');
+            throw error;
         }
     },
 
@@ -104,7 +104,7 @@ export const RecordService = {
             return await Record.findByIdAndDelete(id);
         } catch (error) {
             console.error('Error deleting record', error);
-            throw new Error('Error deleting record');
+            throw error;
         }
     },
 
