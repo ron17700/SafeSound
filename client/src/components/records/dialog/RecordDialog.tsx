@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   TextField,
@@ -20,6 +19,7 @@ import {
 import { DialogWrapper } from '../../shared/styles/wrappers';
 import { FileText, TransparentInputField } from '../../shared/styles/inputs';
 import { Record } from '../list/RecordsList';
+import { StyledDialog } from '../../shared/styles/Dialogs';
 
 interface RecordDialogProps {
   open: boolean;
@@ -62,6 +62,14 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
     }
   }, [isEditing, currentRecord]);
 
+  const handleClosingDialog = (): void => {
+    setName('');
+    setIsPublic(false);
+    setPhoto(null);
+    setAudio(null);
+    onClose();
+  };
+
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) setPhoto(event.target.files[0]);
   };
@@ -91,11 +99,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
     setLoading(true);
     try {
       await onSave(recordData);
-      setName('');
-      setIsPublic(false);
-      setPhoto(null);
-      setAudio(null);
-      onClose();
+      handleClosingDialog();
     } catch (error) {
       console.error('Failed to save record:', error);
     } finally {
@@ -103,7 +107,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
     }
   };
   return (
-    <Dialog open={open} onClose={onClose}>
+    <StyledDialog open={open} onClose={handleClosingDialog}>
       <DialogWrapper>
         <DialogTitle>
           {isEditing ? 'Update Record' : 'Add New Record'}
@@ -179,7 +183,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <StyledPassiveButton disabled={loading} onClick={onClose}>
+          <StyledPassiveButton disabled={loading} onClick={handleClosingDialog}>
             Cancel
           </StyledPassiveButton>
           <ConfirmButton
@@ -197,7 +201,7 @@ const RecordDialog: React.FC<RecordDialogProps> = ({
           </ConfirmButton>
         </DialogActions>
       </DialogWrapper>
-    </Dialog>
+    </StyledDialog>
   );
 };
 
