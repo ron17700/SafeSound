@@ -375,7 +375,7 @@
     },
     "/record/public": {
       "get": {
-        "tags": ["Social"],
+        "tags": ["Record"],
         "summary": "Get all public records",
         "description": "Retrieve all public records",
         "operationId": "getAllPublicRecords",
@@ -399,7 +399,7 @@
     },
     "/:id/like": {
       "post": {
-        "tags": ["Social"],
+        "tags": ["Record"],
         "summary": "Add a record to favorites",
         "description": "Adds the specified record to the user's list of favorite records.",
         "parameters": [
@@ -573,7 +573,7 @@
     },
     "/record/:recordId/chunk/:id/comment": {
       "post": {
-        "tags": ["Social"],
+        "tags": ["Record"],
         "summary": "Add a comment to a record's chunk",
         "description": "This endpoint adds a comment to an existing record's chunk",
         "parameters": [
