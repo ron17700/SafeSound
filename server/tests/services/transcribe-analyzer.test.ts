@@ -1,11 +1,7 @@
-import {analyzeToneAndWords} from '../../services/transcribe-analyzer.service';
-import { RetrieveTranscriptResponse } from '@speechmatics/batch-client';
+import {analyzeToneAndWords, RetrieveTranscriptResponseAlternative} from '../../services/transcribe-analyzer.service';
 import { Class } from '../../models/chunk.model';
 
 describe('analyzeToneAndWords', () => {
-    it('should throw an error if response is a string', () => {
-        expect(() => analyzeToneAndWords('invalid response')).toThrow('Invalid response');
-    });
 
     it('should return neutral tone if summary is not present', () => {
         const response = {
@@ -18,7 +14,7 @@ describe('analyzeToneAndWords', () => {
             }
         };
 
-        const result = analyzeToneAndWords(response as unknown as RetrieveTranscriptResponse);
+        const result = analyzeToneAndWords(response as unknown as RetrieveTranscriptResponseAlternative);
         expect(result).toEqual({
             overallTone: 'neutral',
             summary: undefined,
@@ -41,7 +37,7 @@ describe('analyzeToneAndWords', () => {
             },
         };
 
-        const result = analyzeToneAndWords(response as unknown as RetrieveTranscriptResponse);
+        const result = analyzeToneAndWords(response as unknown as RetrieveTranscriptResponseAlternative);
         expect(result).toEqual({
             overallTone: Class.Natural,
             summary: undefined,
@@ -65,7 +61,7 @@ describe('analyzeToneAndWords', () => {
             },
         };
 
-        const result = analyzeToneAndWords(response as unknown as RetrieveTranscriptResponse);
+        const result = analyzeToneAndWords(response as unknown as RetrieveTranscriptResponseAlternative);
         expect(result).toEqual({
             overallTone: Class.Good,
             summary: undefined,

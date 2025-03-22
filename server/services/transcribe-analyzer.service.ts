@@ -13,7 +13,7 @@ export type SentimentAnalysisAlternative = {
                 neutral_count: number;
             };
         };
-        sentiment_analysis: SentimentAnalysisAlternative;
+        sentiment_analysis?: SentimentAnalysisAlternative;
 }
 
 export type RetrieveTranscriptResponseAlternative = {
