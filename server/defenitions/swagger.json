@@ -28,6 +28,7 @@
   "paths": {
     "/auth/register": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Register a new user",
         "description": "This endpoint registers a new user",
         "parameters": [
@@ -53,6 +54,7 @@
     },
     "/auth/login": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Log in a user",
         "description": "This endpoint logs in a user",
         "parameters": [
@@ -84,6 +86,7 @@
     },
     "/auth/logout": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Log out a user",
         "description": "This endpoint logs out a user",
         "parameters": [
@@ -120,6 +123,7 @@
     },
     "/auth/refresh-token": {
       "post": {
+        "tags": ["Auth"],
         "summary": "Log in a user",
         "description": "This endpoint refreshes a user's token",
         "parameters": [
@@ -151,7 +155,7 @@
     },
     "/user/{id}": {
       "put": {
-        "tags": ["user"],
+        "tags": ["User"],
         "summary": "Update user profile",
         "description": "Update the user's profile picture and username",
         "operationId": "updateUserProfile",
@@ -192,7 +196,7 @@
         }
       },
       "get": {
-        "tags": ["user"],
+        "tags": ["User"],
         "summary": "Get user profile",
         "description": "Get the user's info",
         "parameters": [
@@ -221,6 +225,7 @@
     },
     "/record": {
       "post": {
+        "tags": ["Record"],
         "summary": "Create a new record",
         "description": "This endpoint creates a new record",
         "parameters": [
@@ -252,6 +257,7 @@
         }
       },
       "get": {
+        "tags": ["Record"],
         "summary": "Get all record by userId",
         "description": "This endpoint fetches record by userId",
         "responses": {
@@ -271,6 +277,7 @@
     },
     "/record/{id}": {
       "put": {
+        "tags": ["Record"],
         "summary": "Update an existing record",
         "description": "This endpoint updates an existing record",
         "parameters": [
@@ -309,6 +316,7 @@
         }
       },
       "delete": {
+        "tags": ["Record"],
         "summary": "Delete an existing record",
         "description": "This endpoint deletes an existing record",
         "parameters": [
@@ -336,10 +344,9 @@
             "description": "Server error"
           }
         }
-      }
-    },
-    "/record/:id": {
+      },
       "get": {
+        "tags": ["Record"],
         "summary": "Get all records by id",
         "description": "This endpoint fetches all records by id",
         "parameters": [
@@ -366,75 +373,9 @@
         }
       }
     },
-    "/record/:recordId/chunk": {
-      "get": {
-        "summary": "Get all chunks by record id",
-        "description": "This endpoint fetches all chunks by record id",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "description": "ID of the record",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Chunks fetched successfully"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      },
-      "post": {
-        "summary": "Add a chunk to a record",
-        "description": "This endpoint adds a chunk to an existing record",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "recordId",
-            "description": "ID of the record to pair the chunk to",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Chunk creation info",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ChunkCreation"
-            }
-          }
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Image uploaded successfully"
-          },
-          "400": {
-            "description": "Invalid credentials"
-          },
-          "500": {
-            "description": "Server error"
-          }
-        }
-      }
-    },
     "/record/public": {
       "get": {
-        "tags": ["record"],
+        "tags": ["Record"],
         "summary": "Get all public records",
         "description": "Retrieve all public records",
         "operationId": "getAllPublicRecords",
@@ -487,6 +428,7 @@
     },
     "/upload/file/{id}": {
       "post": {
+        "tags": ["Upload"],
         "summary": "Upload an image for record",
         "description": "This endpoint adds an image to an existing record",
         "parameters": [
@@ -525,8 +467,77 @@
         }
       }
     },
+    "/record/:recordId/chunk": {
+      "get": {
+        "tags": ["Chunk"],
+        "summary": "Get all chunks by record id",
+        "description": "This endpoint fetches all chunks by record id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "description": "ID of the record",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chunks fetched successfully"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Chunk"],
+        "summary": "Add a chunk to a record",
+        "description": "This endpoint adds a chunk to an existing record",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "recordId",
+            "description": "ID of the record to pair the chunk to",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Chunk creation info",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChunkCreation"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Image uploaded successfully"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
     "/record/:recordId/chunk/:id": {
       "get": {
+        "tags": ["Chunk"],
         "summary": "Get chunk by chunkId",
         "description": "This endpoint fetches all chunks by record id",
         "parameters": [
@@ -562,6 +573,7 @@
     },
     "/record/:recordId/chunk/:id/comment": {
       "post": {
+        "tags": ["Record"],
         "summary": "Add a comment to a record's chunk",
         "description": "This endpoint adds a comment to an existing record's chunk",
         "parameters": [

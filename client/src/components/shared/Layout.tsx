@@ -100,7 +100,7 @@ const Layout: React.FC = () => {
         navigate('/records/public');
         break;
       case 'MY_PROFILE':
-        navigate('/user/profile');
+        navigate('/users/profile');
         break;
       case 'LOGOUT':
         onLogout();

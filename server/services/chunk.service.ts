@@ -1,4 +1,4 @@
-import {Chunk, IChunk, IChunkScheme, Status} from '../models/chunk.model';
+import {Chunk, Class, IChunk, IChunkScheme, Status} from '../models/chunk.model';
 import {taskQueue} from "../index";
 import Message, {IMessage} from "../models/message.model";
 import {IRecord, Record} from "../models/record.model";
@@ -10,7 +10,8 @@ export const ChunkService = {
             startTime: chunkData.startTime,
             endTime: chunkData.endTime,
             status: Status.NotStarted,
-            audioFilePath: audioFilePath
+            audioFilePath: audioFilePath,
+            chunkClass: Class.Natural,
         });
 
         try {

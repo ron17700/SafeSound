@@ -11,6 +11,8 @@ import mainRoutes from './routes/index';
 import errorHandler from './middlewares/errorHandler';
 import taskQueueInstance, {TaskQueue} from "./services/task.queue";
 import http from 'http';
+import https from 'https';
+import fs from 'fs';
 import { Server } from 'socket.io';
 import { setupSocketHandlers } from './socket/socket-handlers'; // Import the socket handlers
 
@@ -26,13 +28,29 @@ app.use((req, res, next) => {
     next();
 });
 
-const server = http.createServer(app);
-const io = new Server(server, {
+let server: http.Server | https.Server;
+let io: Server;
+
+if (process.env.NODE_ENV === "production") {
+    const options = {
+        key: fs.readFileSync("/etc/safesound/privkey.pem"),
+        cert: fs.readFileSync("/etc/safesound/fullchain.pem"),
+    };
+    server = https.createServer(options, app);
+    console.log("Running in production with HTTPS");
+} else {
+    server = http.createServer(app);
+    console.log("Running in development with HTTP");
+}
+
+// WebSocket setup
+io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000', // Frontend URL
-        methods: ['GET', 'POST'], // Allowed methods
+        origin: 'http://localhost:3000', // Change to frontend URL in production
+        methods: ['GET', 'POST'],
     },
 });
+setupSocketHandlers(io); // Set up the socket handlers
 
 app.use(express.json());
 app.use(cors());
@@ -43,8 +61,6 @@ app.use(express.static(path.resolve(__dirname, "./public")));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 app.use("/", mainRoutes);
 app.use(errorHandler);
-
-setupSocketHandlers(io); // Set up the socket handlers
 
 export let taskQueue: TaskQueue;
 const start = async () => {

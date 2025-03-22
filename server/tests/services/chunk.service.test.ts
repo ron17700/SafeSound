@@ -67,6 +67,36 @@ describe('ChunkService', () => {
         });
     });
 
+    describe('deleteChunk', () => {
+        it('should deleteChunk a chunk by id', async () => {
+            const chunk = await Chunk.create({
+                recordId,
+                startTime: new Date(),
+                endTime: new Date(),
+                status: Status.NotStarted,
+                audioFilePath: 'path/to/audio/file.mp3',
+            });
+            const res = await ChunkService.deleteChunk(chunk.id);
+
+            expect(res).toHaveProperty('_id');
+            expect(res?.id.toString()).toBe(chunk.id);
+        });
+
+        it('should return null if chunk is not found', async () => {
+            const chunk = await ChunkService.deleteChunk('6784201f9ffb01bca4c9c249');
+
+            expect(chunk).toBeNull();
+        });
+
+        it('should return null if chunk is not found - error', async () => {
+            try {
+                await ChunkService.deleteChunk('');
+            } catch (e) {
+                expect(e).toBeInstanceOf(Error);
+            }
+        });
+    });
+
     describe('getAllChunks', () => {
         it('should get all chunks for a record', async () => {
             const chunks = await ChunkService.getAllChunks(recordId);

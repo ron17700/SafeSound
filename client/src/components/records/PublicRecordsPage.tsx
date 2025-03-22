@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import api from '../../api/apiService';
-import RecordsList from './list/RecordsList';
+import RecordsList, { Record } from './list/RecordsList';
 import { parseAccessTokenToPayload } from '../../logic/user';
 import { ListWrapper, PaddedBox } from '../shared/styles/wrappers';
 
 const PublicRecordsPage: React.FC = () => {
-  const [records, setRecords] = useState<any[]>([]);
+  const [records, setRecords] = useState<Record[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchRecords = async () => {

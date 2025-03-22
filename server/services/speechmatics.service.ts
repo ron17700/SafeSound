@@ -1,6 +1,6 @@
 import { BatchClient } from '@speechmatics/batch-client';
 import { openAsBlob } from 'node:fs';
-import { mockData } from './mock';
+import {mockData} from './mock';
 
 export async function analyzeAudio(audioFilePath: string) {
     let response;
