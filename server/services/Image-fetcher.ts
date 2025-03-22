@@ -2,10 +2,12 @@ import * as fs from "fs";
 const { v4: uuidv4 } = require('uuid');
 import path from "path";
 import axios from "axios";
+import express from "express";
+import router, {resolveStaticPath} from "../routes";
 
 export const saveImageFromUrl = async (imageUrl: string) => {
     try {
-        const uploadDir = path.join(__dirname, '../uploads');
+        const uploadDir = resolveStaticPath('uploads');
 
         const response = await axios.get(imageUrl, { responseType: 'stream' });
 

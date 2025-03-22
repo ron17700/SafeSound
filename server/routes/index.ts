@@ -11,7 +11,7 @@ router.use("/record", recordRoutes);
 router.use("/upload", uploadRoutes);
 router.use("/user", userRoutes);
 
-const resolveStaticPath = (relativePath: string) => {
+export const resolveStaticPath = (relativePath: string) => {
     return process.env.NODE_ENV === 'production'
         ? path.join(__dirname, '../../', relativePath)
         : path.join(process.cwd(), relativePath);
