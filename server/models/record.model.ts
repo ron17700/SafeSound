@@ -43,7 +43,7 @@ const RecordSchema = new Schema<IRecord>(
         recordClass: {
             type: String,
             enum: Object.values(Class),
-            default: Class.Natural
+            default: Class.IN_PROGRESS
         },
         image: {
             type: String,

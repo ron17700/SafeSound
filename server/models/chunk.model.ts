@@ -5,6 +5,7 @@ export enum Class {
     Natural = "Natural",
     Good = "Good",
     Bad = "Bad",
+    IN_PROGRESS = "In Progress",
 }
 
 export enum Status {
