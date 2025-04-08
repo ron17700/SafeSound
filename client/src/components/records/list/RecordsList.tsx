@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import api, { API_BASE_URL } from '../../../api/apiService';
 import { getClassIcon } from '../../../logic/record';
 import { showSwal } from '../../shared/Swal';
+import { Class, Status } from '../../../../../server/models/chunk.model';
 
 export interface Record {
   _id: string;
@@ -25,7 +26,8 @@ export interface Record {
   name: string;
   public: boolean;
   image: string | null;
-  recordClass: string;
+  recordClass: Class;
+  status: Status;
   numberOfComments: number;
   isFavorite?: boolean;
 }
@@ -76,7 +78,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
               }
             >
               <ListItemAvatar>
-                {getClassIcon(record.recordClass)}
+                {getClassIcon(record.recordClass, record.status)}
               </ListItemAvatar>
               <img
                 src={`${API_BASE_URL}/${(record.image || '').replace(
@@ -101,9 +103,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
                       record.createdAt
                     ).toLocaleDateString()}
                     `}</div>
-                    <div>
-                      {`Comments: ${record.numberOfComments}`}
-                    </div>
+                    <div>{`Comments: ${record.numberOfComments}`}</div>
                   </>
                 }
               />

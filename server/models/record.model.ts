@@ -1,11 +1,12 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import { Class } from './chunk.model';
+import { Class, Status } from './chunk.model';
 
 export interface IRecord extends Document {
     userId: string;
     name?: string;
     image?: string;
     recordClass: Class;
+    status: Status;
     public?: boolean;
     createdAt: Date;
     location?: {
@@ -21,6 +22,7 @@ export type RecordObj ={
     name?: string;
     image?: string;
     recordClass: Class;
+    status: Status;
     public?: boolean;
     createdAt: Date;
     location?: {
@@ -44,6 +46,10 @@ const RecordSchema = new Schema<IRecord>(
             type: String,
             enum: Object.values(Class),
             default: Class.Natural
+        }, status: {
+            type: String,
+            enum: Object.values(Status),
+            default: Status.Completed
         },
         image: {
             type: String,
