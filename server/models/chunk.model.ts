@@ -4,8 +4,7 @@ import {IMessage} from "./message.model";
 export enum Class {
     Natural = "Natural",
     Good = "Good",
-    Bad = "Bad",
-    IN_PROGRESS = "In Progress",
+    Bad = "Bad"
 }
 
 export enum Status {

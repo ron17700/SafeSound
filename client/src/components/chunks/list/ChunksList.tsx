@@ -16,6 +16,7 @@ import { StatusCodes } from 'http-status-codes';
 import { getClassIcon } from '../../../logic/record';
 import { ListWrapper, PageWrapper } from '../../shared/styles/wrappers';
 import { UserProfile } from '../../user/UserProfilePage';
+import { Class, Status } from '../../../../../server/models/chunk.model';
 
 export interface Message {
   _id: string;
@@ -30,8 +31,8 @@ export interface Chunk {
   startTime: string;
   endTime: string;
   audioFilePath: string;
-  status: string;
-  chunkClass: string;
+  status: Status;
+  chunkClass: Class;
   name: string;
   numberOfComments: number;
   recordId: string;
@@ -107,7 +108,7 @@ const ChunksList: React.FC = () => {
               <CardContent>
                 <ListItem>
                   <ListItemAvatar>
-                    {getClassIcon(chunk.chunkClass)}
+                    {getClassIcon(chunk.chunkClass, chunk.status)}
                   </ListItemAvatar>
                   <ListItemText
                     primary={`Chunk ${chunk.name} (${chunk.numberOfComments})`}

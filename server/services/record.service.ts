@@ -1,5 +1,5 @@
 import {IRecord, Record, RecordObj} from '../models/record.model';
-import { Chunk, Class } from '../models/chunk.model';
+import { Chunk, Class, Status } from '../models/chunk.model';
 import * as fs from "node:fs";
 import User from "../models/user.model";
 
@@ -28,6 +28,7 @@ export const RecordService = {
             name,
             image: file,
             public: isPublic,
+            status: Status.InProgress,
             location: {
                 type: 'Point',
                 coordinates: [longitude, latitude]
@@ -51,6 +52,7 @@ export const RecordService = {
         }
 
         Object.assign(record, {
+            status: Status.InProgress,
             name: recordData.name ? recordData.name : record.name,
             public: recordData.isPublic ? recordData.isPublic : record.public,
             image: recordData.file ? recordData.file : record.image,
@@ -146,6 +148,7 @@ export const RecordService = {
         }
 
         record.recordClass = overallTone;
+        record.status = Status.Completed;
         await record.save();
     },
 
@@ -160,6 +163,7 @@ export const RecordService = {
                 name: record.name,
                 image: record.image,
                 recordClass: record.recordClass,
+                status: record.status,
                 public: record.public,
                 createdAt: record.createdAt,
                 location: record.location,
