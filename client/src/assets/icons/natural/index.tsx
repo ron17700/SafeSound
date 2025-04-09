@@ -1,4 +1,4 @@
-const CustomIcon = () => {
+const CustomNeutralIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -6,14 +6,10 @@ const CustomIcon = () => {
       height="24"
       viewBox="0 0 24 24"
     >
-      <path
-        fill="#ECC477"
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M14.05 17.58l-0.01 0.01-2.4-2.4 1.06-1.06 1.35 1.35 2.58-2.58 1.06 1.06-3.54 3.54L14.05 17.58zM12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zM7.34 6.28l1.41 1.41 1.41-1.41 1.06 1.06-1.47 1.47 1.41 1.41-1.06 1.06-1.47-1.47-1.41 1.41-1.06-1.06 1.41-1.41L6.28 7.34 7.34 6.28zM12 20c-2.2 0-4.2-0.9-5.7-2.3L17.7 6.3C19.1 7.8 20 9.8 20 12c0 4.4-3.6 8-8 8z"
-      />
+      <circle cx="12" cy="12" r="10" fill="#ECC477" />
+      <rect x="7" y="11" width="10" height="2" fill="#ffffff" />
     </svg>
   );
 };
 
-export default CustomIcon;
+export default CustomNeutralIcon;
