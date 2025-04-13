@@ -4,13 +4,14 @@ import { ChunkService } from '../services/chunk.service';
 export const ChunkController  = {
     async addChunk (req: Request, res: Response, next: NextFunction) {
         try {
+
             const recordId = req.params.recordId;
-            const chunkData = req.body;
+            const { chunkData, userId } = req.body;
             const audioFilePath: string = req.body.file;
             if (!audioFilePath) {
                 throw new Error('Audio file is required');
             }
-            const chunk = await ChunkService.addChunk(recordId, chunkData, audioFilePath);
+            const chunk = await ChunkService.addChunk(userId, recordId, chunkData, audioFilePath);
             res.status(201).json(chunk);
         } catch (err: any) {
             next(err);

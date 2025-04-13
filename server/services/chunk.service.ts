@@ -4,7 +4,7 @@ import Message, {IMessage} from "../models/message.model";
 import {IRecord, Record} from "../models/record.model";
 
 export const ChunkService = {
-    async addChunk(recordId: string, chunkData: IChunk, audioFilePath: string) {
+    async addChunk(userId: string, recordId: string, chunkData: IChunk, audioFilePath: string) {
         const newChunk = new Chunk({
             recordId: recordId,
             startTime: chunkData.startTime,
@@ -19,7 +19,7 @@ export const ChunkService = {
 
             // Add task to queue
             if (taskQueue && taskQueue.addTask) {
-                taskQueue.addTask(result);
+                taskQueue.addTask(userId, result);
             } else {
                 console.error('taskQueue is not initialized');
             }

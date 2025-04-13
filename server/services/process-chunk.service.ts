@@ -1,8 +1,12 @@
 import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
-import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
-import { RetrieveTranscriptResponseAlternative } from './transcribe-analyzer.service';
+import {
+    AnalysisResult,
+    analyzeToneAndWords,
+    RetrieveTranscriptResponseAlternative
+} from "./transcribe-analyzer.service";
+import {NotificationService} from '../services/notification-service';
 
 export function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
@@ -19,7 +23,7 @@ export function getRandomSummary(mockSummary: string): string {
     return summaries[Math.floor(Math.random() * summaries.length)];
 }
 
-export async function processChunk(chunk: IChunkScheme) {
+export async function processChunk(userId: string, chunk: IChunkScheme) {
     try {
         // Update chunk status to in-progress
         await ChunkService.updateChunk(chunk.id, { status: Status.InProgress });
@@ -45,6 +49,10 @@ export async function processChunk(chunk: IChunkScheme) {
                 chunkClass: chunkClass,
                 summary: analysisResult.summary,
             });
+        }
+
+        if (analysisResult.overallTone === Class.Bad) {
+            await NotificationService.sendMessages(userId, chunk);
         }
 
     } catch (error) {

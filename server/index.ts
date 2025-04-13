@@ -14,7 +14,13 @@ import http from 'http';
 import https from 'https';
 import fs from 'fs';
 import { Server } from 'socket.io';
-import { setupSocketHandlers } from './socket/socket-handlers'; // Import the socket handlers
+import { setupSocketHandlers } from './socket/socket-handlers';
+import admin from 'firebase-admin';
+import serviceAccount from '../server/config/firebase-config.json';
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
 
 dotenv.config({ path: path.join(__dirname, "./.env") });
 
