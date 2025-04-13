@@ -23,6 +23,10 @@ export type RetrieveTranscriptResponseAlternative = {
     };
 }
 
+export type EmptyResponse = {
+    emptyChunk: boolean
+}
+
 export function analyzeToneAndWords(response: RetrieveTranscriptResponseAlternative): AnalysisResult {
     const summary = response?.sentiment_analysis?.summary?.overall || response?.sentiment_analysis?.sentiment_analysis?.summary?.overall;
 

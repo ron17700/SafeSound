@@ -1,44 +1,45 @@
 import { BatchClient } from '@speechmatics/batch-client';
 import { openAsBlob } from 'node:fs';
-import {mockData} from './mock';
-import ffmpegPath from 'ffmpeg-static';
 import { spawn } from 'child_process';
-import { promises as fs } from 'fs';
+import ffmpegPath from 'ffmpeg-static';
+import { mockData } from './mock';
 import path from 'path';
 
-export async function removeSilenceFromAudio(inputPath: string): Promise<string | null> {
-    const outputPath = path.join(path.dirname(inputPath), `processed-${path.basename(inputPath)}`);
+const DECIBEL_THRESHOLD = -40; // dB threshold to detect meaningful sound
 
+// Analyze volume to check if there's sound above DECIBEL_THRESHOLD
+async function hasAudibleSound(filePath: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         const ffmpeg = spawn(ffmpegPath as string, [
-            '-i', inputPath,
-            '-af', 'silenceremove=start_periods=1:start_duration=0.5:start_threshold=-40dB:stop_periods=-1:stop_duration=0.5:stop_threshold=-40dB',
-            '-ar', '44100', // sample rate
-            '-ac', '2',     // channels
-            '-b:a', '192k', // bitrate
-            outputPath
+            '-i', filePath,
+            '-af', 'volumedetect',
+            '-f', 'null',
+            process.platform === 'win32' ? 'NUL' : '/dev/null'
         ]);
 
-        ffmpeg.on('close', async (code) => {
-            if (code === 0) {
-                const stats = await fs.stat(outputPath).catch(() => null);
-                if (stats && stats.size > 1000) {
-                    resolve(outputPath);
-                } else {
-                    await fs.unlink(outputPath).catch(() => {});
-                    resolve(null);
-                }
+        let stderr = '';
+        ffmpeg.stderr.on('data', (data) => {
+            stderr += data.toString();
+        });
+
+        ffmpeg.on('close', () => {
+            const match = stderr.match(/max_volume: ([-\d.]+) dB/);
+            if (match) {
+                const maxVolume = parseFloat(match[1]);
+                console.log(`Detected max volume: ${maxVolume} dB`);
+                resolve(maxVolume > DECIBEL_THRESHOLD);
             } else {
-                reject(new Error('Failed to remove silence'));
+                console.warn('Could not determine max_volume from ffmpeg output.');
+                resolve(false);
             }
         });
 
-        ffmpeg.stderr.on('data', (data) => {
-            console.error(`FFmpeg error: ${data}`);
+        ffmpeg.on('error', (err) => {
+            console.error('FFmpeg error during volume detection:', err);
+            reject(err);
         });
     });
 }
-
 
 export async function analyzeAudio(audioFilePath: string) {
     let response;
@@ -48,34 +49,28 @@ export async function analyzeAudio(audioFilePath: string) {
     });
 
     try {
-        console.log('Cleaning silence...');
-
-        const cleanedPath = await removeSilenceFromAudio(audioFilePath);
-        if (!cleanedPath) {
-            console.log('All silence — skipping transcription.');
-            return { skipped: true, reason: 'no_audio_detected' };
+        const hasSound = await hasAudibleSound(audioFilePath);
+        if (!hasSound) {
+            console.log('Audio is below threshold. Skipping transcription.');
+            return { emptyChunk: true };
         }
 
-        const blob = await openAsBlob(cleanedPath);
-        const file = new File([blob], cleanedPath);
+        console.log('Sending file for transcription...');
+        const blob = await openAsBlob(audioFilePath);
+        const file = new File([blob], audioFilePath);
 
         if (process.env.LOCAL_ENV) {
             response = mockData;
         } else {
-            response = await client.transcribe(
-                file,
-                {
-                    transcription_config: {
-                        language: 'en',
-                    },
-                    sentiment_analysis_config: {},
-                    summarization_config: {
-                        "content_type": "informative",
-                        "summary_length": "brief",
-                        "summary_type": "bullets"
-                    }
-                },
-            );
+            response = await client.transcribe(file, {
+                transcription_config: { language: 'en' },
+                sentiment_analysis_config: {},
+                summarization_config: {
+                    content_type: 'informative',
+                    summary_length: 'brief',
+                    summary_type: 'bullets'
+                }
+            });
         }
 
         console.log('Transcription finished!', {client, file});

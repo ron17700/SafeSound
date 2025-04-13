@@ -1,7 +1,7 @@
 import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
-import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
+import {AnalysisResult, analyzeToneAndWords, EmptyResponse} from "./transcribe-analyzer.service";
 import { RetrieveTranscriptResponseAlternative } from './transcribe-analyzer.service';
 
 export function getRandomStatus(): Status {
@@ -25,14 +25,22 @@ export async function processChunk(chunk: IChunkScheme) {
         await ChunkService.updateChunk(chunk.id, { status: Status.InProgress });
 
         // Send audio to Speechmatics
-        const result: RetrieveTranscriptResponseAlternative = await analyzeAudio(chunk.audioFilePath);
-        const analysisResult: AnalysisResult = analyzeToneAndWords(result);
+        const result: RetrieveTranscriptResponseAlternative | EmptyResponse = await analyzeAudio(chunk.audioFilePath);
+
+        // Handle empty chunks (silent or under threshold)
+        if ('emptyChunk' in result && result.emptyChunk) {
+            await ChunkService.updateChunk(chunk.id, {
+                status: Status.Completed,
+                chunkClass: Class.Natural,
+                summary: 'No meaningful audio detected',
+            });
+            return;
+        }
 
         // Analyze result for tone and bad words
-        const chunkClass = analysisResult.overallTone;
+        const analysisResult: AnalysisResult = analyzeToneAndWords(result as RetrieveTranscriptResponseAlternative);
 
         // Update chunk with analysis result
-
         if (process.env.LOCAL_ENV) {
             await ChunkService.updateChunk(chunk.id, {
                 status: getRandomStatus(),
@@ -42,7 +50,7 @@ export async function processChunk(chunk: IChunkScheme) {
         } else {
             await ChunkService.updateChunk(chunk.id, {
                 status: Status.Completed,
-                chunkClass: chunkClass,
+                chunkClass: analysisResult.overallTone,
                 summary: analysisResult.summary,
             });
         }
