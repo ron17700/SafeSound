@@ -1,10 +1,11 @@
 import admin from "firebase-admin";
 import User from "../models/user.model";
 import { IChunkScheme} from "../models/chunk.model";
+import {IDevice} from "../models/device.model";
 
 export const NotificationService = {
     sendMessages: async (userId: string, chunk: IChunkScheme): Promise<void> => {
-        const user = await User.findById(userId).populate('devices');
+        const user = await User.findById(userId).populate<{devices: IDevice[]}>('devices');
 
         if (!user || !user.devices || user.devices.length === 0) {
             console.log('No devices found for user:', userId);
@@ -17,15 +18,10 @@ export const NotificationService = {
         for (const device of user.devices) {
             const deviceToken = device.deviceToken; // or whatever field holds the device token
 
-            if (device.lastActiveDate && new Date(device.lastActiveDate) < oneMonthAgo) {
-                console.log(`Skipping inactive device ${device._id}, last active: ${device.lastActiveDate}`);
-                continue;
-            }
-
             if (deviceToken) {
                 await NotificationService.sendMessage(deviceToken, {
                     title: 'We have identified a new audio that contains bad content',
-                    body: 'Bad'
+                    body: chunk.summary
                 });
             }
         }

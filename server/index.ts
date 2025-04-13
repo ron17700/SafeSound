@@ -16,10 +16,10 @@ import fs from 'fs';
 import { Server } from 'socket.io';
 import { setupSocketHandlers } from './socket/socket-handlers';
 import admin from 'firebase-admin';
-import serviceAccount from '../server/config/firebase-config.json';
+import {serviceAccountString} from './config/firebase-config';
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+    credential: admin.credential.cert(serviceAccountString)
 });
 
 dotenv.config({ path: path.join(__dirname, "./.env") });

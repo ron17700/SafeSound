@@ -3,7 +3,6 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export interface IDevice extends Document {
     userId: string;
     deviceToken: string;
-    lastActiveDate: Date;
 }
 
 const DeviceSchema = new Schema<IDevice>(
@@ -15,9 +14,6 @@ const DeviceSchema = new Schema<IDevice>(
         deviceToken: {
             type: String,
         },
-        lastActiveDate: {
-            type: Date,
-        }
     },
     {
         timestamps: true,
