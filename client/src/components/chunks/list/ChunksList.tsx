@@ -119,7 +119,6 @@ const ChunksList: React.FC = () => {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit',
-                            timeZone: 'UTC',
                           }
                         )} - ${new Date(chunk.endTime).toLocaleTimeString(
                           'en-GB',
@@ -127,7 +126,6 @@ const ChunksList: React.FC = () => {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit',
-                            timeZone: 'UTC',
                           }
                         )}`}</div>
                         <div>{`Comments: ${chunk.numberOfComments}`}</div>
