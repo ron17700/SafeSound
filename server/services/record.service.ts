@@ -1,7 +1,10 @@
 import {IRecord, Record, RecordObj} from '../models/record.model';
 import { Chunk, Class } from '../models/chunk.model';
 import * as fs from "node:fs";
+import { promisify } from 'util';
 import User from "../models/user.model";
+
+const unlinkAsync = promisify(fs.unlink);
 
 export const RecordService = {
     async getAllRecords(userId: string) {
@@ -86,14 +89,23 @@ export const RecordService = {
             const chunks = await Chunk.find({ recordId: id });
             for (const chunk of chunks) {
                 if (chunk.audioFilePath) {
-                    fs.unlinkSync(chunk.audioFilePath);
+                    try {
+                        // Check if the chunk audio file exists before attempting to delete it
+                        await unlinkAsync(chunk.audioFilePath);
+                    } catch (error) {
+                        console.error(`Error deleting chunk file: ${chunk.audioFilePath}`);
+                    }
                 }
                 await Chunk.findByIdAndDelete(chunk.id);
             }
 
-            // Delete the record
+            // Delete the record image if it exists and isn't the default image
             if (record.image && record.image !== 'default-files/default-record-image.jpg') {
-                fs.unlinkSync(record.image);
+                try {
+                    await unlinkAsync(record.image);
+                } catch (error) {                   
+                    console.error(`Error deleting record image: ${record.image}`);
+                }
             }
 
             await User.updateMany(
