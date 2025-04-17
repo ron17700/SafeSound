@@ -43,24 +43,21 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchAccessToken = async () => {
       try {
-        let token: string | null = localStorage.getItem('accessToken');
-
-        if (!token) {
-          token = await refreshAccessToken();
-          if (token) {
-            localStorage.setItem('accessToken', token);
-          }
+        const token = await refreshAccessToken();
+        if (token) {
+          localStorage.setItem('accessToken', token);
+          setAccessToken(token);
+        } else {
+          setAccessToken(null);
         }
-
-        setAccessToken(token);
       } catch (error) {
-        console.error('Failed to fetch access token:', error);
+        console.error('Token refresh failed:', error);
         setAccessToken(null);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchAccessToken();
   }, []);
 
