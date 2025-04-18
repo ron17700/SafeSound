@@ -1,8 +1,10 @@
 import {Class, IChunkScheme, Status} from '../models/chunk.model';
+import { hasAudibleSound } from './audibleSoundDetector';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
 import {AnalysisResult, analyzeToneAndWords} from "./transcribe-analyzer.service";
 import { RetrieveTranscriptResponseAlternative } from './transcribe-analyzer.service';
+import { promises as fs } from 'fs';
 
 export function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
@@ -24,15 +26,33 @@ export async function processChunk(chunk: IChunkScheme) {
         // Update chunk status to in-progress
         await ChunkService.updateChunk(chunk.id, { status: Status.InProgress });
 
+        const hasSound = await hasAudibleSound(chunk.audioFilePath);
+        if (!hasSound) {
+            console.log('Audio is below threshold. Skipping transcription.');
+     
+            await ChunkService.updateChunk(chunk.id, {
+                status: Status.Completed,
+                chunkClass: Class.Natural,
+                summary: 'No meaningful audio detected',
+            });
+
+            try {
+                await fs.unlink(chunk.audioFilePath);
+                console.log('File deleted:', chunk.audioFilePath);
+            } catch (err) {
+                console.error('Failed to delete file:', err);
+            }
+
+            return;
+        }
+
         // Send audio to Speechmatics
         const result: RetrieveTranscriptResponseAlternative = await analyzeAudio(chunk.audioFilePath);
-        const analysisResult: AnalysisResult = analyzeToneAndWords(result);
 
         // Analyze result for tone and bad words
-        const chunkClass = analysisResult.overallTone;
+        const analysisResult: AnalysisResult = analyzeToneAndWords(result as RetrieveTranscriptResponseAlternative);
 
         // Update chunk with analysis result
-
         if (process.env.LOCAL_ENV) {
             await ChunkService.updateChunk(chunk.id, {
                 status: getRandomStatus(),
@@ -42,7 +62,7 @@ export async function processChunk(chunk: IChunkScheme) {
         } else {
             await ChunkService.updateChunk(chunk.id, {
                 status: Status.Completed,
-                chunkClass: chunkClass,
+                chunkClass: analysisResult.overallTone,
                 summary: analysisResult.summary,
             });
         }
