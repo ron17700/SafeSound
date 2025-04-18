@@ -53,6 +53,7 @@ const RecordsList: React.FC<RecordsListProps> = ({
       showSwal('Record deleted successfully!');
     } catch (error) {
       console.error(`Failed to delete record: ${recordId}`, error);
+      showSwal(`Deleting record failed!`, 'error');
     }
   };
 
