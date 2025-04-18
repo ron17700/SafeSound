@@ -16,12 +16,14 @@ import fs from 'fs';
 import { Server } from 'socket.io';
 import { setupSocketHandlers } from './socket/socket-handlers';
 import admin from 'firebase-admin';
-import {serviceAccountString} from './config/firebase-config';
 
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccountString)
+    credential: admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: (process.env.FIRE_BASE_PRIVATE_KEY || '').replace(/\\n/g, '\n')
+    })
 });
-
 dotenv.config({ path: path.join(__dirname, "./.env") });
 
 process.env.rootDir = __dirname;
