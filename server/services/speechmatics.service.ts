@@ -1,4 +1,4 @@
-import {BatchClient, RetrieveTranscriptResponse} from '@speechmatics/batch-client';
+import { BatchClient } from '@speechmatics/batch-client';
 import { openAsBlob } from 'node:fs';
 
 export async function analyzeAudio(audioFilePath: string) {
@@ -10,7 +10,6 @@ export async function analyzeAudio(audioFilePath: string) {
 
     try {
         console.log('Sending file for transcription...');
-
         const blob = await openAsBlob(audioFilePath);
         const file = new File([blob], audioFilePath);
 
