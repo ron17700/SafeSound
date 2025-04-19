@@ -2,10 +2,13 @@ import admin from "firebase-admin";
 import User from "../models/user.model";
 import { IChunkScheme} from "../models/chunk.model";
 import {IDevice} from "../models/device.model";
+import {Record} from "../models/record.model";
 
 export const NotificationService = {
     sendMessages: async (userId: string, chunk: IChunkScheme): Promise<void> => {
         const user = await User.findById(userId).populate<{devices: IDevice[]}>('devices');
+        const record = await Record.findById(chunk.recordId);
+        const recordName = record?.name;
 
         if (!user || !user.devices || user.devices.length === 0) {
             console.log('No devices found for user:', userId);
@@ -20,7 +23,7 @@ export const NotificationService = {
 
             if (deviceToken) {
                 await NotificationService.sendMessage(deviceToken, {
-                    title: 'We have identified a new audio that contains bad content',
+                    title: `Record ${recordName}: We have identified a new audio that contains bad content`,
                     body: chunk.summary
                 });
             }
