@@ -57,7 +57,7 @@ export async function processChunk(userId: string, chunk: IChunkScheme) {
             await ChunkService.updateChunk(chunk.id, {
                 status: getRandomStatus(),
                 chunkClass: chunkClass,
-                summary: getRandomSummary(mockData.summary),
+                summary: getRandomSummary(mockData.summary.content),
             });
         } else {
             // Send audio to Speechmatics
