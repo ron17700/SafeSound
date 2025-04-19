@@ -1,12 +1,14 @@
 import {NextFunction, Request, Response} from 'express';
 import { ChunkService } from '../services/chunk.service';
+import {IChunk} from "../models/chunk.model";
 
 export const ChunkController  = {
     async addChunk (req: Request, res: Response, next: NextFunction) {
         try {
 
             const recordId = req.params.recordId;
-            const { chunkData, userId } = req.body;
+            const  userId = req.body.userId;
+            const chunkData: Partial<IChunk>  = {startTime: req.body.startTime, endTime: req.body.endTime};
             const audioFilePath: string = req.body.file;
             if (!audioFilePath) {
                 throw new Error('Audio file is required');

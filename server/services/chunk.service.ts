@@ -4,7 +4,7 @@ import Message, {IMessage} from "../models/message.model";
 import {IRecord, Record} from "../models/record.model";
 
 export const ChunkService = {
-    async addChunk(userId: string, recordId: string, chunkData: IChunk, audioFilePath: string) {
+    async addChunk(userId: string, recordId: string, chunkData: Partial<IChunk>, audioFilePath: string) {
         const newChunk = new Chunk({
             recordId: recordId,
             startTime: chunkData.startTime,
