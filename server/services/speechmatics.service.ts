@@ -1,6 +1,5 @@
-import { BatchClient } from '@speechmatics/batch-client';
+import {BatchClient, RetrieveTranscriptResponse} from '@speechmatics/batch-client';
 import { openAsBlob } from 'node:fs';
-import {mockData} from './mock';
 
 export async function analyzeAudio(audioFilePath: string) {
     let response;
@@ -15,25 +14,20 @@ export async function analyzeAudio(audioFilePath: string) {
         const blob = await openAsBlob(audioFilePath);
         const file = new File([blob], audioFilePath);
 
-        if (process.env.LOCAL_ENV) {
-            response = mockData;
-        } else {
-            response = await client.transcribe(
-                file,
-                {
-                    transcription_config: {
-                        language: 'en',
-                    },
-                    sentiment_analysis_config: {},
-                    summarization_config: {
-                        "content_type": "informative",
-                        "summary_length": "brief",
-                        "summary_type": "bullets"
-                    }
+        response = await client.transcribe(
+            file,
+            {
+                transcription_config: {
+                    language: 'en',
                 },
-            );
-        }
-
+                sentiment_analysis_config: {},
+                summarization_config: {
+                    "content_type": "informative",
+                    "summary_length": "brief",
+                    "summary_type": "bullets"
+                }
+            },
+        );
         console.log('Transcription finished!', {client, file});
         return response;
     } catch (error) {

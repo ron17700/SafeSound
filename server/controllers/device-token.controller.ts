@@ -6,12 +6,8 @@ export const DeviceTokenController = {
     async updateDeviceInfo(req: Request, res: Response, next: NextFunction) {
         const { userId, deviceToken } = req.body;
         try {
-            const user = await DeviceTokenService.addDeviceToken(userId, deviceToken);
-
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
-            res.json(user);
+            const device = await DeviceTokenService.addDeviceToken(userId, fcmToken);
+            res.json(device);
         } catch (err: any) {
             next(err);
         }

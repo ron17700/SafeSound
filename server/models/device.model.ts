@@ -1,16 +1,11 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IDevice extends Document {
-    userId: string;
     deviceToken: string;
 }
 
 const DeviceSchema = new Schema<IDevice>(
     {
-        userId: {
-            type: String,
-            ref: 'User',
-        },
         deviceToken: {
             type: String,
         },
@@ -20,6 +15,6 @@ const DeviceSchema = new Schema<IDevice>(
     }
 );
 
-const Device: Model<IDevice> = mongoose.models.User || mongoose.model<IDevice>('Device', DeviceSchema);
+const Device: Model<IDevice> = mongoose.model<IDevice>('Device', DeviceSchema);
 
 export default Device;

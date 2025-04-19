@@ -4,9 +4,9 @@ import {analyzeAudio} from './speechmatics.service';
 import {
     AnalysisResult,
     analyzeToneAndWords,
-    RetrieveTranscriptResponseAlternative
 } from "./transcribe-analyzer.service";
 import {NotificationService} from '../services/notification-service';
+import {mockData} from "./mock";
 
 export function getRandomStatus(): Status {
     const statuses = [Status.NotStarted, Status.InProgress, Status.Completed];
@@ -28,22 +28,23 @@ export async function processChunk(userId: string, chunk: IChunkScheme) {
         // Update chunk status to in-progress
         await ChunkService.updateChunk(chunk.id, { status: Status.InProgress });
 
-        // Send audio to Speechmatics
-        const result: RetrieveTranscriptResponseAlternative = await analyzeAudio(chunk.audioFilePath);
-        const analysisResult: AnalysisResult = analyzeToneAndWords(result);
-
-        // Analyze result for tone and bad words
-        const chunkClass = analysisResult.overallTone;
-
         // Update chunk with analysis result
-
+        let chunkClass;
         if (process.env.LOCAL_ENV) {
+            chunkClass = getRandomClass();
             await ChunkService.updateChunk(chunk.id, {
                 status: getRandomStatus(),
-                chunkClass: getRandomClass(),
-                summary: getRandomSummary(analysisResult.summary),
+                chunkClass: chunkClass,
+                summary: getRandomSummary(mockData.summary),
             });
         } else {
+            // Send audio to Speechmatics
+            const result: any = await analyzeAudio(chunk.audioFilePath);
+            const analysisResult: AnalysisResult = analyzeToneAndWords(result);
+
+            // Analyze result for tone and bad words
+            const chunkClass = analysisResult.overallTone;
+
             await ChunkService.updateChunk(chunk.id, {
                 status: Status.Completed,
                 chunkClass: chunkClass,
@@ -51,7 +52,7 @@ export async function processChunk(userId: string, chunk: IChunkScheme) {
             });
         }
 
-        if (analysisResult.overallTone === Class.Bad) {
+        if (chunkClass === Class.Bad) {
             await NotificationService.sendMessages(userId, chunk);
         }
 
