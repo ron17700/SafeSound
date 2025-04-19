@@ -3,7 +3,7 @@ import {DeviceTokenService} from '../services/device-token.service';
 
 export const DeviceTokenController = {
 
-    async updateDeviceToken(req: Request, res: Response, next: NextFunction) {
+    async updateDeviceInfo(req: Request, res: Response, next: NextFunction) {
         const { userId, deviceToken } = req.body;
         try {
             const user = await DeviceTokenService.addDeviceToken(userId, deviceToken);

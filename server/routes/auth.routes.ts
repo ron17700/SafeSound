@@ -15,6 +15,6 @@ router.post('/refresh-token', AuthController.refreshToken);
 router.get('/login/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 router.get('/login/google/callback', passport.authenticate('google', { session: false }), AuthController.handleGoogleCallback)
 
-router.put('/fcm-token', [isAuthorized, DeviceTokenController.updateDeviceToken]);
+router.put('/fcm-token', [isAuthorized, DeviceTokenController.updateDeviceInfo]);
 
 export default router;
