@@ -2,13 +2,12 @@ import {Class, IChunkScheme, Status} from '../models/chunk.model';
 import { hasAudibleSound } from './audibleSoundDetector';
 import {ChunkService} from './chunk.service';
 import {analyzeAudio} from './speechmatics.service';
-import { RetrieveTranscriptResponseAlternative } from './transcribe-analyzer.service';
 import { promises as fs } from 'fs';
 import {
     AnalysisResult,
     analyzeToneAndWords,
 } from "./transcribe-analyzer.service";
-import {NotificationService} from '../services/notification-service';
+import {NotificationService} from './notification-service';
 import {mockData} from "./mock";
 
 export function getRandomStatus(): Status {
@@ -51,12 +50,6 @@ export async function processChunk(userId: string, chunk: IChunkScheme) {
             return;
         }
 
-        // Send audio to Speechmatics
-        const result: RetrieveTranscriptResponseAlternative = await analyzeAudio(chunk.audioFilePath);
-
-        // Analyze result for tone and bad words
-        const analysisResult: AnalysisResult = analyzeToneAndWords(result as RetrieveTranscriptResponseAlternative);
-
         // Update chunk with analysis result
         let chunkClass;
         if (process.env.LOCAL_ENV) {
@@ -72,7 +65,7 @@ export async function processChunk(userId: string, chunk: IChunkScheme) {
             const analysisResult: AnalysisResult = analyzeToneAndWords(result);
 
             // Analyze result for tone and bad words
-            const chunkClass = analysisResult.overallTone;
+            chunkClass = analysisResult.overallTone;
 
             await ChunkService.updateChunk(chunk.id, {
                 status: Status.Completed,
