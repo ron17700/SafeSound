@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
 import User from "../models/user.model";
-import { IChunkScheme} from "../models/chunk.model";
+import { IChunkScheme } from "../models/chunk.model";
 import {IDevice} from "../models/device.model";
 import {Record} from "../models/record.model";
+import { DeviceTokenService} from "./device-token.service";
 
 export const NotificationService = {
     sendMessages: async (userId: string, chunk: IChunkScheme): Promise<void> => {
@@ -15,17 +16,25 @@ export const NotificationService = {
             return;
         }
 
+        
         const oneMonthAgo = new Date();
-        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+        const now = new Date();
+        oneMonthAgo.setMonth(now.getMonth() - 1);
 
         for (const device of user.devices) {
-            const deviceToken = device.deviceToken; // or whatever field holds the device token
+            const deviceToken = device.deviceToken;
 
             if (deviceToken) {
-                await NotificationService.sendMessage(deviceToken, {
-                    title: `Record ${recordName}: We have identified a new audio that contains bad content`,
-                    body: chunk.summary
-                });
+
+                if (device.updatedAt < oneMonthAgo) {
+                    await DeviceTokenService.removeDeviceToken(userId, deviceToken);
+                } else {
+                    await NotificationService.sendMessage(deviceToken, {
+                        title: `Record ${recordName}: We have identified a new audio that contains bad content`,
+                        body: chunk.summary
+                    });
+                }
+
             }
         }
     },

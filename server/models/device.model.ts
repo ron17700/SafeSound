@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IDevice extends Document {
     deviceToken: string;
+    updatedAt: Date;
 }
 
 const DeviceSchema = new Schema<IDevice>(

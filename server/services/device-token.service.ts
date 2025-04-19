@@ -1,10 +1,23 @@
-import User, {IUser} from '../models/user.model';
+import User from '../models/user.model';
 import DeviceModel from "../models/device.model";
 
 export const DeviceTokenService = {
-    async getDeviceTokenById(userId: string) {
-        const user: IUser | null = await User.findById(userId);
-        return user?.devices;
+    async removeDeviceToken(userId: string, token: string) {
+        const device = await DeviceModel.findOne({ deviceToken: token });
+
+        if (!device) {
+            return null;
+        }
+
+        await User.findByIdAndUpdate(
+            userId,
+            { $pull: { devices: device._id } },
+            { new: true }
+        );
+
+        await DeviceModel.findByIdAndDelete(device._id);
+
+        return device;
     },
 
     async addDeviceToken(userId: string, token: string) {
