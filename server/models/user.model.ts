@@ -1,10 +1,12 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
+import {IDevice} from "./device.model";
 
 export interface IUser extends Document {
     email: string;
     userName: string;
     password: string;
     refreshToken: string | null;
+    devices: IDevice[];
     profileImage?: string;
     role: 'user' | 'admin';
     createdAt: Date;
@@ -33,6 +35,10 @@ const UserSchema = new Schema<IUser>(
             type: String,
             select: false,
         },
+        devices: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Device'
+        }],
         profileImage: {
             type: String,
             default: 'default-files/default-profile-image.jpg',

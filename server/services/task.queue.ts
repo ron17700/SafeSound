@@ -2,8 +2,13 @@ import { IChunkScheme } from '../models/chunk.model';
 import { processChunk } from './process-chunk.service';
 import { RecordService } from './record.service';
 
+type Task = {
+    userId: string,
+    chunk: IChunkScheme,
+};
+
 export class TaskQueue {
-    private queue: IChunkScheme[] = [];
+    private queue: Task[] = [];
     private maxParallelTasks = 5;
     private currentTasks = 0;
 
@@ -11,8 +16,8 @@ export class TaskQueue {
         this.startProcessing();
     }
 
-    public addTask(chunk: IChunkScheme) {
-        this.queue.push(chunk);
+    public addTask(userId: string, chunk: IChunkScheme) {
+        this.queue.push({userId, chunk});
     }
 
     private async startProcessing() {
@@ -25,13 +30,15 @@ export class TaskQueue {
     private async processQueue() {
         if (this.currentTasks >= this.maxParallelTasks) return;
 
-        const chunk = this.queue.shift();
-        if (!chunk) return;
+        const task = this.queue.shift();
+        if (!task) return;
+
+        const { userId, chunk } = task;
 
         this.currentTasks++;
         try {
             // Save the chunk before processing
-            await processChunk(chunk);
+            await processChunk(userId, chunk);
             await RecordService.defineRecordClass(chunk.recordId);
         } catch (error) {
             console.error('Error processing chunk', error);
