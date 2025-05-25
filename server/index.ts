@@ -41,8 +41,8 @@ let io: Server;
 
 if (process.env.NODE_ENV === "production") {
     const options = {
-        key: fs.readFileSync("/etc/safesound/privkey.pem"),
-        cert: fs.readFileSync("/etc/safesound/fullchain.pem"),
+        key: fs.readFileSync("/etc/safesound/safesound.key"),
+        cert: fs.readFileSync("/etc/safesound/safesound.crt"),
     };
     server = https.createServer(options, app);
     console.log("Running in production with HTTPS");
