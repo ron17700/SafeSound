@@ -37,7 +37,7 @@ describe('processChunk', () => {
             audioFilePath,
         };
 
-        const result = await processChunk(mockChunk as unknown as IChunkScheme);
+        const result = await processChunk(userId, mockChunk as unknown as IChunkScheme);
         expect(result).toEqual(undefined);
     });
 
@@ -54,7 +54,7 @@ describe('processChunk', () => {
         };
 
         try {
-            await processChunk(mockChunk as unknown as IChunkScheme);
+            await processChunk(userId, mockChunk as unknown as IChunkScheme);
         } catch (e) {
             expect(e).toEqual(new Error('Error analyzing audio with Speechmatics'));
         }

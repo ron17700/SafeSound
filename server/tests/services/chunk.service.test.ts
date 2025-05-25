@@ -38,7 +38,7 @@ describe('ChunkService', () => {
                 audioFilePath,
             };
 
-            const chunk = await ChunkService.addChunk(recordId, chunkData, audioFilePath);
+            const chunk = await ChunkService.addChunk(userId, recordId, chunkData, audioFilePath);
 
             expect(chunk).toHaveProperty('_id');
             expect(chunk.recordId.toString()).toBe(recordId);
