@@ -33,7 +33,7 @@ export const RecordService = {
             public: isPublic,
             location: {
                 type: 'Point',
-                coordinates: [longitude, latitude]
+                coordinates: [latitude, longitude]
             }
         });
 
